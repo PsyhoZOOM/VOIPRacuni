@@ -1,2 +1,2 @@
 # VOIPRacuni
-Stampa racuna za iptv
+Stampa racuna za Fiksnu telefoniju
