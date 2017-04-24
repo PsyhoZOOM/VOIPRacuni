@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -39,6 +40,8 @@ public class korisniciWin implements Initializable {
     public TableColumn cPostBr;
     public TableColumn cBrUgovora;
     public Database db;
+    public Button bTrazi;
+    public TextField tTrazi;
     URL location;
     ResourceBundle resources;
 
@@ -55,16 +58,24 @@ public class korisniciWin implements Initializable {
 
     }
 
-    public void setData() {
-        tblKorisnici.setItems(setTableData(null));
+    public void setData(String search) {
+        tblKorisnici.setItems(setTableData(search));
     }
 
     private ObservableList setTableData(String search) {
-        String query = "SELECT * FROM korisnici";
+        PreparedStatement ps = null;
+        String query = "SELECT * FROM korisnici WHERE imePrezime LIKE  ? OR adresa LIKE ? OR mesto LIKE ? OR postbr LIKE ? or brUgovora LIKE  ? ";
         ArrayList<Users> usersArrayList = new ArrayList<Users>();
         try {
-            PreparedStatement ps = db.connection.prepareStatement(query);
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, search + "%");
+            ps.setString(2, search + "%");
+            ps.setString(3, search + "%");
+            ps.setString(4, search + "%");
+            ps.setString(5, search + "%");
+
             ResultSet rs = ps.executeQuery();
+
             if (rs.isBeforeFirst()) {
                 Users user;
                 while (rs.next()) {
@@ -82,6 +93,12 @@ public class korisniciWin implements Initializable {
             e.printStackTrace();
         }
 
+
+        try {
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         ObservableList userObservable = FXCollections.observableArrayList(usersArrayList);
         return userObservable;
 
@@ -103,13 +120,41 @@ public class korisniciWin implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        setData();
+        setData("");
 
     }
 
     public void editKorisnik(ActionEvent actionEvent) {
+        if (tblKorisnici.getSelectionModel().getSelectedIndex() == -1) {
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editKorisnik.fxml"), resources);
+        try {
+            Scene scene = new Scene((Parent) fxmlLoader.load());
+            editKorisnik editKorisnikController = fxmlLoader.getController();
+            editKorisnikController.db = db;
+            editKorisnikController.editUser = true;
+            editKorisnikController.user = tblKorisnici.getSelectionModel().getSelectedItem();
+            editKorisnikController.setData();
+
+            Stage stage = new Stage();
+            stage.initOwner(bEditKorisnik.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Izmena korisnila" + tblKorisnici.getSelectionModel().getSelectedItem().getIme());
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setData("");
+
     }
 
     public void obrisiKorinisk(ActionEvent actionEvent) {
+    }
+
+    public void traziKorisnika(ActionEvent actionEvent) {
+        setData(tTrazi.getText());
     }
 }

@@ -34,6 +34,7 @@ public class Database {
             if (!rs.isBeforeFirst()) {
                 createTables();
             }
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,6 +101,9 @@ public class Database {
             st.executeUpdate(queryKorisnici);
             st = connection.createStatement();
             st.executeUpdate(queryZoneCene);
+            st.close();
+            connection.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
