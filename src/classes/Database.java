@@ -45,51 +45,50 @@ public class Database {
     //INIT DATABASE IF NOT EXISTS
     private void createTables() {
         String queryKorisnici = "" +
-                "CREATE TABLE IF NOT EXISTS `korisnici` (\n" +
-                "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-                "\t`imePrezime`\tTEXT,\n" +
-                "\t`adresa`\tTEXT,\n" +
-                "\t`mesto`\tTEXT,\n" +
-                "\t`postbr`\tTEXT,\n" +
-                "\t`brUgovora`\tTEXT\n" +
-                ");";
+                "CREATE TABLE `korisnici` (\n" +
+                "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "        `imePrezime`    TEXT,\n" +
+                "        `adresa`        TEXT,\n" +
+                "        `mesto` TEXT,\n" +
+                "        `postbr`        TEXT,\n" +
+                "        `brUgovora`     TEXT\n" +
+                ");\n";
 
         String queryBrojevi = "" +
-                "CREATE TABLE IF NOT EXISTS `brojevi` (\n" +
-                "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-                "\t`userID`\tINTEGER,\n" +
-                "\t`brTel`\tTEXT\n" +
-                ");";
+                "CREATE TABLE `brojevi` (\n" +
+                "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "        `userID`        INTEGER,\n" +
+                "        `brTel` TEXT\n" +
+                ");\n";
 
-        String queryZoneCene = "CREATE TABLE IF NOT EXISTS `zoneCene` (\n" +
-                "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-                "\t`vrstaUsluge`\tTEXT,\n" +
-                "\t`providerCena`\tREAL,\n" +
-                "\t`providerCenaPDV`\tREAL,\n" +
-                "\t`cena`\tREAL,\n" +
-                "\t`PDV`\tREAL,\n" +
-                "\t`cenaPDV`\tREAL,\n" +
-                "\t`otherCena`\tREAL,\n" +
-                "\t`razlika`\tREAL\n" +
-                ");" +
-                "";
+        String queryZoneCene = "" +
+                "CREATE TABLE \"zoneCene\" (\n" +
+                "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "        `vrstaUsluge`   TEXT,\n" +
+                "        `providerCena`  REAL,\n" +
+                "        `providerPDV`   REAL,\n" +
+                "        `cena`  REAL,\n" +
+                "        `PDV`   REAL,\n" +
+                "        `cenaPDV`       REAL,\n" +
+                "        `otherCena`     REAL\n" +
+                ");\n";
 
         String queryCSV = "" +
-                "CREATE TABLE IF NOT EXISTS `csv` (\n" +
-                "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-                "\t`account`\tTEXT,\n" +
-                "\t`from`\tTEXT,\n" +
-                "\t`to`\tTEXT,\n" +
-                "\t`country`\tTEXT,\n" +
-                "\t`description`\tTEXT,\n" +
-                "\t`connectTime`\tTEXT,\n" +
-                "\t`chargedTimeMS`\tTEXT,\n" +
-                "\t`chargedTimeS`\tINTEGER,\n" +
-                "\t`chargedAmountRSD`\tREAL,\n" +
-                "\t`serviceName`\tTEXT,\n" +
-                "\t`chargedQuantity`\tINTEGER,\n" +
-                "\t`serviceUnit`\tTEXT\n" +
-                ");";
+                "CREATE TABLE `csv` (\n" +
+                "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "        `account`       TEXT,\n" +
+                "        `from`  TEXT,\n" +
+                "        `to`    TEXT,\n" +
+                "        `country`       TEXT,\n" +
+                "        `description`   TEXT,\n" +
+                "        `connectTime`   TEXT,\n" +
+                "        `chargedTimeMS` TEXT,\n" +
+                "        `chargedTimeS`  INTEGER,\n" +
+                "        `chargedAmountRSD`      REAL,\n" +
+                "        `serviceName`   TEXT,\n" +
+                "        `chargedQuantity`       INTEGER,\n" +
+                "        `serviceUnit`   TEXT\n" +
+                ");\n";
 
 
         try {

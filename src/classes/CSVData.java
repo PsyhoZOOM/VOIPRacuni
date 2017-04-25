@@ -14,7 +14,7 @@ public class CSVData implements Serializable {
     String descrition;
     String connectTime;
     String chargedTimeMinSec;
-    double chargedTimeSec;
+    int chargedTimeSec;
     double chargetAmmountRSD;
     String serviceName;
     int chargedQuantity;
@@ -85,11 +85,11 @@ public class CSVData implements Serializable {
         this.chargedTimeMinSec = chargedTimeMinSec;
     }
 
-    public double getChargedTimeSec() {
+    public int getChargedTimeSec() {
         return chargedTimeSec;
     }
 
-    public void setChargedTimeSec(double chargedTimeSec) {
+    public void setChargedTimeSec(int chargedTimeSec) {
         this.chargedTimeSec = chargedTimeSec;
     }
 
