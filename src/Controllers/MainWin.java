@@ -34,6 +34,7 @@ public class MainWin implements Initializable {
     public MenuItem menuAbout;
     public BorderPane bPane;
     public MenuItem menuPrikaziUsluge;
+    public MenuItem menuShowCSV;
     URL location;
     ResourceBundle resources;
     FXMLLoader fxmlLoader;
@@ -228,5 +229,10 @@ public class MainWin implements Initializable {
         }
 
         return csvFiles;
+    }
+
+    public void showCSV(ActionEvent actionEvent) {
+        CSVEdit csvEdit = new CSVEdit();
+        csvEdit.initialize(location, resources);
     }
 }
