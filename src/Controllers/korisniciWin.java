@@ -112,4 +112,7 @@ public class korisniciWin implements Initializable {
 
     public void obrisiKorinisk(ActionEvent actionEvent) {
     }
+
+    public void traziKorisnika(ActionEvent actionEvent) {
+    }
 }
