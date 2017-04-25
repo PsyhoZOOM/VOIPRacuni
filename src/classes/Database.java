@@ -45,7 +45,7 @@ public class Database {
     //INIT DATABASE IF NOT EXISTS
     private void createTables() {
         String queryKorisnici = "" +
-                "CREATE TABLE `korisnici` (\n" +
+                "CREATE TABLE IF NOT EXISTS `korisnici` (\n" +
                 "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
                 "        `imePrezime`    TEXT,\n" +
                 "        `adresa`        TEXT,\n" +
@@ -55,14 +55,14 @@ public class Database {
                 ");\n";
 
         String queryBrojevi = "" +
-                "CREATE TABLE `brojevi` (\n" +
+                "CREATE TABLE IF NOT EXISTS  `brojevi` (\n" +
                 "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
                 "        `userID`        INTEGER,\n" +
                 "        `brTel` TEXT\n" +
                 ");\n";
 
         String queryZoneCene = "" +
-                "CREATE TABLE \"zoneCene\" (\n" +
+                "CREATE TABLE IF NOT EXISTS \"zoneCene\" (\n" +
                 "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
                 "        `vrstaUsluge`   TEXT,\n" +
                 "        `providerCena`  REAL,\n" +
@@ -74,7 +74,7 @@ public class Database {
                 ");\n";
 
         String queryCSV = "" +
-                "CREATE TABLE `csv` (\n" +
+                "CREATE TABLE IF NOT EXISTS  `csv` (\n" +
                 "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
                 "        `account`       TEXT,\n" +
                 "        `from`  TEXT,\n" +
@@ -88,7 +88,7 @@ public class Database {
                 "        `serviceName`   TEXT,\n" +
                 "        `chargedQuantity`       INTEGER,\n" +
                 "        `serviceUnit`   TEXT\n" +
-                ");\n";
+                "         `customerID`	TEXT);";
 
 
         try {
@@ -100,9 +100,8 @@ public class Database {
             st.executeUpdate(queryKorisnici);
             st = connection.createStatement();
             st.executeUpdate(queryZoneCene);
-            st.close();
-            connection.close();
 
+            st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

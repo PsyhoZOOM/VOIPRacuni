@@ -19,7 +19,16 @@ public class CSVData implements Serializable {
     String serviceName;
     int chargedQuantity;
     String serviceUnit;
+    String customerID;
 
+
+    public String getCustomerID() {
+        return customerID;
+    }
+
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
+    }
 
     public int getId() {
         return id;
@@ -124,4 +133,6 @@ public class CSVData implements Serializable {
     public void setServiceUnit(String serviceUnit) {
         this.serviceUnit = serviceUnit;
     }
+
+
 }
