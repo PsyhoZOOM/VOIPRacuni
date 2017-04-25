@@ -9,7 +9,8 @@ public class ZoneCene implements Serializable {
     int id;
     String vrstaUsluge;
     double providerCena;
-    double providerCenaPDV;
+    double providerPDV;
+    double providerUkupno;
     double cena;
     double PDV;
     double cenaPDV;
@@ -40,12 +41,12 @@ public class ZoneCene implements Serializable {
         this.providerCena = providerCena;
     }
 
-    public double getProviderCenaPDV() {
-        return providerCenaPDV;
+    public double getProviderPDV() {
+        return providerPDV;
     }
 
-    public void setProviderCenaPDV(double providerCenaPDV) {
-        this.providerCenaPDV = providerCenaPDV;
+    public void setProviderPDV(double providerPDV) {
+        this.providerPDV = providerPDV;
     }
 
     public double getCena() {
@@ -86,5 +87,13 @@ public class ZoneCene implements Serializable {
 
     public void setRazlika(double razlika) {
         this.razlika = razlika;
+    }
+
+    public double getProviderUkupno() {
+        return providerUkupno;
+    }
+
+    public void setProviderUkupno(double providerUkupno) {
+        this.providerUkupno = providerUkupno;
     }
 }

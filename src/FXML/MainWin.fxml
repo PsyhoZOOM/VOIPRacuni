@@ -4,10 +4,8 @@
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../css/Main.css"
-            xmlns="http://javafx.com/javafx/8.0.112" fx:controller="Controllers.MainWin"
             AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-            AnchorPane.topAnchor="0.0"
->
+            AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.102" fx:controller="Controllers.MainWin">
     <children>
         <BorderPane fx:id="bPane" layoutX="168.0" layoutY="122.0" prefHeight="768.0" prefWidth="1024.0"
                     AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
@@ -19,8 +17,21 @@
                             <menus>
                                 <Menu mnemonicParsing="false" text="File">
                                     <items>
-                                        <MenuItem fx:id="menuOpenCSV" mnemonicParsing="false" text="Import CSV"/>
+                                        <MenuItem fx:id="menuOpenCSV" mnemonicParsing="false" onAction="#openCSV"
+                                                  text="Import CSV"/>
                                         <MenuItem fx:id="meniExit" mnemonicParsing="false" text="Izlaz"/>
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Usluge">
+                                    <items>
+                                        <MenuItem fx:id="menuPrikaziUsluge" mnemonicParsing="false"
+                                                  onAction="#showUsluge" text="Prikazi usluge"/>
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="CSV">
+                                    <items>
+                                        <MenuItem fx:id="menuShowCSV" mnemonicParsing="false" onAction="#showCSV"
+                                                  text="Prikazi CSV"/>
                                     </items>
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="Help">
@@ -33,12 +44,6 @@
                     </children>
                 </VBox>
             </top>
-            <right>
-                <Pane maxWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
-            </right>
-            <left>
-                <VBox maxWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
-            </left>
         </BorderPane>
     </children>
 </AnchorPane>
