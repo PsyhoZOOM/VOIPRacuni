@@ -28,6 +28,7 @@ public class editKorisnik implements Initializable {
     public Database db;
     public boolean editUser = false;
     public Users user;
+    public TextField tCustomerID;
     private URL location;
     private ResourceBundle resources;
 
@@ -59,7 +60,7 @@ public class editKorisnik implements Initializable {
 
     private void saveUser() {
         PreparedStatement ps;
-        String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID) VALUES (?,?,?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -67,6 +68,7 @@ public class editKorisnik implements Initializable {
             ps.setString(3, tMesto.getText());
             ps.setString(4, tPostBr.getText());
             ps.setString(5, tbrUgovora.getText());
+            ps.setString(6, tCustomerID.getText());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -77,7 +79,7 @@ public class editKorisnik implements Initializable {
     private void updateUser() {
 
         PreparedStatement ps;
-        String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=? WHERE id=? ";
+        String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=?, customerID=? WHERE id=? ";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -85,7 +87,9 @@ public class editKorisnik implements Initializable {
             ps.setString(3, tMesto.getText());
             ps.setString(4, tPostBr.getText());
             ps.setString(5, tbrUgovora.getText());
-            ps.setInt(6, user.getId());
+            ps.setString(6, tCustomerID.getText());
+            ps.setInt(7, user.getId());
+            System.out.println(ps.toString());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -100,5 +104,6 @@ public class editKorisnik implements Initializable {
         tMesto.setText(user.getMesto());
         tPostBr.setText(user.getPostBr());
         tbrUgovora.setText(user.getBrUgovora());
+        tCustomerID.setText(user.getCustomerId());
     }
 }

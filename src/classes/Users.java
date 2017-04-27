@@ -12,6 +12,7 @@ public class Users implements Serializable {
     String mesto;
     String postBr;
     String brUgovora;
+    String customerId;
 
 
     public int getId() {
@@ -60,5 +61,14 @@ public class Users implements Serializable {
 
     public void setBrUgovora(String brUgovora) {
         this.brUgovora = brUgovora;
+    }
+
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

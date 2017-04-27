@@ -45,14 +45,15 @@ public class Database {
     //INIT DATABASE IF NOT EXISTS
     private void createTables() {
         String queryKorisnici = "" +
-                "CREATE TABLE IF NOT EXISTS `korisnici` (\n" +
-                "        `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-                "        `imePrezime`    TEXT,\n" +
-                "        `adresa`        TEXT,\n" +
-                "        `mesto` TEXT,\n" +
-                "        `postbr`        TEXT,\n" +
-                "        `brUgovora`     TEXT\n" +
-                ");\n";
+                "CREATE TABLE IF NOT EXISTS`korisnici` (\n" +
+                "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "\t`imePrezime`\tTEXT,\n" +
+                "\t`adresa`\tTEXT,\n" +
+                "\t`mesto`\tTEXT,\n" +
+                "\t`postbr`\tTEXT,\n" +
+                "\t`brUgovora`\tTEXT,\n" +
+                "\t`customerID`\tTEXT\n" +
+                ");";
 
         String queryBrojevi = "" +
                 "CREATE TABLE IF NOT EXISTS  `brojevi` (\n" +
@@ -87,8 +88,10 @@ public class Database {
                 "        `chargedAmountRSD`      REAL,\n" +
                 "        `serviceName`   TEXT,\n" +
                 "        `chargedQuantity`       INTEGER,\n" +
-                "        `serviceUnit`   TEXT\n" +
-                "         `customerID`	TEXT);";
+                "        `serviceUnit`   TEXT,\n" +
+                "         `customerID`	TEXT,\n" +
+                "         `fileName` TEXT\n);";
+
 
 
         try {

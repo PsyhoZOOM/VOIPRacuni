@@ -20,7 +20,15 @@ public class CSVData implements Serializable {
     int chargedQuantity;
     String serviceUnit;
     String customerID;
+    String fileName;
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public String getCustomerID() {
         return customerID;

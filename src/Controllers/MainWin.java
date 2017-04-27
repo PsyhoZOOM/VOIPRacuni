@@ -22,15 +22,16 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Created by PsyhoZOOM@gmail.com on 4/20/17.
@@ -93,12 +94,8 @@ public class MainWin implements Initializable {
     public void openCSV(ActionEvent actionEvent) {
         //OPEN CSV file and set extensions filter
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Mesečni obračun CSV Fajl", "csv");
-        FileChooser.ExtensionFilter extFilterAll = new FileChooser.ExtensionFilter("Svi fajlovi", "*.zip", "*.csv", "*.*");
-        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("Mesecčni obračun Zipovani-CSV Fajl", "*.zip");
-        fileChooser.getExtensionFilters().add(extensionFilter);
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Mesečni obračun CSV Fajl", "*.csv");
         fileChooser.getExtensionFilters().add(extFilter);
-        fileChooser.getExtensionFilters().add(extFilterAll);
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.setTitle("Import Zipovani-CSV fajl");
 
@@ -111,22 +108,8 @@ public class MainWin implements Initializable {
 
                 String message;
                 for (int i = 0; i < lf.size(); i++) {
-                    int max = lf.size();
-                    if (lf.get(i).getName().toLowerCase().endsWith(".zip")) {
-                        System.out.println("Unzipping file: " + lf.get(i).getName());
-                        List<File> lsFileTmp = unZipFile(lf.get(i));
-                        for (int a = 0; a < lsFileTmp.size(); a++) {
-                            csvFiles.add(lsFileTmp.get(a));
-                            System.out.println("UNPACKED: " + lsFileTmp.get(a).getName());
-                            updateMessage("IMPORTING: " + lsFileTmp.get(a).getName());
-                        }
-
-                    } else {
-                        System.out.println("No need for unzip of file " + lf.get(i).getName());
                         csvFiles.add(lf.get(i));
                         lf.get(i).getName();
-                    }
-
                 }
                 updateMessage("Importujem u bazu podataka.. molim sacekajte..");
                 exportCSVtoDatabase(csvFiles);
@@ -158,9 +141,16 @@ public class MainWin implements Initializable {
         PreparedStatement ps;
         CsvReader csvReader;
         CSVData csvData;
+        String fileName;
+        String customerID;
         final ArrayList<CSVData> csvDataArrayList = new ArrayList<CSVData>();
         for (int i = 0; i < csvFiles.size(); i++) {
             System.out.println("IMPORTING: " + csvFiles.get(i).getName());
+
+            fileName = FilenameUtils.getBaseName(csvFiles.get(i).getName());
+            customerID = fileName.substring(fileName.lastIndexOf("-"));
+            customerID = customerID.replace("-customer", "");
+
             try {
 
                 csvReader = new CsvReader(new FileReader(csvFiles.get(i)));
@@ -182,7 +172,8 @@ public class MainWin implements Initializable {
                     csvData.setServiceName(csvReader.get("Service Name"));
                     csvData.setChargedQuantity(Integer.parseInt(csvReader.get("Charged quantity")));
                     csvData.setServiceUnit(csvReader.get("Service unit"));
-                    csvData.setCustomerID(csvFiles.get(i).getName());
+                    csvData.setCustomerID(customerID);
+                    csvData.setFileName(fileName);
                     csvDataArrayList.add(csvData);
                 }
             } catch (FileNotFoundException e) {
@@ -196,7 +187,7 @@ public class MainWin implements Initializable {
 
         for (int i = 0; i < csvDataArrayList.size(); i++) {
             CSVData csvDataSQL = csvDataArrayList.get(i);
-            String query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS, chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS, chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID, fileName) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             try {
                 ps = db.connection.prepareStatement(query);
                 ps.setString(1, csvDataSQL.getAccount());
@@ -212,6 +203,7 @@ public class MainWin implements Initializable {
                 ps.setInt(11, csvDataSQL.getChargedQuantity());
                 ps.setString(12, csvDataSQL.getServiceUnit());
                 ps.setString(13, csvDataSQL.getCustomerID());
+                ps.setString(14, csvDataSQL.getFileName());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -223,64 +215,6 @@ public class MainWin implements Initializable {
     }
 
 
-    private List<File> unZipFile(File file) {
-        List<File> csvFiles = new ArrayList<File>();
-        ZipInputStream zipInputStream;
-        ZipEntry zipEntry;
-        FileInputStream fileInputStream;
-        byte[] buffer = new byte[1024];
-        String tDir = System.getProperty("java.io.tmpdir");
-        String tDirChild = "/VoipTMP/";
-
-
-        try {
-            fileInputStream = new FileInputStream(file);
-            zipInputStream = new ZipInputStream(fileInputStream);
-
-            zipEntry = zipInputStream.getNextEntry();
-
-            while (zipEntry != null) {
-                if (zipEntry.isDirectory()) {
-                    zipEntry = zipInputStream.getNextEntry();
-                    continue;
-                }
-                System.out.println("Creating tmp file withname: " + zipEntry.getName().toLowerCase());
-                //              File unzipedFile = File.createTempFile(zipEntry.getName().toLowerCase().replace(".zip", ""), "");
-                File unzipedFile = new File(tDir + tDirChild + FilenameUtils.getBaseName(zipEntry.getName()) + "." + FilenameUtils.getExtension(zipEntry.getName()));
-                System.out.println(unzipedFile.getAbsoluteFile());
-                unzipedFile.deleteOnExit();
-
-                System.out.println("TEMP FILE: " + unzipedFile.getName());
-                FileOutputStream fos = new FileOutputStream(unzipedFile);
-                int len;
-                progBarImport.setVisible(true);
-                while ((len = zipInputStream.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
-                }
-
-                if (zipEntry.getName().toLowerCase().endsWith(".csv")) {
-                    csvFiles.add(unzipedFile);
-                } else {
-                    if (zipEntry.getName().toLowerCase().endsWith(".zip")) {
-                        List<File> dblFile = new ArrayList<File>();
-                        dblFile = unZipFile(unzipedFile);
-                        for (int z = 0; z < dblFile.size(); z++) {
-                            csvFiles.add(dblFile.get(z));
-                        }
-                    }
-                }
-                fos.close();
-                zipInputStream.closeEntry();
-                zipEntry = zipInputStream.getNextEntry();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return csvFiles;
-    }
 
     public void showCSV(ActionEvent actionEvent) {
         CSVEdit csvEdit = new CSVEdit();

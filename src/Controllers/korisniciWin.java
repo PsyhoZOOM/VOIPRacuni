@@ -33,7 +33,7 @@ public class korisniciWin implements Initializable {
     public Button bEditKorisnik;
     public Button bObrisiKorisnik;
     public TableView<Users> tblKorisnici;
-    public TableColumn cBrojevi;
+    public TableColumn cCustomerID;
     public TableColumn cIme;
     public TableColumn cAdresa;
     public TableColumn cMesto;
@@ -54,6 +54,7 @@ public class korisniciWin implements Initializable {
         cMesto.setCellValueFactory(new PropertyValueFactory<Users, String>("mesto"));
         cPostBr.setCellValueFactory(new PropertyValueFactory<Users, String>("postBr"));
         cBrUgovora.setCellValueFactory(new PropertyValueFactory<Users, String>("brUgovora"));
+        cCustomerID.setCellValueFactory(new PropertyValueFactory<Users, String>("customerId"));
 
 
     }
@@ -64,7 +65,7 @@ public class korisniciWin implements Initializable {
 
     private ObservableList setTableData(String search) {
         PreparedStatement ps = null;
-        String query = "SELECT * FROM korisnici WHERE imePrezime LIKE  ? OR adresa LIKE ? OR mesto LIKE ? OR postbr LIKE ? or brUgovora LIKE  ? ";
+        String query = "SELECT * FROM korisnici WHERE imePrezime LIKE  ? OR adresa LIKE ? OR mesto LIKE ? OR postbr LIKE ? or brUgovora LIKE  ? OR customerID LIKE ?";
         ArrayList<Users> usersArrayList = new ArrayList<Users>();
         try {
             ps = db.connection.prepareStatement(query);
@@ -73,6 +74,7 @@ public class korisniciWin implements Initializable {
             ps.setString(3, search + "%");
             ps.setString(4, search + "%");
             ps.setString(5, search + "%");
+            ps.setString(6, search + "%");
 
             ResultSet rs = ps.executeQuery();
 
@@ -86,6 +88,7 @@ public class korisniciWin implements Initializable {
                     user.setMesto(rs.getString("mesto"));
                     user.setPostBr(rs.getString("postbr"));
                     user.setBrUgovora(rs.getString("brUgovora"));
+                    user.setCustomerId(rs.getString("customerID"));
                     usersArrayList.add(user);
                 }
             }
@@ -141,7 +144,7 @@ public class korisniciWin implements Initializable {
             Stage stage = new Stage();
             stage.initOwner(bEditKorisnik.getScene().getWindow());
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Izmena korisnila" + tblKorisnici.getSelectionModel().getSelectedItem().getIme());
+            stage.setTitle("Izmena korisnika " + tblKorisnici.getSelectionModel().getSelectedItem().getIme() + " " + tblKorisnici.getSelectionModel().getSelectedItem().getCustomerId());
             stage.setScene(scene);
             stage.showAndWait();
         } catch (IOException e) {

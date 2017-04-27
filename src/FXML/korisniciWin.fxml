@@ -18,7 +18,7 @@
         </ToolBar>
         <TableView fx:id="tblKorisnici" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="cBrojevi" prefWidth="75.0" text="Brojevi"/>
+                <TableColumn fx:id="cCustomerID" prefWidth="75.0" text="ID"/>
                 <TableColumn fx:id="cIme" prefWidth="75.0" text="Ime i Prezime"/>
                 <TableColumn fx:id="cAdresa" prefWidth="75.0" text="Adresa"/>
                 <TableColumn fx:id="cMesto" prefWidth="75.0" text="Mesto"/>
