@@ -92,6 +92,15 @@ public class Database {
                 "         `customerID`	TEXT,\n" +
                 "         `fileName` TEXT\n);";
 
+        String queryZone = "" +
+                "CREATE TABLE `zone` (\n" +
+                "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "\t`naziv`\tTEXT,\n" +
+                "\t`opis`\tTEXT,\n" +
+                "\t`zona`\tTEXT,\n" +
+                "\t`uslugaID`\tINTEGER\n" +
+                ");";
+
 
 
         try {
@@ -103,6 +112,8 @@ public class Database {
             st.executeUpdate(queryKorisnici);
             st = connection.createStatement();
             st.executeUpdate(queryZoneCene);
+            st = connection.createStatement();
+            st.executeUpdate(queryZone);
 
             st.close();
         } catch (SQLException e) {

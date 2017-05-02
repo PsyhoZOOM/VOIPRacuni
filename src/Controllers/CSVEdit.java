@@ -66,8 +66,6 @@ public class CSVEdit implements Initializable {
         stage.setTitle("EDIT CSV");
         stage.setScene(scene);
         tblCSVDAta.getColumns().addAll(cAccount, cFrom, cTo, cConnecTime, cChargedAmountRSD);
-        tblCSVDAta.setMaxHeight(Double.MAX_VALUE);
-        tblCSVDAta.setMaxWidth(Double.MAX_VALUE);
         GridPane gridPane = new GridPane();
         Button bIzbrisi = new Button("Izbrisi");
         Button bOsvezi = new Button("Osvezi");
@@ -77,16 +75,28 @@ public class CSVEdit implements Initializable {
 
         gridPane.setHgap(5);
         gridPane.setVgap(5);
-        gridPane.autosize();
-        anchorPane.autosize();
         gridPane.setAlignment(Pos.CENTER);
         bBox.getChildren().add(bIzbrisi);
         bBox.getChildren().add(bOsvezi);
         bBox.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
         gridPane.add(bBox, 1, 0);
-        gridPane.add(tblCSVDAta, 0, 1);
+        gridPane.add(tblCSVDAta, 0, 1, 2, 1);
+
+        gridPane.setHgap(5);
+        gridPane.setVgap(5);
+        gridPane.paddingProperty().setValue(new Insets(5));
+        gridPane.gridLinesVisibleProperty().setValue(true);
+        gridPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         anchorPane.getChildren().add(gridPane);
+        anchorPane.setMinHeight(600.00);
+        anchorPane.setMinWidth(900.00);
+        AnchorPane.setTopAnchor(gridPane, 10.0);
+        AnchorPane.setLeftAnchor(gridPane, 10.0);
+        AnchorPane.setRightAnchor(gridPane, 10.0);
+        AnchorPane.setBottomAnchor(gridPane, 10.0);
+
+
 
         stage.showAndWait();
 

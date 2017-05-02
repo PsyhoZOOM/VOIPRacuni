@@ -45,6 +45,8 @@ public class MainWin implements Initializable {
     public MenuItem menuShowCSV;
     public Label lMessage;
     public ProgressBar progBarImport;
+    public MenuItem menuPrikaziZone;
+    public MenuItem menuPaketi;
     URL location;
     ResourceBundle resources;
     FXMLLoader fxmlLoader;
@@ -219,5 +221,43 @@ public class MainWin implements Initializable {
     public void showCSV(ActionEvent actionEvent) {
         CSVEdit csvEdit = new CSVEdit();
         csvEdit.initialize(location, resources);
+    }
+
+    public void showZone(ActionEvent actionEvent) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editZone.fxml"), resources);
+
+        try {
+            Scene scene = new Scene((Parent) fxmlLoader.load());
+            editZone editZonecontroller = fxmlLoader.getController();
+            editZonecontroller.db = db;
+            editZonecontroller.showData("");
+            Stage stage = new Stage();
+            stage.initOwner(bPane.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Izmene Zona");
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showPaketi(ActionEvent actionEvent) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editPaketi.fxml"), resources);
+
+        try {
+            Scene scene = new Scene((Parent) fxmlLoader.load());
+            editPaket editPaketController = fxmlLoader.getController();
+            editPaketController.db = db;
+            editPaketController.showData("");
+            Stage stage = new Stage();
+            stage.initOwner(bPane.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Izmena Paketa");
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

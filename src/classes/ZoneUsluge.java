@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by PsyhoZOOM@gmail.com on 4/21/17.
  */
-public class ZoneCene implements Serializable {
+public class ZoneUsluge implements Serializable {
     int id;
     String vrstaUsluge;
     double providerCena;

@@ -8,8 +8,8 @@
             AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.112" fx:controller="Controllers.MainWin">
     <children>
         <BorderPane fx:id="bPane" layoutX="168.0" layoutY="122.0" prefHeight="768.0" prefWidth="1024.0"
-                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                    AnchorPane.topAnchor="0.0">
+                    stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
                 <VBox BorderPane.alignment="CENTER">
                     <children>
@@ -24,6 +24,10 @@
                                     <items>
                                         <MenuItem fx:id="menuPrikaziUsluge" mnemonicParsing="false"
                                                   onAction="#showUsluge" text="Prikazi usluge"/>
+                                        <MenuItem fx:id="menuPrikaziZone" mnemonicParsing="false" onAction="#showZone"
+                                                  text="Zone"/>
+                                        <MenuItem fx:id="menuPaketi" mnemonicParsing="false" onAction="#showPaketi"
+                                                  text="Paketi"/>
                                     </items>
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="CSV">
