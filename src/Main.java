@@ -4,6 +4,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+
 /**
  * Created by zoom on 4/20/17.
  */
@@ -15,6 +17,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Locale.setDefault(new Locale("rs", "RS"));
         Parent root = FXMLLoader.load(getClass().getResource("/FXML/MainWin.fxml"));
         primaryStage.setTitle("Fiksna Telefonija Stampa Racuna");
         primaryStage.setScene(new Scene(root));

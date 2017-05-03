@@ -47,6 +47,7 @@ public class MainWin implements Initializable {
     public ProgressBar progBarImport;
     public MenuItem menuPrikaziZone;
     public MenuItem menuPaketi;
+    public MenuItem menuStampa;
     URL location;
     ResourceBundle resources;
     FXMLLoader fxmlLoader;
@@ -166,11 +167,11 @@ public class MainWin implements Initializable {
                     csvData.setFrom(csvReader.get("From"));
                     csvData.setTo(csvReader.get("To"));
                     csvData.setCountry(csvReader.get("Country"));
-                    csvData.setDescrition(csvReader.get("Description"));
+                    csvData.setDescription(csvReader.get("Description"));
                     csvData.setConnectTime(csvReader.get("Connect Time"));
                     csvData.setChargedTimeMinSec(csvReader.get("Charged Time, min:sec"));
                     csvData.setChargedTimeSec(Integer.parseInt(csvReader.get("Charged Time, sec.")));
-                    csvData.setChargetAmmountRSD(Double.parseDouble(csvReader.get("Charged Amount, RSD")));
+                    csvData.setChargedAmountRSD(Double.parseDouble(csvReader.get("Charged Amount, RSD")));
                     csvData.setServiceName(csvReader.get("Service Name"));
                     csvData.setChargedQuantity(Integer.parseInt(csvReader.get("Charged quantity")));
                     csvData.setServiceUnit(csvReader.get("Service unit"));
@@ -196,11 +197,11 @@ public class MainWin implements Initializable {
                 ps.setString(2, csvDataSQL.getFrom());
                 ps.setString(3, csvDataSQL.getTo());
                 ps.setString(4, csvDataSQL.getCountry());
-                ps.setString(5, csvDataSQL.getDescrition());
+                ps.setString(5, csvDataSQL.getDescription());
                 ps.setString(6, csvDataSQL.getConnectTime());
                 ps.setString(7, csvDataSQL.getChargedTimeMinSec());
                 ps.setInt(8, csvDataSQL.getChargedTimeSec());
-                ps.setDouble(9, csvDataSQL.getChargetAmmountRSD());
+                ps.setDouble(9, csvDataSQL.getChargedAmountRSD());
                 ps.setString(10, csvDataSQL.getServiceName());
                 ps.setInt(11, csvDataSQL.getChargedQuantity());
                 ps.setString(12, csvDataSQL.getServiceUnit());
@@ -220,6 +221,7 @@ public class MainWin implements Initializable {
 
     public void showCSV(ActionEvent actionEvent) {
         CSVEdit csvEdit = new CSVEdit();
+        csvEdit.db = db;
         csvEdit.initialize(location, resources);
     }
 
@@ -256,6 +258,26 @@ public class MainWin implements Initializable {
             stage.setTitle("Izmena Paketa");
             stage.setScene(scene);
             stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showStampa(ActionEvent actionEvent) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/stampaRacuna.fxml"), resources);
+
+
+        try {
+            Scene scene = new Scene((Parent) fxmlLoader.load());
+            stampaRacuna stampaRacunaController = fxmlLoader.getController();
+            stampaRacunaController.db = db;
+            Stage stage = new Stage();
+            stage.initOwner(bPane.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Štampa računa");
+            stage.setScene(scene);
+            stage.showAndWait();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,17 +1,23 @@
 package Controllers;
 
 import classes.Database;
+import classes.Paketi;
 import classes.Users;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -29,6 +35,9 @@ public class editKorisnik implements Initializable {
     public boolean editUser = false;
     public Users user;
     public TextField tCustomerID;
+    public TextField tPozivNaBroj;
+    public TextField tBrojTelefona;
+    public ComboBox<Paketi> cmbPaket;
     private URL location;
     private ResourceBundle resources;
 
@@ -42,6 +51,38 @@ public class editKorisnik implements Initializable {
             public void handle(ActionEvent event) {
                 Stage stage = (Stage) bClose.getScene().getWindow();
                 stage.close();
+            }
+        });
+
+
+        cmbPaket.setCellFactory(new Callback<ListView<Paketi>, ListCell<Paketi>>() {
+            @Override
+            public ListCell<Paketi> call(ListView<Paketi> param) {
+                ListCell<Paketi> cell = new ListCell<Paketi>() {
+                    @Override
+                    protected void updateItem(Paketi item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                        } else {
+                            setText(item.getNaziv());
+
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
+
+        cmbPaket.setConverter(new StringConverter<Paketi>() {
+            @Override
+            public String toString(Paketi object) {
+                return object.getNaziv();
+            }
+
+            @Override
+            public Paketi fromString(String string) {
+                return null;
             }
         });
     }
@@ -60,7 +101,7 @@ public class editKorisnik implements Initializable {
 
     private void saveUser() {
         PreparedStatement ps;
-        String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID) VALUES (?,?,?,?,?,?)";
+        String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID, pozivNaBroj, brojTelefona, paketID) VALUES (?,?,?,?,?,?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -69,6 +110,9 @@ public class editKorisnik implements Initializable {
             ps.setString(4, tPostBr.getText());
             ps.setString(5, tbrUgovora.getText());
             ps.setString(6, tCustomerID.getText());
+            ps.setString(7, tPozivNaBroj.getText());
+            ps.setString(9, tBrojTelefona.getText());
+            ps.setInt(10, cmbPaket.getValue().getId());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -79,7 +123,7 @@ public class editKorisnik implements Initializable {
     private void updateUser() {
 
         PreparedStatement ps;
-        String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=?, customerID=? WHERE id=? ";
+        String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=?, customerID=?, pozivNaBroj=?, brojTelefona=?, paketID=? WHERE id=? ";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -88,8 +132,10 @@ public class editKorisnik implements Initializable {
             ps.setString(4, tPostBr.getText());
             ps.setString(5, tbrUgovora.getText());
             ps.setString(6, tCustomerID.getText());
-            ps.setInt(7, user.getId());
-            System.out.println(ps.toString());
+            ps.setString(7, tPozivNaBroj.getText());
+            ps.setString(8, tBrojTelefona.getText());
+            ps.setInt(9, cmbPaket.getValue().getId());
+            ps.setInt(10, user.getId());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -105,5 +151,48 @@ public class editKorisnik implements Initializable {
         tPostBr.setText(user.getPostBr());
         tbrUgovora.setText(user.getBrUgovora());
         tCustomerID.setText(user.getCustomerId());
+        tPozivNaBroj.setText(user.getPozivNaBroj());
+        tBrojTelefona.setText(user.getBrojTelefona());
+
+
+        setPaketiData();
+
     }
+
+    private void setPaketiData() {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT * FROM paketi";
+        Paketi paketi;
+        ArrayList<Paketi> paketiArrayList = new ArrayList<Paketi>();
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    paketi = new Paketi();
+                    paketi.setId(rs.getInt("id"));
+                    paketi.setPretplata(rs.getDouble("pretplata"));
+                    paketi.setNaziv(rs.getString("naziv"));
+                    paketi.setPDV(rs.getDouble("PDV"));
+                    paketiArrayList.add(paketi);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        ObservableList data = FXCollections.observableArrayList(paketiArrayList);
+        cmbPaket.setItems(data);
+
+        if (editUser) {
+            cmbPaket.getSelectionModel().selectFirst();
+            while (cmbPaket.getSelectionModel().getSelectedItem().getId() != user.getUserPaketID()) {
+                cmbPaket.getSelectionModel().selectNext();
+            }
+        }
+    }
+
+
 }

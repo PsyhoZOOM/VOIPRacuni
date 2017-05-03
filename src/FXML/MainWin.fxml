@@ -20,6 +20,12 @@
                                         <MenuItem fx:id="meniExit" mnemonicParsing="false" text="Izlaz"/>
                                     </items>
                                 </Menu>
+                                <Menu mnemonicParsing="false" text="Računi">
+                                    <items>
+                                        <MenuItem fx:id="menuStampa" mnemonicParsing="false" onAction="#showStampa"
+                                                  text="Štampa"/>
+                                    </items>
+                                </Menu>
                                 <Menu mnemonicParsing="false" text="Usluge">
                                     <items>
                                         <MenuItem fx:id="menuPrikaziUsluge" mnemonicParsing="false"

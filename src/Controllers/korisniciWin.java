@@ -42,6 +42,9 @@ public class korisniciWin implements Initializable {
     public Database db;
     public Button bTrazi;
     public TextField tTrazi;
+    public TableColumn cPozivNaBroj;
+    public TableColumn cBrojTelefona;
+    public TableColumn cPaket;
     URL location;
     ResourceBundle resources;
 
@@ -55,6 +58,9 @@ public class korisniciWin implements Initializable {
         cPostBr.setCellValueFactory(new PropertyValueFactory<Users, String>("postBr"));
         cBrUgovora.setCellValueFactory(new PropertyValueFactory<Users, String>("brUgovora"));
         cCustomerID.setCellValueFactory(new PropertyValueFactory<Users, String>("customerId"));
+        cPozivNaBroj.setCellValueFactory(new PropertyValueFactory<Users, String>("pozivNaBroj"));
+        cPaket.setCellValueFactory(new PropertyValueFactory<Users, String>("userPaket"));
+        cBrojTelefona.setCellValueFactory(new PropertyValueFactory<Users, String>("brojTelefona"));
 
 
     }
@@ -89,6 +95,10 @@ public class korisniciWin implements Initializable {
                     user.setPostBr(rs.getString("postbr"));
                     user.setBrUgovora(rs.getString("brUgovora"));
                     user.setCustomerId(rs.getString("customerID"));
+                    user.setPozivNaBroj(rs.getString("pozivNaBroj"));
+                    user.setUserPaketID(rs.getInt("paketID"));
+                    user.setUserPaket(getNazivPaketa(rs.getInt("paketID")));
+                    user.setBrojTelefona(rs.getString("brojTelefona"));
                     usersArrayList.add(user);
                 }
             }
@@ -108,6 +118,28 @@ public class korisniciWin implements Initializable {
 
     }
 
+    private String getNazivPaketa(int id) {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT * FROM  paketi WHERE id=?";
+        String paket = "";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                rs.next();
+                paket = rs.getString("naziv");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return paket;
+
+    }
+
     public void novKorisnik(ActionEvent actionEvent) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editKorisnik.fxml"), resources);
         try {
@@ -119,6 +151,7 @@ public class korisniciWin implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Nov korisnik");
             stage.setScene(scene);
+
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();

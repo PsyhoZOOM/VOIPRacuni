@@ -2,9 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0"
+<VBox xmlns:fx="http://javafx.com/fxml/1" minHeight="600.0" minWidth="900.0" AnchorPane.bottomAnchor="0.0"
       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
-      xmlns="http://javafx.com/javafx/8.0.112" fx:controller="Controllers.korisniciWin">
+      xmlns="http://javafx.com/javafx/8.0.65" fx:controller="Controllers.korisniciWin">
     <children>
         <ToolBar VBox.vgrow="ALWAYS">
             <items>
@@ -16,14 +16,17 @@
                 <Button fx:id="bTrazi" mnemonicParsing="false" onAction="#traziKorisnika" text="Trazi"/>
             </items>
         </ToolBar>
-        <TableView fx:id="tblKorisnici" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <TableView fx:id="tblKorisnici" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="cCustomerID" prefWidth="75.0" text="ID"/>
+                <TableColumn fx:id="cBrojTelefona" prefWidth="75.0" text="Broj Telefona"/>
+                <TableColumn fx:id="cPaket" prefWidth="75.0" text="Paket"/>
                 <TableColumn fx:id="cIme" prefWidth="75.0" text="Ime i Prezime"/>
                 <TableColumn fx:id="cAdresa" prefWidth="75.0" text="Adresa"/>
                 <TableColumn fx:id="cMesto" prefWidth="75.0" text="Mesto"/>
                 <TableColumn fx:id="cPostBr" prefWidth="75.0" text="Poštanski broj"/>
                 <TableColumn fx:id="cBrUgovora" prefWidth="75.0" text="Broj ugovora"/>
+                <TableColumn fx:id="cPozivNaBroj" prefWidth="75.0" text="Poziv na broj"/>
             </columns>
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

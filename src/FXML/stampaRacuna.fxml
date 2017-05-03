@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/Main.css"
-            xmlns="http://javafx.com/javafx/8.0.112" fx:controller="Controllers.stampaRacuna">
+            xmlns="http://javafx.com/javafx/8.0.65" fx:controller="Controllers.stampaRacuna">
     <children>
         <VBox layoutX="207.0" layoutY="80.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -32,7 +32,8 @@
                     <columns>
                         <TableColumn fx:id="cIme" prefWidth="75.0" text="Ime i prezime"/>
                         <TableColumn fx:id="cNazivUsluge" prefWidth="75.0" text="Naziv usluge"/>
-                        <TableColumn fx:id="cDatum" prefWidth="75.0" text="Datum "/>
+                        <TableColumn fx:id="cDatum" prefWidth="75.0" text="Mesec"/>
+                        <TableColumn fx:id="cStampaChkBox" prefWidth="75.0" text="Štampa"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

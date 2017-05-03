@@ -28,6 +28,8 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <children>
                         <Label text="Ime i prezime:" GridPane.rowIndex="1"/>
@@ -41,16 +43,30 @@
                         <TextField fx:id="tMesto" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                         <TextField fx:id="tPostBr" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                         <TextField fx:id="tbrUgovora" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                        <Button fx:id="bSnimi" mnemonicParsing="false" onAction="#snimiKorisnika" text="Snimi"
-                                GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="7"/>
                         <TextField fx:id="tCustomerID" prefWidth="200.0" GridPane.columnIndex="1"
                                    GridPane.rowIndex="6"/>
                         <Label text="CustomerID" GridPane.rowIndex="6"/>
+                        <TextField fx:id="tPozivNaBroj" prefWidth="200.0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="7"/>
+                        <Label text="Poziv na broj:" GridPane.rowIndex="7"/>
+                        <TextField fx:id="tBrojTelefona" minWidth="200.0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="8"/>
+                        <Label text="Broj telefona:" GridPane.rowIndex="8"/>
+                        <Label text="Paket:" GridPane.rowIndex="9"/>
+                        <ComboBox fx:id="cmbPaket" minWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
                 </GridPane>
+                <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                    <children>
+                        <Button fx:id="bSnimi" mnemonicParsing="false" onAction="#snimiKorisnika" text="Snimi"/>
+                    </children>
+                </HBox>
             </children>
         </VBox>
     </children>

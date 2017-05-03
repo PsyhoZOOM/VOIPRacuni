@@ -1,5 +1,6 @@
 package classes;
 
+
 import java.sql.*;
 
 /**
@@ -12,8 +13,17 @@ public class Database {
 
     public Database() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:data.db");
+
+            //JDBC
+//            Class.forName("org.sqlite.JDBC");
+//            connection = DriverManager.getConnection("jdbc:sqlite:data.db");
+
+
+            //MYSQL
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://data.yuvideo.net:3306/CSV?useUnicode=true&characterEncoding=utf-8", "www", "psyhodeliczoom");
+
+
 
             create_new_database();
 

@@ -11,11 +11,11 @@ public class CSVData implements Serializable {
     String from;
     String to;
     String country;
-    String descrition;
+    String description;
     String connectTime;
     String chargedTimeMinSec;
     int chargedTimeSec;
-    double chargetAmmountRSD;
+    double chargedAmountRSD;
     String serviceName;
     int chargedQuantity;
     String serviceUnit;
@@ -78,12 +78,12 @@ public class CSVData implements Serializable {
         this.country = country;
     }
 
-    public String getDescrition() {
-        return descrition;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescrition(String descrition) {
-        this.descrition = descrition;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getConnectTime() {
@@ -110,12 +110,12 @@ public class CSVData implements Serializable {
         this.chargedTimeSec = chargedTimeSec;
     }
 
-    public double getChargetAmmountRSD() {
-        return chargetAmmountRSD;
+    public double getChargedAmountRSD() {
+        return chargedAmountRSD;
     }
 
-    public void setChargetAmmountRSD(double chargetAmmountRSD) {
-        this.chargetAmmountRSD = chargetAmmountRSD;
+    public void setChargedAmountRSD(double chargedAmountRSD) {
+        this.chargedAmountRSD = chargedAmountRSD;
     }
 
     public String getServiceName() {
