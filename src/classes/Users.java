@@ -18,10 +18,17 @@ public class Users implements Serializable {
     String nazivUsluge;
     boolean aktivan;
     String mesec;
-    int userPaketID;
-    String userPaket;
+    int nazivPaketaID;
     String brojTelefona;
 
+
+    public int getNazivPaketaID() {
+        return nazivPaketaID;
+    }
+
+    public void setNazivPaketaID(int nazivPaketaID) {
+        this.nazivPaketaID = nazivPaketaID;
+    }
 
     public String getBrojTelefona() {
         return brojTelefona;
@@ -31,21 +38,8 @@ public class Users implements Serializable {
         this.brojTelefona = brojTelefona;
     }
 
-    public int getUserPaketID() {
-        return userPaketID;
-    }
 
-    public void setUserPaketID(int userPaketID) {
-        this.userPaketID = userPaketID;
-    }
 
-    public String getUserPaket() {
-        return userPaket;
-    }
-
-    public void setUserPaket(String userPaket) {
-        this.userPaket = userPaket;
-    }
 
     public String getMesec() {
         return mesec;

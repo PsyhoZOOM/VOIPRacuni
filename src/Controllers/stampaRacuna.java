@@ -1,7 +1,9 @@
 package Controllers;
 
-import classes.Database;
-import classes.Users;
+import classes.*;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,17 +16,19 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 
 /**
  * Created by PsyhoZOOM@gmail.com on 4/21/17.
  */
 public class stampaRacuna implements Initializable {
-    public Button bClose;
     public Button bPrikazi;
     public Button bPrint;
-    public TableView tblData;
+    public TableView<Users> tblData;
     public TableColumn cIme;
     public TableColumn cNazivUsluge;
     public TableColumn cDatum;
@@ -32,37 +36,46 @@ public class stampaRacuna implements Initializable {
     public DatePicker dtpDo;
     public TableColumn cStampaChkBox;
     public Database db;
+    public CheckBox stampaAll;
+    public MenuItem menuStampajSingle;
+    ObservableList<Users> data;
     private URL location;
     private ResourceBundle resources;
+    private Calendar calStart = Calendar.getInstance();
+    private Calendar calEnd = Calendar.getInstance();
+    private LocalDate localDateStart;
+    private LocalDate localDateStop;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.location = location;
         this.resources = resources;
 
-        cStampaChkBox.setCellFactory(new Callback<TableColumn, TableCell>() {
+
+        cIme.setCellValueFactory(new PropertyValueFactory<Users, String>("ime"));
+        cNazivUsluge.setCellValueFactory(new PropertyValueFactory<Users, String>("nazivUsluge"));
+        cDatum.setCellValueFactory(new PropertyValueFactory<Users, String>("mesec"));
+
+
+        cStampaChkBox.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Users, CheckBox>, ObservableValue<CheckBox>>() {
             @Override
-            public TableCell call(TableColumn param) {
-                TableCell cell = new TableCell<Users, String>() {
+            public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Users, CheckBox> param) {
+                Users user = param.getValue();
+                CheckBox checkBox = new CheckBox();
+                checkBox.setSelected(user.isStampa());
+                checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
                     @Override
-                    public void updateItem(String item, boolean bool) {
-                        super.updateItem(item, bool);
-                        if (bool) {
-                            setText(item);
-                            new CheckBox("Štampaj");
-                        } else {
-                            setText(null);
-                        }
+                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                        user.setStampa(newValue);
                     }
-                };
-                return cell;
+                });
+                return new SimpleObjectProperty<CheckBox>(checkBox);
             }
         });
 
-        cStampaChkBox.setCellValueFactory(new PropertyValueFactory<Users, Boolean>("stampa"));
-        cIme.setCellValueFactory(new PropertyValueFactory<Users, String>("ime"));
-        cNazivUsluge.setCellFactory(new PropertyValueFactory<Users, String>("nazivUsluge"));
-        cDatum.setCellValueFactory(new PropertyValueFactory<Users, String>("mesec"));
+
+        dtpOd.setValue(LocalDate.now());
+        dtpDo.setValue(LocalDate.now().plusMonths(1));
 
 
     }
@@ -90,7 +103,10 @@ public class stampaRacuna implements Initializable {
                     users.setBrUgovora(rs.getString("brUgovora"));
                     users.setCustomerId(rs.getString("customerID"));
                     users.setPozivNaBroj(rs.getString("pozivNaBroj"));
-                    users.setUserPaketID(getUserPaket(rs.getInt("id")));
+                    users.setNazivPaketaID(getUserPaket(rs.getInt("paketID")));
+                    users.setNazivUsluge(getPaketName(rs.getInt("paketID")));
+                    users.setStampa(rs.getBoolean("stampa"));
+                    users.setBrojTelefona(rs.getString("brojTelefona"));
                     usresArrayList.add(users);
                 }
             }
@@ -98,7 +114,7 @@ public class stampaRacuna implements Initializable {
             e.printStackTrace();
         }
 
-        ObservableList data = FXCollections.observableArrayList(usresArrayList);
+        data = FXCollections.observableArrayList(usresArrayList);
         tblData.setItems(data);
     }
 
@@ -127,7 +143,7 @@ public class stampaRacuna implements Initializable {
     private String getPaketName(int idPaket) {
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM paketi WHER id=?";
+        String query = "SELECT * FROM paketi WHERE id=?";
         String paketName = null;
 
         try {
@@ -146,8 +162,38 @@ public class stampaRacuna implements Initializable {
 
 
     public void showForPrint(ActionEvent actionEvent) {
+        LocalDate start = dtpOd.getValue();
+        LocalDate stop = dtpDo.getValue();
+
+
+        setData();
+
+
     }
 
     public void printData(ActionEvent actionEvent) {
+        ObservableList<Users> usersArrayList = tblData.getItems();
+        for (int i = 0; i < usersArrayList.size(); i++) {
+            System.out.println(usersArrayList.get(i).isStampa());
+        }
     }
+
+    public void stampajSingle(ActionEvent actionEvent) {
+        if (tblData.getSelectionModel().getSelectedIndex() == -1)
+            return;
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        Users user = tblData.getSelectionModel().getSelectedItem();
+        String starDate = dtpOd.getValue().format(timeFormatter);
+        String stopDate = dtpDo.getValue().format(timeFormatter);
+
+
+        ArrayList<CSVData> csvDataArrayList = getCSVUserData.getData(user.getId(), user.getBrojTelefona(), starDate, stopDate, db);
+        PrintPage printPage = new PrintPage(user, csvDataArrayList, starDate, stopDate);
+
+
+    }
+
+
 }

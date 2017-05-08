@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -96,9 +95,10 @@ public class korisniciWin implements Initializable {
                     user.setBrUgovora(rs.getString("brUgovora"));
                     user.setCustomerId(rs.getString("customerID"));
                     user.setPozivNaBroj(rs.getString("pozivNaBroj"));
-                    user.setUserPaketID(rs.getInt("paketID"));
-                    user.setUserPaket(getNazivPaketa(rs.getInt("paketID")));
+                    user.setNazivPaketaID(rs.getInt("paketID"));
+                    user.setNazivUsluge(getNazivPaketa(rs.getInt("paketID")));
                     user.setBrojTelefona(rs.getString("brojTelefona"));
+                    user.setStampa(rs.getBoolean("stampa"));
                     usersArrayList.add(user);
                 }
             }
@@ -143,7 +143,7 @@ public class korisniciWin implements Initializable {
     public void novKorisnik(ActionEvent actionEvent) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editKorisnik.fxml"), resources);
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             editKorisnik editKorisnikController = fxmlLoader.getController();
             editKorisnikController.db = db;
             Stage stage = new Stage();
@@ -167,7 +167,7 @@ public class korisniciWin implements Initializable {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editKorisnik.fxml"), resources);
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             editKorisnik editKorisnikController = fxmlLoader.getController();
             editKorisnikController.db = db;
             editKorisnikController.editUser = true;

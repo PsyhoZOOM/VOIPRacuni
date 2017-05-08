@@ -30,6 +30,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <children>
                         <Label text="Ime i prezime:" GridPane.rowIndex="1"/>
@@ -54,6 +55,8 @@
                         <Label text="Broj telefona:" GridPane.rowIndex="8"/>
                         <Label text="Paket:" GridPane.rowIndex="9"/>
                         <ComboBox fx:id="cmbPaket" minWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                        <CheckBox fx:id="chkStampa" mnemonicParsing="false" selected="true" text="Štampa računa"
+                                  GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
