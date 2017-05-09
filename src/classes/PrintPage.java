@@ -1,73 +1,90 @@
 package classes;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTextArray;
+import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
  * Created by PsyhoZOOM@gmail.com on 5/8/17.
  */
 public class PrintPage {
-    PDPageContentStream pdPageContentStream;
-    PDDocument document;
-    PDPage frontPage = new PDPage();
-    PDPage backPage;
+    Document doc;
+    Font font = FontFactory.getFont(getClass().getResource("/Fonts/OpenSans-Regular.ttf").toExternalForm(), BaseFont.IDENTITY_H, 10);
+    Paragraph p;
+    PdfWriter writer;
 
-    public PrintPage(Users user, ArrayList<CSVData> csvData, String starDate, String stopDate) {
-        document = new PDDocument();
-        frontPage = new PDPage(PDRectangle.A4);
-        backPage = new PDPage(PDRectangle.A4);
 
-        document.addPage(frontPage);
+    public PrintPage(Users user, ArrayList<CSVData> csvData, String startDate, String stopDate, Paketi userPaket) {
+        doc = new Document(new Rectangle(PageSize.A4), 14, 14, 60, 14);
         try {
-
-
-            pdPageContentStream = new PDPageContentStream(document, frontPage);
-            //topRight ugovor datumizdavanja;
-            pdPageContentStream.beginText();
-            pdPageContentStream.setFont(PDType1Font.TIMES_ROMAN, 10);
-            pdPageContentStream.newLineAtOffset(frontPage.getMediaBox().getUpperRightX() - 200, frontPage.getMediaBox().getUpperRightY() - 50);
-            pdPageContentStream.showText("Ugovor br.: " + user.getBrUgovora());
-            pdPageContentStream.endText();
-            pdPageContentStream.beginText();
-            pdPageContentStream.newLineAtOffset(frontPage.getMediaBox().getUpperRightX() - 200, frontPage.getMediaBox().getUpperRightY() - 60);
-            pdPageContentStream.showText("Datum izdavanja: " + LocalDate.now().toString());
-            pdPageContentStream.endText();
-            pdPageContentStream.beginText();
-            pdPageContentStream.newLineAtOffset(frontPage.getMediaBox().getUpperRightX() - 200, frontPage.getMediaBox().getUpperRightY() - 70);
-            pdPageContentStream.showText("Za period od: " + starDate + " do " + stopDate);
-            pdPageContentStream.endText();
-            pdPageContentStream.beginText();
-            pdPageContentStream.newLineAtOffset(frontPage.getMediaBox().getUpperRightX() - 200, frontPage.getMediaBox().getUpperRightY() - 80);
-            pdPageContentStream.endText();
-            pdPageContentStream.beginText();
-            pdPageContentStream.showText("Rok placanja: " + LocalDate.parse(stopDate).plusMonths(1));
-            pdPageContentStream.endText();
-            pdPageContentStream.close();
-
-        } catch (IOException e) {
+            writer = PdfWriter.getInstance(doc, new FileOutputStream("/home/zoom/test.pdf"));
+            doc.open();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        createFrontPage(user, csvData, startDate, stopDate, userPaket);
+
+    }
+
+    private void createFrontPage(Users user, ArrayList<CSVData> csvData, String startDate, String stopDate, Paketi userPaket) {
+        String startD = LocalDate.parse(startDate).format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        String endD = LocalDate.parse(stopDate).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+        String topR = String.format("" +
+                "Ugovor br.: %s\n" +
+                "Datum izdavanja: %s\n" +
+                "Za period od %s do %s\n" +
+                "Rok Plaćanja %s", user.getBrUgovora(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), startD, endD, "25.05.2007");
+        Paragraph p = new Paragraph(topR, font);
+        p.setAlignment(Element.ALIGN_RIGHT);
+
+        Phrase phraseImeAdresa = new Phrase(user.getIme() + "\n" + user.getAdresa() + "\n" + user.getPostBr() + " " + user.getMesto(), font);
+        PdfContentByte canvas = writer.getDirectContent();
+        PdfTextArray textArray = new PdfTextArray();
+        int X = 320;
+        int Y = 665;
+
+
+        canvas.saveState();
+
+        canvas.setFontAndSize(font.getBaseFont(), 13);
+        canvas.beginText();
+        canvas.moveText(X, Y);
+        canvas.showText(user.getIme());
+        canvas.endText();
+        canvas.beginText();
+        canvas.moveText(X, Y - 20);
+        canvas.showText(user.getAdresa());
+        canvas.endText();
+        canvas.beginText();
+        canvas.moveText(X, Y - 40);
+        canvas.showText(user.getMesto() + " " + user.getPostBr());
+        canvas.endText();
+
+        canvas.restoreState();
 
 
         try {
-            document.save(new File("/home/zoom/test.pdf"));
-        } catch (IOException e) {
+            doc.add(p);
+            doc.close();
+        } catch (DocumentException e) {
             e.printStackTrace();
         }
 
 
     }
 
-    private void createFrontPage() {
-        frontPage = new PDPage();
-
+    private void createBackPage() {
     }
+
 }

@@ -103,7 +103,7 @@ public class stampaRacuna implements Initializable {
                     users.setBrUgovora(rs.getString("brUgovora"));
                     users.setCustomerId(rs.getString("customerID"));
                     users.setPozivNaBroj(rs.getString("pozivNaBroj"));
-                    users.setNazivPaketaID(getUserPaket(rs.getInt("paketID")));
+                    users.setNazivPaketaID(getUserPaket(rs.getInt("paketID")).getId());
                     users.setNazivUsluge(getPaketName(rs.getInt("paketID")));
                     users.setStampa(rs.getBoolean("stampa"));
                     users.setBrojTelefona(rs.getString("brojTelefona"));
@@ -119,24 +119,28 @@ public class stampaRacuna implements Initializable {
     }
 
 
-    private int getUserPaket(int idPaket) {
+    private Paketi getUserPaket(int idPaket) {
         PreparedStatement ps;
         ResultSet rs;
         String query = "SELECT * FROM paketi WHERE id=?";
-        int paketID = 0;
+        Paketi paket = null;
 
         try {
             ps = db.connection.prepareStatement(query);
             ps.setInt(1, idPaket);
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
+                paket = new Paketi();
                 rs.next();
-                paketID = rs.getInt("id");
+                paket.setId(rs.getInt("id"));
+                paket.setNaziv(rs.getString("naziv"));
+                paket.setPretplata(rs.getDouble("pretplata"));
+                paket.setPDV(rs.getDouble("PDV"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return paketID;
+        return paket;
     }
 
 
@@ -159,6 +163,7 @@ public class stampaRacuna implements Initializable {
         }
         return paketName;
     }
+
 
 
     public void showForPrint(ActionEvent actionEvent) {
@@ -190,7 +195,7 @@ public class stampaRacuna implements Initializable {
 
 
         ArrayList<CSVData> csvDataArrayList = getCSVUserData.getData(user.getId(), user.getBrojTelefona(), starDate, stopDate, db);
-        PrintPage printPage = new PrintPage(user, csvDataArrayList, starDate, stopDate);
+        PrintPage printPage = new PrintPage(user, csvDataArrayList, starDate, stopDate, getUserPaket(user.getNazivPaketaID()));
 
 
     }
