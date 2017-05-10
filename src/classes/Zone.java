@@ -9,8 +9,8 @@ public class Zone implements Serializable {
     int id;
     String naziv;
     String opis;
-    String usluga;
-    int uslugaID;
+    String zona;
+    int zonaID;
 
     public int getId() {
         return id;
@@ -36,19 +36,20 @@ public class Zone implements Serializable {
         this.opis = opis;
     }
 
-    public String getUsluga() {
-        return usluga;
+
+    public int getZonaID() {
+        return zonaID;
     }
 
-    public void setUsluga(String usluga) {
-        this.usluga = usluga;
+    public void setZonaID(int zonaID) {
+        this.zonaID = zonaID;
     }
 
-    public int getUslugaID() {
-        return uslugaID;
+    public String getZona() {
+        return zona;
     }
 
-    public void setUslugaID(int uslugaID) {
-        this.uslugaID = uslugaID;
+    public void setZona(String zona) {
+        this.zona = zona;
     }
 }

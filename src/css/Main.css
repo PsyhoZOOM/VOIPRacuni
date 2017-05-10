@@ -1,7 +1,14 @@
+@font-face {
+    font-family: 'OpenSans';
+    src: url('/Fonts/OpenSans-Regular.ttf');
+}
 .root {
 -fx-base: rgb(50, 50, 50);
 -fx-background: rgb(50, 50, 50);
 -fx-control-inner-background:  rgb(50, 50, 50);
+-fx-font-family: "OpenSans";
+-fx-font-size: 10px;
+-fx-font: 10px OpenSans;
 }
 
 .tab {
@@ -34,6 +41,7 @@ linear-gradient(to bottom, derive(-fx-base,+40%), derive(-fx-base,-20%), derive(
 -fx-table-header-border-color:derive(-fx-base,+20%);
 }
 
+
 .split-pane:horizontal > * > .split-pane-divider {
 -fx-border-color: transparent -fx-base transparent -fx-base;
 -fx-background-color: transparent, derive(-fx-base,20%);
@@ -51,4 +59,8 @@ linear-gradient(to bottom, derive(-fx-base,+40%), derive(-fx-base,-20%), derive(
 .text-input {
 -fx-background-color: gray;
 
+}
+
+.align-center {
+    -fx-alignment: center-center
 }

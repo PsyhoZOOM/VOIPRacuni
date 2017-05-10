@@ -10,7 +10,15 @@ public class Paketi implements Serializable {
     String naziv;
     double pretplata;
     double PDV;
+    int besplatniMinutiFiksna;
 
+    public int getBesplatniMinutiFiksna() {
+        return besplatniMinutiFiksna;
+    }
+
+    public void setBesplatniMinutiFiksna(int besplatniMinutiFiksna) {
+        this.besplatniMinutiFiksna = besplatniMinutiFiksna;
+    }
 
     public int getId() {
         return id;

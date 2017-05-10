@@ -37,6 +37,7 @@ public class editPaket implements Initializable {
     public Button bOsvezi;
     public Button bDelete;
     public Database db;
+    public TextField tBesplatniMinutiFiksna;
     private ResourceBundle resources;
     private URL location;
 
@@ -57,6 +58,7 @@ public class editPaket implements Initializable {
                 tNaziv.setText(newValue.getNaziv());
                 tPretplata.setText(String.valueOf(newValue.getPretplata()));
                 tPDV.setText(String.valueOf(newValue.getPDV()));
+                tBesplatniMinutiFiksna.setText(String.valueOf(newValue.getBesplatniMinutiFiksna()));
             }
         });
 
@@ -65,12 +67,13 @@ public class editPaket implements Initializable {
 
     public void snimiNov(ActionEvent actionEvent) {
         PreparedStatement ps;
-        String query = "INSERT INTO PAKETI ('naziv', 'pretplata', 'PDV') VALUES (?,?,?)";
+        String query = "INSERT INTO PAKETI (naziv, pretplata, PDV, besplatniMinutiFiksna) VALUES (?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tNaziv.getText());
             ps.setDouble(2, Double.parseDouble(tPretplata.getText()));
             ps.setDouble(3, Double.parseDouble(tPDV.getText()));
+            ps.setInt(4, Integer.parseInt(tBesplatniMinutiFiksna.getText()));
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,13 +86,14 @@ public class editPaket implements Initializable {
             return;
 
         PreparedStatement ps;
-        String query = "UPDATE paketi set naziv=?, pretplata=?, PDV=? WHERE id=?";
+        String query = "UPDATE paketi set naziv=?, pretplata=?, PDV=?, besplatniMinutiFiksna=? WHERE id=?";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tNaziv.getText());
             ps.setDouble(2, Double.parseDouble(tPretplata.getText()));
             ps.setDouble(3, Double.parseDouble(tPDV.getText()));
-            ps.setInt(4, tblPaketi.getSelectionModel().getSelectedItem().getId());
+            ps.setInt(4, Integer.parseInt(tBesplatniMinutiFiksna.getText()));
+            ps.setInt(5, tblPaketi.getSelectionModel().getSelectedItem().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -119,6 +123,7 @@ public class editPaket implements Initializable {
                     paketi.setNaziv(rs.getString("naziv"));
                     paketi.setPDV(rs.getDouble("PDV"));
                     paketi.setPretplata(rs.getDouble("pretplata"));
+                    paketi.setBesplatniMinutiFiksna(rs.getInt("besplatniMinutiFiksna"));
                     paketiArrayList.add(paketi);
                 }
             }

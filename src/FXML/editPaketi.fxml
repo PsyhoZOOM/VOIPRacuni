@@ -18,6 +18,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
             </rowConstraints>
             <children>
@@ -25,7 +26,7 @@
                 <Label text="Pretplata:" GridPane.rowIndex="1"/>
                 <Label text="PDV:" GridPane.rowIndex="2"/>
                 <TableView fx:id="tblPaketi" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
-                           GridPane.rowIndex="4">
+                           GridPane.rowIndex="5">
                     <columns>
                         <TableColumn fx:id="cNaziv" prefWidth="75.0" text="Naziv"/>
                         <TableColumn fx:id="cPretplata" prefWidth="75.0" text="Pretplata"/>
@@ -39,7 +40,7 @@
                 <TextField fx:id="tPretplata" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <TextField fx:id="tPDV" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0"
-                      GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
+                      GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
                     <children>
                         <Button fx:id="bDelete" mnemonicParsing="false" onAction="#deleteData" text="Izbriši"/>
                         <Button fx:id="bNov" mnemonicParsing="false" onAction="#snimiNov" text="Snimi nov"/>
@@ -47,6 +48,8 @@
                         <Button fx:id="bOsvezi" mnemonicParsing="false" onAction="#osveziTable" text="Osveži"/>
                     </children>
                 </HBox>
+                <Label text="Besplatni minuti fiksna:" GridPane.rowIndex="3"/>
+                <TextField fx:id="tBesplatniMinutiFiksna" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

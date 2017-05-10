@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="600.0" prefWidth="1024.0" stylesheets="@../css/Main.css"
-            xmlns="http://javafx.com/javafx/8.0.112" fx:controller="Controllers.zoneCene">
+            xmlns="http://javafx.com/javafx/8.0.65" fx:controller="Controllers.zoneCene">
     <children>
         <VBox layoutX="116.0" layoutY="-28.0" prefHeight="600.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -19,12 +19,13 @@
                         <Button fx:id="bTrazi" mnemonicParsing="false" onAction="#traziKorisnik" text="Traži"/>
                     </items>
                 </ToolBar>
-                <TableView fx:id="tblCeneZone" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tblCeneZone" prefWidth="200.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="cVrstaUsluge" prefWidth="75.0" text="Vrsta usluge"/>
+                        <TableColumn fx:id="cVrstaUsluge" prefWidth="75.0" style="-fx-alignment: center-right;"
+                                     text="Vrsta usluge"/>
                         <TableColumn fx:id="cProviderCena" maxWidth="500.0" minWidth="100.0" prefWidth="100.0"
                                      text="Provider cena"/>
-                        <TableColumn fx:id="cProviderPDV" maxWidth="500.0" minWidth="150.0" prefWidth="150.0"
+                        <TableColumn fx:id="cProviderPDV" maxWidth="120.0" minWidth="120.0" prefWidth="120.0"
                                      text="Provider PDV"/>
                         <TableColumn fx:id="cProviderCenaPDV" prefWidth="75.0" text="Provider&#10;Cena+PDV"/>
                         <TableColumn fx:id="cTelekomCena" prefWidth="75.0" text="Telekom cena"/>

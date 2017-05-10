@@ -1,6 +1,7 @@
 package Controllers;
 
 import classes.*;
+import com.itextpdf.text.Document;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -38,6 +39,7 @@ public class stampaRacuna implements Initializable {
     public Database db;
     public CheckBox stampaAll;
     public MenuItem menuStampajSingle;
+    public DatePicker dtpRokPlacanja;
     ObservableList<Users> data;
     private URL location;
     private ResourceBundle resources;
@@ -74,8 +76,9 @@ public class stampaRacuna implements Initializable {
         });
 
 
-        dtpOd.setValue(LocalDate.now());
-        dtpDo.setValue(LocalDate.now().plusMonths(1));
+        dtpOd.setValue(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().minus(1), 1));
+        dtpDo.setValue(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().minus(1), 25));
+        dtpRokPlacanja.setValue(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 28));
 
 
     }
@@ -178,26 +181,43 @@ public class stampaRacuna implements Initializable {
 
     public void printData(ActionEvent actionEvent) {
         ObservableList<Users> usersArrayList = tblData.getItems();
+        ArrayList<Document> documents = new ArrayList<>();
+
         for (int i = 0; i < usersArrayList.size(); i++) {
-            System.out.println(usersArrayList.get(i).isStampa());
+            if (usersArrayList.get(i).isStampa()) {
+                PrintRacune(usersArrayList.get(i));
+            }
         }
+
+
     }
 
     public void stampajSingle(ActionEvent actionEvent) {
         if (tblData.getSelectionModel().getSelectedIndex() == -1)
             return;
 
+        Users user = tblData.getSelectionModel().getSelectedItem();
+        PrintRacune(user);
+
+    }
+
+
+    private Document PrintRacune(Users user) {
+
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        Users user = tblData.getSelectionModel().getSelectedItem();
+
         String starDate = dtpOd.getValue().format(timeFormatter);
         String stopDate = dtpDo.getValue().format(timeFormatter);
+        String rokPlacanja = dtpRokPlacanja.getValue().format(timeFormatter);
 
 
-        ArrayList<CSVData> csvDataArrayList = getCSVUserData.getData(user.getId(), user.getBrojTelefona(), starDate, stopDate, db);
-        PrintPage printPage = new PrintPage(user, csvDataArrayList, starDate, stopDate, getUserPaket(user.getNazivPaketaID()));
+        userRacun ur = new userRacun(db, starDate, stopDate, rokPlacanja, user);
 
 
+        Document printPage = new PrintPage(ur).getDocument();
+        setData();
+        return printPage;
     }
 
 

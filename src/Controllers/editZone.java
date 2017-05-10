@@ -2,7 +2,9 @@ package Controllers;
 
 import classes.Database;
 import classes.Zone;
-import classes.ZoneUsluge;
+import classes.ZoneCene;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -31,9 +33,10 @@ public class editZone implements Initializable {
     public TableColumn cOpis;
     public TableColumn cUsluga;
     public Button bObrisi;
-    public ComboBox<ZoneUsluge> cmbUsluga;
+    public ComboBox<ZoneCene> cmbZona;
     public Button bOsvezi;
     public Database db;
+    public Button bIzmeni;
     private URL location;
     private ResourceBundle resoources;
 
@@ -44,15 +47,15 @@ public class editZone implements Initializable {
 
         cNaziv.setCellValueFactory(new PropertyValueFactory<Zone, String>("naziv"));
         cOpis.setCellValueFactory(new PropertyValueFactory<Zone, String>("opis"));
-        cUsluga.setCellValueFactory(new PropertyValueFactory<Zone, String>("usluga"));
+        cUsluga.setCellValueFactory(new PropertyValueFactory<Zone, String>("zona"));
 
 
-        cmbUsluga.setCellFactory(new Callback<ListView<ZoneUsluge>, ListCell<ZoneUsluge>>() {
+        cmbZona.setCellFactory(new Callback<ListView<ZoneCene>, ListCell<ZoneCene>>() {
             @Override
-            public ListCell<ZoneUsluge> call(ListView<ZoneUsluge> param) {
-                return new ListCell<ZoneUsluge>() {
+            public ListCell<ZoneCene> call(ListView<ZoneCene> param) {
+                return new ListCell<ZoneCene>() {
                     @Override
-                    protected void updateItem(ZoneUsluge item, boolean empty) {
+                    protected void updateItem(ZoneCene item, boolean empty) {
                         super.updateItem(item, empty);
 
                         if (item == null || empty) {
@@ -67,30 +70,47 @@ public class editZone implements Initializable {
         });
 
 
-        cmbUsluga.setConverter(new StringConverter<ZoneUsluge>() {
+        cmbZona.setConverter(new StringConverter<ZoneCene>() {
             @Override
-            public String toString(ZoneUsluge object) {
+            public String toString(ZoneCene object) {
                 return object.getVrstaUsluge();
             }
 
             @Override
-            public ZoneUsluge fromString(String string) {
+            public ZoneCene fromString(String string) {
                 return null;
             }
         });
 
 
+        tblZone.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Zone>() {
+            @Override
+            public void changed(ObservableValue<? extends Zone> observable, Zone oldValue, Zone newValue) {
+                if (newValue == null)
+                    return;
+                tNazivZone.setText(tblZone.getSelectionModel().getSelectedItem().getNaziv());
+                tOpisZone.setText(tblZone.getSelectionModel().getSelectedItem().getOpis());
+                cmbZona.getSelectionModel().selectFirst();
+                ObservableList<ZoneCene> zc = cmbZona.getItems();
+                for (int i = 0; i < zc.size(); i++) {
+                    if (newValue.getZonaID() == zc.get(i).getId())
+                        cmbZona.setValue(zc.get(i));
+                }
+
+            }
+        });
+
     }
 
     public void addZone(ActionEvent actionEvent) {
         PreparedStatement ps;
-        String query = "INSERT INTO zone ('naziv', 'opis', 'usluga', 'uslugaID') VALUES (?,?,?,?)";
+        String query = "INSERT INTO zone (naziv, opis, zona, zonaID) VALUES (?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tNazivZone.getText());
             ps.setString(2, tOpisZone.getText());
-            ps.setString(3, cmbUsluga.getSelectionModel().getSelectedItem().getVrstaUsluge());
-            ps.setInt(4, cmbUsluga.getSelectionModel().getSelectedItem().getId());
+            ps.setString(3, cmbZona.getSelectionModel().getSelectedItem().getVrstaUsluge());
+            ps.setInt(4, cmbZona.getSelectionModel().getSelectedItem().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -139,8 +159,8 @@ public class editZone implements Initializable {
                     zone.setId(rs.getInt("id"));
                     zone.setNaziv(rs.getString("naziv"));
                     zone.setOpis(rs.getString("opis"));
-                    zone.setUsluga(rs.getString("usluga"));
-                    zone.setUslugaID(rs.getInt("uslugaID"));
+                    zone.setZona(rs.getString("zona"));
+                    zone.setZonaID(rs.getInt("zonaID"));
                     zoneArrayList.add(zone);
                 }
             }
@@ -158,8 +178,8 @@ public class editZone implements Initializable {
         ResultSet rs;
         String query;
 
-        ZoneUsluge zoneUsluge;
-        ArrayList<ZoneUsluge> zoneUslugeArrayList = new ArrayList();
+        ZoneCene zoneCene;
+        ArrayList<ZoneCene> zoneCeneArrayList = new ArrayList();
 
         query = "SELECT * FROM zoneCene";
         try {
@@ -167,16 +187,16 @@ public class editZone implements Initializable {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
-                    zoneUsluge = new ZoneUsluge();
-                    zoneUsluge.setId(rs.getInt("id"));
-                    zoneUsluge.setVrstaUsluge(rs.getString("vrstaUsluge"));
-                    zoneUsluge.setProviderCena(rs.getDouble("providerCena"));
-                    zoneUsluge.setProviderPDV(rs.getDouble("providerPDV"));
-                    zoneUsluge.setCena(rs.getDouble("cena"));
-                    zoneUsluge.setPDV(rs.getDouble("PDV"));
-                    zoneUsluge.setCenaPDV(rs.getDouble("cenaPDV"));
-                    zoneUsluge.setCompetitionCena(rs.getDouble("otherCena"));
-                    zoneUslugeArrayList.add(zoneUsluge);
+                    zoneCene = new ZoneCene();
+                    zoneCene.setId(rs.getInt("id"));
+                    zoneCene.setVrstaUsluge(rs.getString("vrstaUsluge"));
+                    zoneCene.setProviderCena(rs.getDouble("providerCena"));
+                    zoneCene.setProviderPDV(rs.getDouble("providerPDV"));
+                    zoneCene.setCena(rs.getDouble("cena"));
+                    zoneCene.setPDV(rs.getDouble("PDV"));
+                    zoneCene.setCenaPDV(rs.getDouble("cenaPDV"));
+                    zoneCene.setCompetitionCena(rs.getDouble("otherCena"));
+                    zoneCeneArrayList.add(zoneCene);
                 }
             }
         } catch (SQLException e) {
@@ -184,11 +204,32 @@ public class editZone implements Initializable {
         }
 
 
-        ObservableList data = FXCollections.observableArrayList(zoneUslugeArrayList);
-        cmbUsluga.setItems(data);
+        ObservableList data = FXCollections.observableArrayList(zoneCeneArrayList);
+        cmbZona.setItems(data);
     }
 
     public void refreshTable(ActionEvent actionEvent) {
+        showTableZone();
+    }
+
+    public void izmeniZonu(ActionEvent actionEvent) {
+        if (cmbZona.getSelectionModel().isEmpty() || tblZone.getSelectionModel().getSelectedIndex() == -1)
+            return;
+        PreparedStatement ps;
+        String query = "UPDATE zone set naziv=?, opis=?, zona=?, zonaID=? WHERE id=?";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, tNazivZone.getText());
+            ps.setString(2, tOpisZone.getText());
+            ps.setString(3, cmbZona.getSelectionModel().getSelectedItem().getVrstaUsluge());
+            ps.setInt(4, cmbZona.getSelectionModel().getSelectedItem().getId());
+            ps.setInt(5, tblZone.getSelectionModel().getSelectedItem().getId());
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         showTableZone();
     }
 }

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" minWidth="400.0" stylesheets="@../css/Main.css"
-            xmlns="http://javafx.com/javafx/8.0.112" fx:controller="Controllers.editUsluge">
+            xmlns="http://javafx.com/javafx/8.0.65" fx:controller="Controllers.editUsluge">
     <children>
         <VBox layoutX="74.0" layoutY="-29.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -20,6 +20,7 @@
                         <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                     </columnConstraints>
                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
@@ -45,7 +46,9 @@
                         <TextField fx:id="tCena" minWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                         <TextField fx:id="tPDV" minWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                         <Button fx:id="bSnimi" mnemonicParsing="false" onAction="#saveData" text="Snimi"
-                                GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6"/>
+                                GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="7"/>
+                        <Label text="Gratis minuta:" GridPane.rowIndex="6"/>
+                        <TextField fx:id="tGratis" minWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

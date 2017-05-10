@@ -1,7 +1,7 @@
 package Controllers;
 
 import classes.Database;
-import classes.ZoneUsluge;
+import classes.ZoneCene;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -25,7 +25,7 @@ public class editUsluge implements Initializable {
     public TextField tPDV;
     public Button bSnimi;
     public Database db;
-    public ZoneUsluge zoneCene;
+    public ZoneCene zoneCene;
     public boolean setUpdate = false;
     private URL location;
     private ResourceBundle resources;

@@ -16,6 +16,8 @@
                         <DatePicker fx:id="dtpOd" editable="false"/>
                         <Label text="Do"/>
                         <DatePicker fx:id="dtpDo" editable="false"/>
+                        <Label text="Rok plaćanja"/>
+                        <DatePicker fx:id="dtpRokPlacanja" editable="false"/>
                         <Button fx:id="bPrikazi" mnemonicParsing="false" onAction="#showForPrint" text="Prikaži"/>
                         <Button fx:id="bPrint" mnemonicParsing="false" onAction="#printData" text="Štampaj"/>
                     </children>

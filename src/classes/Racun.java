@@ -20,6 +20,15 @@ public class Racun implements Serializable {
     String rokPlacanja;
     String broj;
     ArrayList<destination> destinacija;
+    String pozivNaBroj;
+
+    public String getPozivNaBroj() {
+        return pozivNaBroj;
+    }
+
+    public void setPozivNaBroj(String pozivNaBroj) {
+        this.pozivNaBroj = pozivNaBroj;
+    }
 
     public int getId() {
         return id;
@@ -124,4 +133,5 @@ public class Racun implements Serializable {
     public void setDestinacija(ArrayList<destination> destinacija) {
         this.destinacija = destinacija;
     }
+
 }

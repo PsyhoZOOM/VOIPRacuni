@@ -11,6 +11,15 @@ public class destination {
     int minutaZaNaplatu;
     double cenaPoMinutu;
     double ukupno;
+    String account;
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
 
     public int getUserid() {
         return userid;

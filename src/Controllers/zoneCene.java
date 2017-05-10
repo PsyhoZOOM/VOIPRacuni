@@ -1,13 +1,12 @@
 package Controllers;
 
 import classes.Database;
-import classes.ZoneUsluge;
+import classes.ZoneCene;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -33,7 +32,7 @@ public class zoneCene implements Initializable {
     public Button bIzmeni;
     public Button bObrisi;
     public Button bTrazi;
-    public TableView<ZoneUsluge> tblCeneZone;
+    public TableView<ZoneCene> tblCeneZone;
     public TableColumn cVrstaUsluge;
     public TableColumn cProviderCena;
     public TableColumn cTelekomCena;
@@ -53,15 +52,15 @@ public class zoneCene implements Initializable {
         this.location = location;
         this.resources = resources;
 
-        cVrstaUsluge.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, String>("vrstaUsluge"));
-        cProviderCena.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("providerCena"));
-        cProviderPDV.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("providerPDV"));
-        cProviderCenaPDV.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("providerUkupno"));
-        cTelekomCena.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("competitionCena"));
-        cCena.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("cena"));
-        cPDV.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("PDV"));
-        cCenaPDV.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("cenaPDV"));
-        cRazlika.setCellValueFactory(new PropertyValueFactory<ZoneUsluge, Double>("razlika"));
+        cVrstaUsluge.setCellValueFactory(new PropertyValueFactory<ZoneCene, String>("vrstaUsluge"));
+        cProviderCena.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("providerCena"));
+        cProviderPDV.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("providerPDV"));
+        cProviderCenaPDV.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("providerUkupno"));
+        cTelekomCena.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("competitionCena"));
+        cCena.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("cena"));
+        cPDV.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("PDV"));
+        cCenaPDV.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("cenaPDV"));
+        cRazlika.setCellValueFactory(new PropertyValueFactory<ZoneCene, Double>("razlika"));
 
 
 
@@ -71,7 +70,7 @@ public class zoneCene implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editUsluge.fxml"), resources);
         Stage stage = new Stage();
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             editUsluge editZoneController = fxmlLoader.getController();
             editZoneController.db = db;
             stage.initOwner(bNov.getScene().getWindow());
@@ -89,11 +88,11 @@ public class zoneCene implements Initializable {
     }
 
     public void showIzmeni(ActionEvent actionEvent) {
-        ZoneUsluge zoneCene = tblCeneZone.getSelectionModel().getSelectedItem();
+        ZoneCene zoneCene = tblCeneZone.getSelectionModel().getSelectedItem();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editUsluge.fxml"), resources);
         Stage stage = new Stage();
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             editUsluge editZoneController = fxmlLoader.getController();
             editZoneController.db = db;
             editZoneController.zoneCene = zoneCene;
@@ -144,8 +143,8 @@ public class zoneCene implements Initializable {
     private void setTableData(String search) {
         PreparedStatement ps = null;
         ResultSet rs = null;
-        ZoneUsluge zoneCene;
-        ArrayList<ZoneUsluge> zoneCenesArrayList = new ArrayList<ZoneUsluge>();
+        ZoneCene zoneCene;
+        ArrayList<ZoneCene> zoneCenesArrayList = new ArrayList<ZoneCene>();
         String query = "SELECT * FROM zoneCene WHERE vrstaUsluge LIKE ?";
         try {
             ps = db.connection.prepareStatement(query);
@@ -153,7 +152,7 @@ public class zoneCene implements Initializable {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
-                    zoneCene = new ZoneUsluge();
+                    zoneCene = new ZoneCene();
                     zoneCene.setId(rs.getInt("id"));
                     zoneCene.setVrstaUsluge(rs.getString("vrstaUsluge"));
                     zoneCene.setProviderCena(rs.getDouble("providerCena"));
