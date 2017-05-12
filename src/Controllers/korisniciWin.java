@@ -5,6 +5,7 @@ import classes.Users;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -13,6 +14,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -44,6 +48,7 @@ public class korisniciWin implements Initializable {
     public TableColumn cPozivNaBroj;
     public TableColumn cBrojTelefona;
     public TableColumn cPaket;
+    public Button bUplate;
     URL location;
     ResourceBundle resources;
 
@@ -61,6 +66,45 @@ public class korisniciWin implements Initializable {
         cPaket.setCellValueFactory(new PropertyValueFactory<Users, String>("userPaket"));
         cBrojTelefona.setCellValueFactory(new PropertyValueFactory<Users, String>("brojTelefona"));
 
+        tblKorisnici.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    showUplate();
+                }
+            }
+        });
+
+        tblKorisnici.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getClickCount() == 2) {
+                    showUplate();
+                }
+            }
+        });
+
+    }
+
+    private void showUplate() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/KorisnikUplate.fxml"), resources);
+        try {
+            Scene scene = new Scene(fxmlLoader.load());
+            korisnikUplate korisnikUplateController = fxmlLoader.getController();
+            korisnikUplateController.db = this.db;
+            korisnikUplateController.user = tblKorisnici.getSelectionModel().getSelectedItem();
+            korisnikUplateController.setData();
+            Stage stage = new Stage();
+            stage.initOwner(bUplate.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Uplate korisnika: " + tblKorisnici.getSelectionModel().getSelectedItem().getIme());
+            stage.setScene(scene);
+            stage.showAndWait();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -192,5 +236,9 @@ public class korisniciWin implements Initializable {
 
     public void traziKorisnika(ActionEvent actionEvent) {
         setData(tTrazi.getText());
+    }
+
+    public void bshowUplate(ActionEvent actionEvent) {
+        showUplate();
     }
 }

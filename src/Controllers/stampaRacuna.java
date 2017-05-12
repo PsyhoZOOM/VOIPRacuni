@@ -2,6 +2,10 @@ package Controllers;
 
 import classes.*;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfWriter;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,8 +15,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +28,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.ResourceBundle;
 
 /**
@@ -43,10 +50,7 @@ public class stampaRacuna implements Initializable {
     ObservableList<Users> data;
     private URL location;
     private ResourceBundle resources;
-    private Calendar calStart = Calendar.getInstance();
-    private Calendar calEnd = Calendar.getInstance();
-    private LocalDate localDateStart;
-    private LocalDate localDateStop;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -110,6 +114,7 @@ public class stampaRacuna implements Initializable {
                     users.setNazivUsluge(getPaketName(rs.getInt("paketID")));
                     users.setStampa(rs.getBoolean("stampa"));
                     users.setBrojTelefona(rs.getString("brojTelefona"));
+
                     usresArrayList.add(users);
                 }
             }
@@ -180,14 +185,40 @@ public class stampaRacuna implements Initializable {
     }
 
     public void printData(ActionEvent actionEvent) {
-        ObservableList<Users> usersArrayList = tblData.getItems();
-        ArrayList<Document> documents = new ArrayList<>();
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
+        fileChooser.getExtensionFilters().addAll(extensionFilter);
 
+        File file = fileChooser.showSaveDialog(bPrint.getScene().getWindow());
+
+        ObservableList<Users> usersArrayList = tblData.getItems();
+        if (usersArrayList.size() < 1)
+            return;
+
+        Document doc = new Document(new Rectangle(PageSize.A4), 14, 14, 60, 14);
+        PdfWriter pdfWriter = null;
+        try {
+            pdfWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getAbsolutePath()));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        doc.open();
         for (int i = 0; i < usersArrayList.size(); i++) {
             if (usersArrayList.get(i).isStampa()) {
-                PrintRacune(usersArrayList.get(i));
+                PrintRacune(usersArrayList.get(i), doc, pdfWriter);
+
+
             }
         }
+
+        doc.close();
+
+
+
 
 
     }
@@ -195,14 +226,35 @@ public class stampaRacuna implements Initializable {
     public void stampajSingle(ActionEvent actionEvent) {
         if (tblData.getSelectionModel().getSelectedIndex() == -1)
             return;
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
+        fileChooser.getExtensionFilters().addAll(extensionFilter);
+
+        File file = fileChooser.showSaveDialog(bPrint.getScene().getWindow());
+
+        Document doc = new Document(new Rectangle(PageSize.A4), 14, 14, 60, 14);
+        PdfWriter pdfWriter = null;
+        try {
+            pdfWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getAbsolutePath()));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         Users user = tblData.getSelectionModel().getSelectedItem();
-        PrintRacune(user);
+        if (user.isStampa() == false)
+            return;
+
+        doc.open();
+
+        PrintRacune(user, doc, pdfWriter);
+        doc.close();
 
     }
 
 
-    private Document PrintRacune(Users user) {
+    private void PrintRacune(Users user, Document doc, PdfWriter pdfWriter) {
 
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -213,11 +265,32 @@ public class stampaRacuna implements Initializable {
 
 
         userRacun ur = new userRacun(db, starDate, stopDate, rokPlacanja, user);
+        PrintPage printPage = new PrintPage(ur, doc, pdfWriter);
+
+        zaduziKorisnika(ur);
 
 
-        Document printPage = new PrintPage(ur).getDocument();
-        setData();
-        return printPage;
+    }
+
+    private void zaduziKorisnika(userRacun ur) {
+        PreparedStatement ps;
+        String query = "INSERT INTO uplate (ime, brojTel, zaUplatu, uplaceno, zaMesec, userID, modelPoziv, datumUplate)" +
+                "VALUES  (?,?,?,?,?,?,?,?)";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, ur.getUser().getIme());
+            ps.setString(2, ur.getUser().getBrojTelefona());
+            ps.setDouble(3, ur.getZaUplatu());
+            ps.setDouble(4, 0.00);
+            ps.setString(5, String.valueOf(LocalDate.parse(ur.getPeriodDo(), DateTimeFormatter.ofPattern("dd.MM.yyyy")).getMonthValue()));
+            ps.setInt(6, ur.getUser().getId());
+            ps.setString(7, ur.getUser().getPozivNaBroj());
+            ps.setString(8, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -3,8 +3,6 @@ package classes;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,35 +12,26 @@ import java.util.ArrayList;
  * Created by PsyhoZOOM@gmail.com on 5/8/17.
  */
 public class PrintPage {
-    Document doc;
     Font fotNorma = FontFactory.getFont(getClass().getResource("/Fonts/OpenSans-Regular.ttf").toExternalForm(), BaseFont.IDENTITY_H, 8);
     Font font = FontFactory.getFont(getClass().getResource("/Fonts/OpenSans-Bold.ttf").toExternalForm(), BaseFont.IDENTITY_H, 10);
     Font fontBold = FontFactory.getFont(getClass().getResource("/Fonts/OpenSans-ExtraBold.ttf").toExternalForm(), BaseFont.IDENTITY_H, 10);
     Font fontLargeBold = FontFactory.getFont(getClass().getResource("/Fonts/OpenSans-ExtraBold.ttf").toExternalForm(), BaseFont.IDENTITY_H, 20);
-    Paragraph p;
-    PdfWriter writer;
     DecimalFormat df = new DecimalFormat("#,###,##0.00");
-    PdfPage pg;
+    private PdfWriter writer;
+    private Document doc;
 
-    public PrintPage(userRacun racun) {
-        doc = new Document(new Rectangle(PageSize.A4), 14, 14, 60, 14);
-        try {
-            writer = PdfWriter.getInstance(doc, new FileOutputStream("/home/zoom/test.pdf"));
-            doc.open();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+    public PrintPage(userRacun racun, Document doc, PdfWriter pdfWriter) {
+        this.doc = doc;
+        this.writer = pdfWriter;
+
+
         createFrontPage(racun);
+        doc.newPage();
         createBackPage(racun);
-
-
+        doc.newPage();
     }
 
-    public Document getDocument() {
-        return this.doc;
-    }
 
     private void createFrontPage(userRacun racun) {
 
@@ -345,7 +334,6 @@ public class PrintPage {
         }
 
 
-        doc.close();
         createBackPageLog(racun);
     }
 

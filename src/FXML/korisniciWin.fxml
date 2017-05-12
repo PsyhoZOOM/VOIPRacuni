@@ -11,7 +11,12 @@
                 <Button fx:id="bNovKorisnik" mnemonicParsing="false" onAction="#novKorisnik" text="Nov"/>
                 <Button fx:id="bEditKorisnik" mnemonicParsing="false" onAction="#editKorisnik" text="Izmena"/>
                 <Button fx:id="bObrisiKorisnik" mnemonicParsing="false" onAction="#obrisiKorinisk" text="Obriši"/>
-                <Pane HBox.hgrow="ALWAYS"/>
+                <Pane HBox.hgrow="ALWAYS">
+                    <children>
+                        <Button fx:id="bUplate" onAction="#bshowUplate" layoutX="37.0" mnemonicParsing="false"
+                                text="Uplate"/>
+                    </children>
+                </Pane>
                 <TextField fx:id="tTrazi"/>
                 <Button fx:id="bTrazi" mnemonicParsing="false" onAction="#traziKorisnika" text="Trazi"/>
             </items>

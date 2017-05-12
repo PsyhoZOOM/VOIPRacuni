@@ -12,8 +12,8 @@
          <children>
             <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
                <children>
-                   <TextField fx:id="tNazivZone" promptText="Naziv zone"/>
-                   <TextField fx:id="tOpisZone" promptText="Opis zone"/>
+                   <TextField fx:id="tNazivZone" minWidth="250.0" promptText="Naziv zone"/>
+                   <TextField fx:id="tOpisZone" minWidth="250.0" promptText="Opis zone"/>
                    <ComboBox fx:id="cmbZona" promptText="Usluga" HBox.hgrow="ALWAYS"/>
                    <Pane HBox.hgrow="ALWAYS"/>
                    <Button fx:id="bDodaj" mnemonicParsing="false" onAction="#addZone" text="Dodaj" HBox.hgrow="ALWAYS"/>
@@ -35,6 +35,7 @@
             </HBox>
             <HBox alignment="CENTER_RIGHT">
                <children>
+                   <Button fx:id="bImport" mnemonicParsing="false" onAction="#importCSVZone" text="Import"/>
                    <Button fx:id="bObrisi" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false"
                            onAction="#deleteZone" text="Obriši"/>
                    <Button fx:id="bOsvezi" mnemonicParsing="false" onAction="#refreshTable" text="Osveži"/>

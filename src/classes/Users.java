@@ -21,7 +21,6 @@ public class Users implements Serializable {
     int nazivPaketaID;
     String brojTelefona;
 
-
     public int getNazivPaketaID() {
         return nazivPaketaID;
     }

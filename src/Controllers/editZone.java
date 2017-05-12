@@ -1,8 +1,10 @@
 package Controllers;
 
+import classes.CSVZoneData;
 import classes.Database;
 import classes.Zone;
 import classes.ZoneCene;
+import com.csvreader.CsvReader;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -11,9 +13,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +44,7 @@ public class editZone implements Initializable {
     public Button bOsvezi;
     public Database db;
     public Button bIzmeni;
+    public Button bImport;
     private URL location;
     private ResourceBundle resoources;
 
@@ -231,5 +239,57 @@ public class editZone implements Initializable {
             e.printStackTrace();
         }
         showTableZone();
+    }
+
+    public void importCSVZone(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("CSV", "*.csv");
+        fileChooser.getExtensionFilters().addAll(extensionFilter);
+
+        File file = fileChooser.showOpenDialog(bImport.getScene().getWindow());
+
+
+        CSVZoneData csvZoneData;
+        ArrayList<CSVZoneData> csvZoneDatas = new ArrayList<>();
+
+        try {
+            CsvReader csvReader = new CsvReader(new FileReader(file));
+            csvReader.setDelimiter(',');
+            csvReader.readHeaders();
+            while (csvReader.readRecord()) {
+                csvZoneData = new CSVZoneData();
+                csvZoneData.setCountry(csvReader.get("Country"));
+                csvZoneData.setDescription(csvReader.get("Description"));
+                csvZoneData.setZona(csvReader.get("Zona"));
+                csvZoneData.setCenaZoneID(Integer.parseInt(csvReader.get("CenaZoneID")));
+                csvZoneDatas.add(csvZoneData);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        PreparedStatement ps;
+        String query = "INSERT INTO zone (naziv, opis, zona, zonaID) VALUES (?,?,?,?)";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            for (int i = 0; i < csvZoneDatas.size(); i++) {
+                ps.setString(1, csvZoneDatas.get(i).getCountry());
+                ps.setString(2, csvZoneDatas.get(i).getDescription());
+                ps.setString(3, csvZoneDatas.get(i).getZona());
+                ps.setInt(4, csvZoneDatas.get(i).getCenaZoneID());
+                ps.executeUpdate();
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

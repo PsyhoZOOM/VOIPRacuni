@@ -110,7 +110,7 @@ public class userRacun {
         racun.setPdv(getPaketData(user.getNazivPaketaID()).getPDV());
         racun.setPeriodOd(startDate);
         racun.setPeriodDo(stopDate);
-        racun.setPrethodniDug(0.00);
+        racun.setPrethodniDug(getDugKorisnika(user.getId()));
         racun.setRokPlacanja(rokPlacanja);
         racun.setPozivNaBroj(user.getPozivNaBroj());
         racun.setPretplata(getPaketData(user.getNazivPaketaID()).getPretplata());
@@ -120,6 +120,28 @@ public class userRacun {
             potrosnja += userDestinationData.get(i).getUkupno();
         }
         racun.setPotrosnja(potrosnja);
+    }
+
+    private Double getDugKorisnika(int userID) {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT SUM(zaUplatu) AS zaUplatu FROM uplate WHERE userID=? AND uplaceno=0";
+        Double dug = 0.00;
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, userID);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                rs.next();
+                dug = rs.getDouble("zaUplatu");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dug;
     }
 
     private void saberiSve() {
