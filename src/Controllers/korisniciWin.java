@@ -195,6 +195,7 @@ public class korisniciWin implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Nov korisnik");
             stage.setScene(scene);
+            editKorisnikController.setData();
 
             stage.showAndWait();
         } catch (IOException e) {

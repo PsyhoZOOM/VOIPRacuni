@@ -67,7 +67,7 @@ public class editPaket implements Initializable {
 
     public void snimiNov(ActionEvent actionEvent) {
         PreparedStatement ps;
-        String query = "INSERT INTO PAKETI (naziv, pretplata, PDV, besplatniMinutiFiksna) VALUES (?,?,?,?)";
+        String query = "INSERT INTO paketi (naziv, pretplata, PDV, besplatniMinutiFiksna) VALUES (?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tNaziv.getText());

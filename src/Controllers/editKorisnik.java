@@ -101,6 +101,7 @@ public class editKorisnik implements Initializable {
     }
 
     private void saveUser() {
+
         PreparedStatement ps;
         String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID, pozivNaBroj, brojTelefona, paketID, stampa) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try {
@@ -112,9 +113,9 @@ public class editKorisnik implements Initializable {
             ps.setString(5, tbrUgovora.getText());
             ps.setString(6, tCustomerID.getText());
             ps.setString(7, tPozivNaBroj.getText());
-            ps.setString(9, tBrojTelefona.getText());
-            ps.setInt(10, cmbPaket.getValue().getId());
-            ps.setBoolean(11, chkStampa.isSelected());
+            ps.setString(8, tBrojTelefona.getText());
+            ps.setInt(9, cmbPaket.getValue().getId());
+            ps.setBoolean(10, chkStampa.isSelected());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -147,6 +148,11 @@ public class editKorisnik implements Initializable {
     }
 
     public void setData() {
+        if(!editUser){
+            setPaketiData();
+            return;
+        }
+
         bSnimi.setText("Izmeni");
         tImePrezime.setText(user.getIme());
         tAdresa.setText(user.getAdresa());
@@ -192,8 +198,12 @@ public class editKorisnik implements Initializable {
 
         if (editUser) {
             cmbPaket.getSelectionModel().selectFirst();
-            while (cmbPaket.getSelectionModel().getSelectedItem().getId() != user.getNazivPaketaID()) {
-                cmbPaket.getSelectionModel().selectNext();
+            ObservableList<Paketi> items = cmbPaket.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getId() == user.getNazivPaketaID()) {
+                    cmbPaket.setValue(items.get(i));
+                }
+
             }
         }
     }
