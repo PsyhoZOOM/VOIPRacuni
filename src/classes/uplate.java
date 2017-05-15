@@ -15,6 +15,16 @@ public class uplate implements Serializable {
     String uplatio;
     int userID;
     String datumUplate;
+    Double ukupno;
+
+
+    public Double getUkupno() {
+        return ukupno;
+    }
+
+    public void setUkupno(Double ukupno) {
+        this.ukupno = ukupno;
+    }
 
     public String getDatumUplate() {
         return datumUplate;
