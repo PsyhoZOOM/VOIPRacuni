@@ -14,6 +14,15 @@ public class uplate implements Serializable {
     String zaMesec;
     String uplatio;
     int userID;
+    String datumUplate;
+
+    public String getDatumUplate() {
+        return datumUplate;
+    }
+
+    public void setDatumUplate(String datumUplate) {
+        this.datumUplate = datumUplate;
+    }
 
     public int getId() {
         return id;

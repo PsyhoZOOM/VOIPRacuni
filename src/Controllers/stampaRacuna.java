@@ -281,7 +281,7 @@ public class stampaRacuna implements Initializable {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, ur.getUser().getIme());
             ps.setString(2, ur.getUser().getBrojTelefona());
-            ps.setDouble(3, ur.getZaUplatu());
+            ps.setDouble(3, ur.getPretplata() + ur.getPotrosnja());
             ps.setDouble(4, 0.00);
             ps.setString(5, String.valueOf(LocalDate.parse(ur.getPeriodDo(), DateTimeFormatter.ofPattern("dd.MM.yyyy")).getMonthValue()));
             ps.setInt(6, ur.getUser().getId());

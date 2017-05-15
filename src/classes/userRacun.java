@@ -193,7 +193,7 @@ public class userRacun {
         ArrayList<destination> dstArr = new ArrayList<>();
 
         for (int i = 0; i < zoneArr.size(); i++) {
-            query = "SELECT account, description, SUM(chargedTimeS)AS chargedTimeMS FROM csv WHERE account=? " +
+            query = "SELECT account, description, SUM(chargedTimeS) AS chargedTimeMS FROM csv  WHERE account=? " +
                     "AND connectTime >=? AND connectTime <=? AND description=?";
             try {
                 ps = db.connection.prepareStatement(query);

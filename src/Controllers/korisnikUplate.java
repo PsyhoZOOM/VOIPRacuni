@@ -3,6 +3,8 @@ package Controllers;
 import classes.Database;
 import classes.Users;
 import classes.uplate;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -64,9 +66,9 @@ public class korisnikUplate implements Initializable {
                     public void updateItem(Double uplata, boolean bool) {
                         super.updateItem(uplata, bool);
                         if (bool) {
-                            setText(df.format(uplata));
-                        } else {
                             setText(null);
+                        } else {
+                            setText(df.format(uplata));
                         }
                     }
                 };
@@ -82,13 +84,24 @@ public class korisnikUplate implements Initializable {
                     public void updateItem(Double uplaceno, boolean bool) {
                         super.updateItem(uplaceno, bool);
                         if (bool) {
-                            setText(df.format(uplaceno));
-                        } else {
                             setText(null);
+                        } else {
+                            setText(df.format(uplaceno));
                         }
                     }
                 };
                 return cell;
+            }
+        });
+
+        tblUplate.selectionModelProperty().addListener(new ChangeListener<TableView.TableViewSelectionModel<uplate>>() {
+            @Override
+            public void changed(ObservableValue<? extends TableView.TableViewSelectionModel<uplate>> observable, TableView.TableViewSelectionModel<uplate> oldValue, TableView.TableViewSelectionModel<uplate> newValue) {
+                if (newValue.getSelectedItem().getUplaceno() > 0) {
+                    bUplati.setDisable(true);
+                } else {
+                    bUplati.setDisable(false);
+                }
             }
         });
     }
@@ -121,6 +134,7 @@ public class korisnikUplate implements Initializable {
                     uplata.setUplaceno(rs.getDouble("uplaceno"));
                     uplata.setZaMesec(rs.getString("zaMesec"));
                     uplata.setUserID(rs.getInt("userID"));
+                    uplata.setDatumUplate(rs.getString("datumUplate"));
                     uplateArrayList.add(uplata);
                 }
             }
@@ -134,17 +148,17 @@ public class korisnikUplate implements Initializable {
         if (tblUplate.getSelectionModel().getSelectedIndex() == -1)
             return;
 
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         uplate uplata = tblUplate.getSelectionModel().getSelectedItem();
         PreparedStatement ps;
-        String query = "UPDATE uplate SET uplaceno=? datumUplate=? WHERE userID=?";
+        String query = "UPDATE uplate SET uplaceno=?, datumUplate=? WHERE id=?";
 
         try {
             ps = db.connection.prepareStatement(query);
             ps.setDouble(1, uplata.getZaUplatu());
             ps.setString(2, date);
-            ps.setInt(3, user.getId());
+            ps.setInt(3, tblUplate.getSelectionModel().getSelectedItem().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
