@@ -48,7 +48,7 @@ public class PrintPage {
         PdfContentByte canvas = writer.getDirectContent();
         LocalDate zaPerodDo = LocalDate.parse(racun.getPeriodDo(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         LocalDate zaPeriodOd = LocalDate.parse(racun.getPeriodOd(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        String modelIPozivNaBroj = racun.getUser().getPozivNaBroj() + "/" + zaPerodDo.getMonthValue();
+        String modelIPozivNaBroj = racun.getUser().getPozivNaBroj() + zaPeriodOd.getYear() +  "/" + zaPerodDo.getMonthValue();
 
 
         int X = 320;
@@ -57,20 +57,43 @@ public class PrintPage {
         canvas.saveState();
 
         //KORISNICKI PODACI
-
-        canvas.setFontAndSize(fontLargeBold.getBaseFont(), 11);
-        canvas.beginText();
-        canvas.moveText(X, Y);
-        canvas.showText(racun.getUser().getIme());
-        canvas.endText();
-        canvas.beginText();
-        canvas.moveText(X, Y - 20);
-        canvas.showText(racun.getUser().getAdresa());
-        canvas.endText();
-        canvas.beginText();
-        canvas.moveText(X, Y - 40);
-        canvas.showText(racun.getUser().getMesto() + " " + racun.getUser().getPostBr());
-        canvas.endText();
+        if(!racun.getUser().isFirma()) {
+            canvas.setFontAndSize(fontLargeBold.getBaseFont(), 11);
+            canvas.beginText();
+            canvas.moveText(X, Y);
+            canvas.showText(racun.getUser().getIme());
+            canvas.endText();
+            canvas.beginText();
+            canvas.moveText(X, Y - 20);
+            canvas.showText(racun.getUser().getAdresa());
+            canvas.endText();
+            canvas.beginText();
+            canvas.moveText(X, Y - 40);
+            canvas.showText(racun.getUser().getMesto() + " " + racun.getUser().getPostBr());
+            canvas.endText();
+        }else{
+            canvas.setFontAndSize(fontLargeBold.getBaseFont(), 11);
+            canvas.beginText();
+            canvas.moveText(X, Y);
+            canvas.showText(racun.getUser().getNazivFirme());
+            canvas.endText();
+            canvas.beginText();
+            canvas.moveText(X, Y - 20);
+            canvas.showText(racun.getUser().getAdresa());
+            canvas.endText();
+            canvas.beginText();
+            canvas.moveText(X, Y - 40);
+            canvas.showText(racun.getUser().getMesto() + " " + racun.getUser().getPostBr());
+            canvas.endText();
+            canvas.beginText();
+            canvas.moveText(X, Y - 60);
+            canvas.showText("PIB: "+ racun.getUser().getPib());
+            canvas.endText();
+            canvas.beginText();
+            canvas.moveText(X, Y- 80);
+            canvas.showText("Matični broj: "+ racun.getUser().getMbr());
+            canvas.endText();
+        }
 
 
         //CENTAR PRETPLATA LEFT
@@ -285,7 +308,7 @@ public class PrintPage {
             destination = destinationArrayList.get(i);
 
 
-            cll = new PdfPCell(new Phrase(destination.getNazivDestinacije(), fontregular));
+            cll = new PdfPCell(new Phrase(destination.getNazivDestinacijeZone(), fontregular));
             cll.setHorizontalAlignment(Element.ALIGN_CENTER);
             cll.setVerticalAlignment(Element.ALIGN_MIDDLE);
 
@@ -334,7 +357,7 @@ public class PrintPage {
         }
 
 
-        createBackPageLog(racun);
+        //createBackPageLog(racun);
     }
 
     private void createBackPageLog(userRacun racun) {

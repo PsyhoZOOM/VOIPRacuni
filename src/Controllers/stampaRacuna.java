@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -39,7 +40,6 @@ public class stampaRacuna implements Initializable {
     public TableView<Users> tblData;
     public TableColumn cIme;
     public TableColumn cNazivUsluge;
-    public TableColumn cDatum;
     public DatePicker dtpOd;
     public DatePicker dtpDo;
     public TableColumn cStampaChkBox;
@@ -47,6 +47,7 @@ public class stampaRacuna implements Initializable {
     public CheckBox stampaAll;
     public MenuItem menuStampajSingle;
     public DatePicker dtpRokPlacanja;
+    public TableColumn cBrojTelefona;
     ObservableList<Users> data;
     private URL location;
     private ResourceBundle resources;
@@ -60,7 +61,7 @@ public class stampaRacuna implements Initializable {
 
         cIme.setCellValueFactory(new PropertyValueFactory<Users, String>("ime"));
         cNazivUsluge.setCellValueFactory(new PropertyValueFactory<Users, String>("nazivUsluge"));
-        cDatum.setCellValueFactory(new PropertyValueFactory<Users, String>("mesec"));
+        cBrojTelefona.setCellValueFactory(new PropertyValueFactory<Users, String>("brojTelefona"));
 
 
         cStampaChkBox.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Users, CheckBox>, ObservableValue<CheckBox>>() {
@@ -114,6 +115,10 @@ public class stampaRacuna implements Initializable {
                     users.setNazivUsluge(getPaketName(rs.getInt("paketID")));
                     users.setStampa(rs.getBoolean("stampa"));
                     users.setBrojTelefona(rs.getString("brojTelefona"));
+                    users.setFirma(rs.getBoolean("firma"));
+                    users.setNazivFirme(rs.getString("nazivFirme"));
+                    users.setPib(rs.getString("pib"));
+                    users.setMbr(rs.getString("mbr"));
 
                     usresArrayList.add(users);
                 }
@@ -185,6 +190,9 @@ public class stampaRacuna implements Initializable {
     }
 
     public void printData(ActionEvent actionEvent) {
+        if(checkIfRacunExists(false)){
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
         fileChooser.getExtensionFilters().addAll(extensionFilter);
@@ -198,6 +206,10 @@ public class stampaRacuna implements Initializable {
         Document doc = new Document(new Rectangle(PageSize.A4), 14, 14, 60, 14);
         PdfWriter pdfWriter = null;
         try {
+            //USER CANCELED
+            if(file.getAbsolutePath() == null)
+                return;
+
             pdfWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getAbsolutePath()));
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -209,6 +221,7 @@ public class stampaRacuna implements Initializable {
         doc.open();
         for (int i = 0; i < usersArrayList.size(); i++) {
             if (usersArrayList.get(i).isStampa()) {
+                System.out.println("FIRMA: "+usersArrayList.get(i).isFirma());
                 PrintRacune(usersArrayList.get(i), doc, pdfWriter);
 
 
@@ -226,6 +239,9 @@ public class stampaRacuna implements Initializable {
     public void stampajSingle(ActionEvent actionEvent) {
         if (tblData.getSelectionModel().getSelectedIndex() == -1)
             return;
+        if(checkIfRacunExists(true)){
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
         fileChooser.getExtensionFilters().addAll(extensionFilter);
@@ -253,6 +269,71 @@ public class stampaRacuna implements Initializable {
 
     }
 
+    private boolean checkIfRacunExists(boolean singlePrint) {
+        String datumZaduzenja = String.valueOf(dtpOd.getValue() + " 00:00:00");
+        boolean notExist=false;
+
+        PreparedStatement ps;
+        ResultSet rs;
+        String query;
+        if(singlePrint) {
+            query = "SELECT datumZaduzenja from uplate WHERE datumZaduzenja=? and userID=?";
+        }else{
+            query = "SELECT datumZaduzenja FROM uplate WHERE datumZaduzenja=?";
+        }
+        try {
+            ps = db.connection.prepareCall(query);
+            ps.setString(1, datumZaduzenja);
+            if(singlePrint)
+                ps.setInt(2, tblData.getSelectionModel().getSelectedItem().getId());
+            rs = ps.executeQuery();
+            if(rs.isBeforeFirst()) {
+                ButtonType yes = new ButtonType("Da", ButtonBar.ButtonData.YES);
+                ButtonType no = new ButtonType("Ne", ButtonBar.ButtonData.NO);
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        String.format("Računi za %d-%d postoje. " +
+                                "Da li želite da izbrišete i ponovo generišete račune?",
+                                dtpOd.getValue().getMonthValue(), dtpOd.getValue().getYear()),yes , no );
+                alert.setTitle("Duplikovani racuni");
+                alert.setHeaderText("Upozorenje");
+                Optional<ButtonType> buttonType = alert.showAndWait();
+                System.out.println(buttonType);
+                if(buttonType.get() == yes ){
+                    deleteUplate(dtpOd.getValue() + " 00:00:00",singlePrint);
+                    notExist = false;
+                }else {
+                    notExist = true;
+                }
+
+            }
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return  notExist;
+    }
+
+    private void deleteUplate(String datumZaduzenja, boolean singlePrint) {
+        PreparedStatement ps;
+        String query;
+        if(singlePrint) {
+            query = "DELETE FROM uplate WHERE datumZaduzenja=? AND userID=?";
+        }else{
+            query = "DELETE FROM uplate WHERE datumZaduzenja=?";
+        }
+        try {
+            ps = db.connection.prepareCall(query);
+            ps.setString(1, datumZaduzenja);
+            if(singlePrint)
+                ps.setInt(2, tblData.getSelectionModel().getSelectedItem().getId());
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void PrintRacune(Users user, Document doc, PdfWriter pdfWriter) {
 
@@ -274,7 +355,8 @@ public class stampaRacuna implements Initializable {
 
     private void zaduziKorisnika(userRacun ur) {
         PreparedStatement ps;
-        String query = "INSERT INTO uplate (ime, brojTel, zaUplatu, uplaceno, zaMesec, userID, modelPoziv, datumUplate)" +
+        String query = "INSERT INTO uplate (ime, brojTel, zaUplatu, uplaceno, zaMesec, datumZaduzenja, userID, " +
+                "modelPoziv)" +
                 "VALUES  (?,?,?,?,?,?,?,?)";
 
         try {
@@ -283,10 +365,13 @@ public class stampaRacuna implements Initializable {
             ps.setString(2, ur.getUser().getBrojTelefona());
             ps.setDouble(3, ur.getPretplata() + ur.getPotrosnja());
             ps.setDouble(4, 0.00);
-            ps.setString(5, String.valueOf(LocalDate.parse(ur.getPeriodDo(), DateTimeFormatter.ofPattern("dd.MM.yyyy")).getMonthValue()));
-            ps.setInt(6, ur.getUser().getId());
-            ps.setString(7, ur.getUser().getPozivNaBroj());
-            ps.setString(8, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ps.setString(5, String.valueOf(LocalDate.parse(ur.getPeriodDo(),
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy")).getMonthValue()));
+            ps.setString(6, String.valueOf(LocalDate.parse(ur.getPeriodOd(),
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))+" 00:00:00");
+            ps.setInt(7, ur.getUser().getId());
+            ps.setString(8, ur.getUser().getPozivNaBroj());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -19,9 +19,17 @@ public class Database {
 //            connection = DriverManager.getConnection("jdbc:sqlite:data.db");
 
 
+
+
             //MYSQL
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://data.yuvideo.net:3306/CSV?useUnicode=true&characterEncoding=utf-8", "www", "psyhodeliczoom");
+            // REMOTE DATABASE
+             connection = DriverManager.getConnection("jdbc:mysql://data.yuvideo.net:3306/CSV?" +
+                     "useUnicode=true&characterEncoding=utf-8", "www", "psyhodeliczoom");
+
+            //LOCAL DATABASE
+            //connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSV?" +
+            //        "useUniceode=true&characterEncoding=utf-8", "voipUser", "voipPassword");
 
 
 

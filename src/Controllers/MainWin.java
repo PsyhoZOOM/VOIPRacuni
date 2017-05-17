@@ -61,6 +61,7 @@ public class MainWin implements Initializable {
         fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/korisniciWin.fxml"), resources);
         try {
             bPane.setCenter((Node) fxmlLoader.load());
+            bPane.toBack();
             korisniciWinController = fxmlLoader.getController();
             korisniciWinController.db = db;
             korisniciWinController.setData(null);
@@ -282,4 +283,5 @@ public class MainWin implements Initializable {
             e.printStackTrace();
         }
     }
+
 }

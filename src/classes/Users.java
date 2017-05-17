@@ -20,6 +20,43 @@ public class Users implements Serializable {
     String mesec;
     int nazivPaketaID;
     String brojTelefona;
+    boolean firma;
+    String pib;
+    String mbr;
+    String nazivFirme;
+
+
+    public String getNazivFirme() {
+        return nazivFirme;
+    }
+
+    public void setNazivFirme(String nazivFirme) {
+        this.nazivFirme = nazivFirme;
+    }
+
+    public boolean isFirma() {
+        return firma;
+    }
+
+    public void setFirma(boolean firma) {
+        this.firma = firma;
+    }
+
+    public String getPib() {
+        return pib;
+    }
+
+    public void setPib(String pib) {
+        this.pib = pib;
+    }
+
+    public String getMbr() {
+        return mbr;
+    }
+
+    public void setMbr(String mbr) {
+        this.mbr = mbr;
+    }
 
     public int getNazivPaketaID() {
         return nazivPaketaID;

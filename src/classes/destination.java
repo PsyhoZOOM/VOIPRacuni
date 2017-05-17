@@ -4,6 +4,7 @@ package classes;
  * Created by PsyhoZOOM@gmail.com on 5/9/17.
  */
 public class destination {
+    int id;
     int userid;
     String nazivDestinacije;
     int utrosenoMinuta;
@@ -12,6 +13,23 @@ public class destination {
     double cenaPoMinutu;
     double ukupno;
     String account;
+    String nazivDestinacijeZone;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNazivDestinacijeZone() {
+        return nazivDestinacijeZone;
+    }
+
+    public void setNazivDestinacijeZone(String nazivDestinacijeZone) {
+        this.nazivDestinacijeZone = nazivDestinacijeZone;
+    }
 
     public String getAccount() {
         return account;

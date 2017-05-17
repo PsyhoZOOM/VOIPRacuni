@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by PsyhoZOOM@gmail.com on 5/9/17.
@@ -36,6 +41,7 @@ public class userRacun {
         this.user = user;
         this.rokPlacanja = LocalDate.parse(rokPlacanja).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString();
 
+        setCSVData();
         setZoneCene();
         setZoneData();
         setPaketData();
@@ -97,6 +103,46 @@ public class userRacun {
         }
     }
 
+    private void setCSVData(){
+        PreparedStatement ps;
+        ResultSet rs;
+        String query;
+        query= "SELECT  DISTINCT description, id, account, 'from', 'to', country, description," +
+                "connectTime, chargedTimeMS, chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, " +
+                "serviceUnit, customerID, fileName FROM csv";
+        //query = "SELECT *, DISTINCT description FROM csv ";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            if(rs.isBeforeFirst()){
+                while (rs.next()){
+                    CSVData csvData = new CSVData();
+                    csvData.setId(rs.getInt("id"));
+                    csvData.setAccount(rs.getString("account"));
+                    csvData.setFrom(rs.getString("from"));
+                    csvData.setTo(rs.getString("to"));
+                    csvData.setCountry(rs.getString("country"));
+                    csvData.setDescription(rs.getString("description"));
+                    csvData.setConnectTime(rs.getString("connectTime"));
+                    csvData.setChargedTimeMinSec(rs.getString("chargedTimeMS"));
+                    csvData.setChargedTimeSec(rs.getInt("chargedTimeS"));
+                    csvData.setChargedAmountRSD(rs.getDouble("chargedAmountRSD"));
+                    csvData.setServiceName(rs.getString("serviceName"));
+                    csvData.setChargedQuantity(rs.getInt("chargedQuantity"));
+                    csvData.setServiceUnit(rs.getString("serviceUnit"));
+                    csvData.setCustomerID(rs.getString("customerID"));
+                    csvData.setFileName(rs.getString("fileName"));
+                    csvDataArr.add(csvData);
+                }
+            }
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public Racun getRacun() {
         return this.racun;
     }
@@ -125,16 +171,18 @@ public class userRacun {
     private Double getDugKorisnika(int userID) {
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT SUM(zaUplatu) AS zaUplatu FROM uplate WHERE userID=? AND uplaceno=0";
+        String query = "SELECT SUM(zaUplatu) AS zaUplatu FROM uplate WHERE userID=? AND uplaceno=0 AND datumZaduzenja<?";
         Double dug = 0.00;
 
         try {
             ps = db.connection.prepareStatement(query);
             ps.setInt(1, userID);
+            ps.setString(2, startD);
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 rs.next();
                 dug = rs.getDouble("zaUplatu");
+                dug += valueToPercent.getValue(dug, getPDV());
             }
 
 
@@ -191,8 +239,10 @@ public class userRacun {
         ResultSet rs;
         String query;
         ArrayList<destination> dstArr = new ArrayList<>();
+        destination dst = null;
 
         for (int i = 0; i < zoneArr.size(); i++) {
+        //for(int i = 0; i < csvDataArr.size(); i++){
             query = "SELECT account, description, SUM(chargedTimeS) AS chargedTimeMS FROM csv  WHERE account=? " +
                     "AND connectTime >=? AND connectTime <=? AND description=?";
             try {
@@ -200,18 +250,20 @@ public class userRacun {
                 ps.setString(1, user.getBrojTelefona());
                 ps.setString(2, startD);
                 ps.setString(3, stopD);
-                ps.setString(4, zoneArr.get(i).getOpis());
+                ps.setString(4,zoneArr.get(i).getOpis());
                 rs = ps.executeQuery();
                 if (rs.isBeforeFirst()) {
                     rs.next();
                     if (rs.getString("account") == null)
                         continue;
-                    destination dst = new destination();
+                    dst = new destination();
                     dst.setUserid(user.getId());
                     dst.setAccount(rs.getString("account"));
                     dst.setNazivDestinacije(rs.getString("description"));
+                    dst.setNazivDestinacijeZone(getNazivDestinacije(rs.getString("description")));
                     dst.setUtrosenoMinuta(rs.getInt("chargedTimeMS") / 60);
-                    dst.setCenaPoMinutu(getZone(rs.getString("description")).getCena());
+                     Double cenaDesc = getZone(rs.getString("description")).getProviderCena();
+                    dst.setCenaPoMinutu(cenaDesc);
                     dstArr.add(dst);
                 }
                 ps.close();
@@ -223,6 +275,23 @@ public class userRacun {
         userDestinationData = setGratis(dstArr);
         userDestinationData = setMinutaZaNaplatu(userDestinationData);
         setRacun(userDestinationData);
+    }
+
+    private String getNazivDestinacije(String description) {
+        String destinacijaIme = description;
+        for(int i =0;i<zoneArr.size();i++){
+            if(description.equals(zoneArr.get(i).getOpis())){
+                destinacijaIme = zoneArr.get(i).getZona();
+                destinacijaIme = getZoneCeneData(zoneArr.get(i).getZonaID()).getVrstaUsluge();
+
+            }
+
+        }
+        return destinacijaIme;
+    }
+
+    private void getNazivDestinazijeZone(String description){
+
     }
 
     private ArrayList<destination> setMinutaZaNaplatu(ArrayList<destination> userDestinationData) {

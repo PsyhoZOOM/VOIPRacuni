@@ -39,6 +39,10 @@ public class editKorisnik implements Initializable {
     public TextField tBrojTelefona;
     public ComboBox<Paketi> cmbPaket;
     public CheckBox chkStampa;
+    public CheckBox cmbKoristiFirmu;
+    public TextField tNazivFirme;
+    public TextField tPIB;
+    public TextField tMBR;
     private URL location;
     private ResourceBundle resources;
 
@@ -103,7 +107,8 @@ public class editKorisnik implements Initializable {
     private void saveUser() {
 
         PreparedStatement ps;
-        String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID, pozivNaBroj, brojTelefona, paketID, stampa) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID, pozivNaBroj, " +
+                "brojTelefona, paketID, stampa, firma, mbr, pib, nazivFirme) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -116,6 +121,10 @@ public class editKorisnik implements Initializable {
             ps.setString(8, tBrojTelefona.getText());
             ps.setInt(9, cmbPaket.getValue().getId());
             ps.setBoolean(10, chkStampa.isSelected());
+            ps.setBoolean(11, cmbKoristiFirmu.isSelected());
+            ps.setString(12, tMBR.getText());
+            ps.setString(13, tPIB.getText());
+            ps.setString(14, tNazivFirme.getText());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -126,7 +135,8 @@ public class editKorisnik implements Initializable {
     private void updateUser() {
 
         PreparedStatement ps;
-        String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=?, customerID=?, pozivNaBroj=?, brojTelefona=?, paketID=?, stampa=? WHERE id=? ";
+        String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=?, customerID=?, " +
+                "pozivNaBroj=?, brojTelefona=?, paketID=?, stampa=?, firma=?, mbr=?,  pib=?, nazivFirme=? WHERE id=? ";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -139,7 +149,11 @@ public class editKorisnik implements Initializable {
             ps.setString(8, tBrojTelefona.getText());
             ps.setInt(9, cmbPaket.getValue().getId());
             ps.setBoolean(10, chkStampa.isSelected());
-            ps.setInt(11, user.getId());
+            ps.setBoolean(11, cmbKoristiFirmu.isSelected());
+            ps.setString(12, tMBR.getText());
+            ps.setString(13, tPIB.getText());
+            ps.setString(14, tNazivFirme.getText());
+            ps.setInt(15, user.getId());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -163,6 +177,10 @@ public class editKorisnik implements Initializable {
         tPozivNaBroj.setText(user.getPozivNaBroj());
         tBrojTelefona.setText(user.getBrojTelefona());
         chkStampa.setSelected(user.isStampa());
+        cmbKoristiFirmu.setSelected(user.isFirma());
+        tMBR.setText(user.getMbr());
+        tPIB.setText(user.getPib());
+        tNazivFirme.setText(user.getNazivFirme());
 
 
         setPaketiData();

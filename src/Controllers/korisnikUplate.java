@@ -3,6 +3,7 @@ package Controllers;
 import classes.Database;
 import classes.Users;
 import classes.uplate;
+import classes.valueToPercent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -37,6 +38,8 @@ public class korisnikUplate implements Initializable {
     public TableColumn cDatumUplate;
     public Button bUplati;
     public Label lDug;
+    public TableColumn cDug;
+    public TableColumn cPDV;
     Database db;
     Users user;
     private URL location;
@@ -55,6 +58,8 @@ public class korisnikUplate implements Initializable {
         cZaUplatu.setCellValueFactory(new PropertyValueFactory<uplate, Double>("zaUplatu"));
         cUplaceno.setCellValueFactory(new PropertyValueFactory<uplate, Double>("uplaceno"));
         cDatumUplate.setCellValueFactory(new PropertyValueFactory<uplate, String>("datumUplate"));
+        cDug.setCellValueFactory(new PropertyValueFactory<uplate, Double>("dug"));
+        cPDV.setCellValueFactory(new PropertyValueFactory<uplate, Double>("PDV"));
 
         cZaUplatu.setCellFactory(new Callback<TableColumn, TableCell>() {
             @Override
@@ -92,6 +97,43 @@ public class korisnikUplate implements Initializable {
             }
         });
 
+        cPDV.setCellFactory(new Callback<TableColumn, TableCell>() {
+            @Override
+            public TableCell<uplate, Double> call(TableColumn param) {
+                TableCell<uplate, Double> cell = new TableCell<uplate, Double>(){
+                    @Override
+                    protected void updateItem(Double item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(empty){
+                            setText(null);
+                        }else {
+                            setText(df.format(item));
+                        }
+                    }
+                };
+                return  cell;
+            }
+        });
+
+        cDug.setCellFactory(new Callback<TableColumn, TableCell>() {
+            @Override
+            public TableCell call(TableColumn param) {
+                TableCell<uplate, Double> cell = new TableCell<uplate, Double>(){
+
+                    @Override
+                    protected void updateItem(Double item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(empty){
+                            setText(null);
+                        }else{
+                            setText(df.format(item));
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
+
         tblUplate.selectionModelProperty().addListener(new ChangeListener<TableView.TableViewSelectionModel<uplate>>() {
             @Override
             public void changed(ObservableValue<? extends TableView.TableViewSelectionModel<uplate>> observable, TableView.TableViewSelectionModel<uplate> oldValue, TableView.TableViewSelectionModel<uplate> newValue) {
@@ -109,6 +151,26 @@ public class korisnikUplate implements Initializable {
         tblUplate.setItems(data);
 
 
+    }
+
+    private Double getPDV(int userPaketID){
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT PDV from paketi WHERE id=?";
+        Double pdv = 0.00;
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, userPaketID);
+            rs = ps.executeQuery();
+            if(rs.isBeforeFirst()){
+                rs.next();
+                pdv = rs.getDouble("PDV");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return pdv;
     }
 
     private ArrayList<uplate> getUplate(int userId) {
@@ -130,14 +192,15 @@ public class korisnikUplate implements Initializable {
                     uplata.setId(rs.getInt("id"));
                     uplata.setIme(rs.getString("ime"));
                     uplata.setBrojTel(rs.getString("brojTel"));
-                    uplata.setZaUplatu(rs.getDouble("zaUplatu"));
+                    uplata.setDug(rs.getDouble("zaUplatu"));
                     uplata.setUplaceno(rs.getDouble("uplaceno"));
-                    uplata.setZaMesec(rs.getString("zaMesec"));
+                    uplata.setZaMesec(LocalDate.parse(rs.getString("datumZaduzenja"),DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")).format(DateTimeFormatter.ofPattern("MM-yyyy")));
                     uplata.setUserID(rs.getInt("userID"));
                     uplata.setDatumUplate(rs.getString("datumUplate"));
-                    ukupno += rs.getDouble("zaUplatu");
+                    uplata.setPDV(getPDV(user.getNazivPaketaID()));
+                    uplata.setZaUplatu(uplata.getDug() + valueToPercent.getValue(uplata.getDug(), uplata.getPDV()));
+                    ukupno += uplata.getZaUplatu();
                     ukupno -= rs.getDouble("uplaceno");
-                    uplata.setUkupno(ukupno);
                     uplateArrayList.add(uplata);
                     lDug.setText(String.valueOf(ukupno));
                 }

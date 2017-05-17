@@ -9,17 +9,16 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
@@ -49,6 +48,7 @@ public class korisniciWin implements Initializable {
     public TableColumn cBrojTelefona;
     public TableColumn cPaket;
     public Button bUplate;
+    public TableColumn cFirma;
     URL location;
     ResourceBundle resources;
 
@@ -63,10 +63,13 @@ public class korisniciWin implements Initializable {
         cBrUgovora.setCellValueFactory(new PropertyValueFactory<Users, String>("brUgovora"));
         cCustomerID.setCellValueFactory(new PropertyValueFactory<Users, String>("customerId"));
         cPozivNaBroj.setCellValueFactory(new PropertyValueFactory<Users, String>("pozivNaBroj"));
-        cPaket.setCellValueFactory(new PropertyValueFactory<Users, String>("userPaket"));
+        cPaket.setCellValueFactory(new PropertyValueFactory<Users, String>("nazivUsluge"));
         cBrojTelefona.setCellValueFactory(new PropertyValueFactory<Users, String>("brojTelefona"));
+        cFirma.setCellValueFactory(new PropertyValueFactory<Users, String>("nazivFirme"));
 
-        tblKorisnici.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+
+       tblKorisnici.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if (event.getCode().equals(KeyCode.ENTER)) {
@@ -143,6 +146,10 @@ public class korisniciWin implements Initializable {
                     user.setNazivUsluge(getNazivPaketa(rs.getInt("paketID")));
                     user.setBrojTelefona(rs.getString("brojTelefona"));
                     user.setStampa(rs.getBoolean("stampa"));
+                    user.setMbr(rs.getString("mbr"));
+                    user.setPib(rs.getString("pib"));
+                    user.setFirma(rs.getBoolean("firma"));
+                    user.setNazivFirme(rs.getString("nazivFirme"));
                     usersArrayList.add(user);
                 }
             }

@@ -9,30 +9,14 @@ public class uplate implements Serializable {
     int id;
     String ime;
     String brojTel;
+    Double dug;
     Double zaUplatu;
     Double uplaceno;
     String zaMesec;
     String uplatio;
     int userID;
     String datumUplate;
-    Double ukupno;
-
-
-    public Double getUkupno() {
-        return ukupno;
-    }
-
-    public void setUkupno(Double ukupno) {
-        this.ukupno = ukupno;
-    }
-
-    public String getDatumUplate() {
-        return datumUplate;
-    }
-
-    public void setDatumUplate(String datumUplate) {
-        this.datumUplate = datumUplate;
-    }
+    Double PDV;
 
     public int getId() {
         return id;
@@ -56,6 +40,14 @@ public class uplate implements Serializable {
 
     public void setBrojTel(String brojTel) {
         this.brojTel = brojTel;
+    }
+
+    public Double getDug() {
+        return dug;
+    }
+
+    public void setDug(Double dug) {
+        this.dug = dug;
     }
 
     public Double getZaUplatu() {
@@ -96,5 +88,21 @@ public class uplate implements Serializable {
 
     public void setUserID(int userID) {
         this.userID = userID;
+    }
+
+    public String getDatumUplate() {
+        return datumUplate;
+    }
+
+    public void setDatumUplate(String datumUplate) {
+        this.datumUplate = datumUplate;
+    }
+
+    public Double getPDV() {
+        return PDV;
+    }
+
+    public void setPDV(Double PDV) {
+        this.PDV = PDV;
     }
 }
