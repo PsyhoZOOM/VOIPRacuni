@@ -4,6 +4,13 @@
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="Main" />
+        <option name="description" value="Racuni za fiksnu telefoniju" />
+        <option name="height" value="600" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="Fixni Racuni" />
+        <option name="vendor" value="YuVideo" />
+        <option name="version" value="0.1b" />
+        <option name="width" value="900" />
       </options>
     </properties>
     <root id="root">
