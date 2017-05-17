@@ -3,14 +3,9 @@ package Controllers;
 import classes.CSVData;
 import classes.Database;
 import com.csvreader.CsvReader;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -60,8 +55,7 @@ public class MainWin implements Initializable {
         this.resources = resources;
         fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/korisniciWin.fxml"), resources);
         try {
-            bPane.setCenter((Node) fxmlLoader.load());
-            bPane.toBack();
+            bPane.setCenter(fxmlLoader.load());
             korisniciWinController = fxmlLoader.getController();
             korisniciWinController.db = db;
             korisniciWinController.setData(null);
@@ -76,7 +70,7 @@ public class MainWin implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/zoneCene.fxml"), resources);
 
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             zoneCene zoneCeneController = fxmlLoader.getController();
             zoneCeneController.db = db;
             zoneCeneController.showData("");
@@ -106,35 +100,19 @@ public class MainWin implements Initializable {
         final List<File> lf = fileChooser.showOpenMultipleDialog(bPane.getScene().getWindow());
         final List<File> csvFiles = new ArrayList<File>();
 
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
 
                 String message;
                 for (int i = 0; i < lf.size(); i++) {
                         csvFiles.add(lf.get(i));
                         lf.get(i).getName();
                 }
-                updateMessage("Importujem u bazu podataka.. molim sacekajte..");
                 exportCSVtoDatabase(csvFiles);
-                updateMessage("Import je zavrsen");
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Import CSV Fajla zavrseno");
                 alert.showAndWait();
-                return null;
-            }
 
 
-        };
 
-        task.messageProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                lMessage.setText(newValue);
-            }
-
-        });
-        new Thread(task).start();
 
 
     }
@@ -230,7 +208,7 @@ public class MainWin implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editZone.fxml"), resources);
 
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             editZone editZonecontroller = fxmlLoader.getController();
             editZonecontroller.db = db;
             editZonecontroller.showData("");
@@ -249,7 +227,7 @@ public class MainWin implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/editPaketi.fxml"), resources);
 
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             editPaket editPaketController = fxmlLoader.getController();
             editPaketController.db = db;
             editPaketController.showData("");
@@ -269,7 +247,7 @@ public class MainWin implements Initializable {
 
 
         try {
-            Scene scene = new Scene((Parent) fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());
             stampaRacuna stampaRacunaController = fxmlLoader.getController();
             stampaRacunaController.db = db;
             Stage stage = new Stage();
@@ -283,5 +261,4 @@ public class MainWin implements Initializable {
             e.printStackTrace();
         }
     }
-
 }
