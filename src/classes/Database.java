@@ -24,7 +24,7 @@ public class Database {
             //MYSQL
             Class.forName("com.mysql.jdbc.Driver");
             // REMOTE DATABASE
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSV?" +
+            connection = DriverManager.getConnection("jdbc:mysql://venus.yuvideo.net:3306/CSV?" +
                     "useUnicode=true&characterEncoding=utf-8", "jgemstone", "jgemstone");
 
             //LOCAL DATABASE

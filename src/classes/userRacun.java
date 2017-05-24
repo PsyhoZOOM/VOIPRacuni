@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by PsyhoZOOM@gmail.com on 5/9/17.
@@ -199,13 +198,16 @@ public class userRacun {
         pretplata = getPaketData(user.getNazivPaketaID()).getPretplata();
 
         if (!check_first_monthCalculation(pretplata)) {
-            Calendar cal = Calendar.getInstance();
+            double cena = 0.00;
             LocalDate date = LocalDate.now();
-            int days = date.getDayOfMonth();
-            days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+            int days = date.lengthOfMonth();
             int currentDay = date.getDayOfMonth();
+
+            cena = pretplata / days;
             days = days - currentDay;
-            pretplata = pretplata / days;
+            pretplata = cena * days;
+            racun.setPretplata(pretplata);
+
             updateUserFullTimePayment();
 
         }
@@ -221,11 +223,12 @@ public class userRacun {
     }
 
     private void updateUserFullTimePayment() {
-        String query = "UPDATE korisnik SET fullPayment=? WHERE id=?";
+        String query = "UPDATE korisnici SET fullPayment=? WHERE id=?";
 
         try {
             PreparedStatement ps = db.connection.prepareStatement(query);
             ps.setBoolean(1, true);
+            ps.setInt(2, user.getId());
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
