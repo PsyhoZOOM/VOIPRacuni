@@ -6,11 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.Calendar;
 
 /**
  * Created by PsyhoZOOM@gmail.com on 5/9/17.
@@ -201,6 +197,19 @@ public class userRacun {
 
         prethodni_dug = racun.getPrethodniDug();
         pretplata = getPaketData(user.getNazivPaketaID()).getPretplata();
+
+        if (!check_first_monthCalculation(pretplata)) {
+            Calendar cal = Calendar.getInstance();
+            LocalDate date = LocalDate.now();
+            int days = date.getDayOfMonth();
+            days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+            int currentDay = date.getDayOfMonth();
+            days = days - currentDay;
+            pretplata = pretplata / days;
+            updateUserFullTimePayment();
+
+        }
+        
         potrosnja = racun.getPotrosnja();
         pdv = getPaketData(user.getNazivPaketaID()).getPDV();
 
@@ -209,6 +218,40 @@ public class userRacun {
         ukupnoZaUplatu = ukupnoZaUplatu + prethodni_dug;
 
         racun.setZaUplatu(ukupnoZaUplatu);
+    }
+
+    private void updateUserFullTimePayment() {
+        String query = "UPDATE korisnik SET fullPayment=? WHERE id=?";
+
+        try {
+            PreparedStatement ps = db.connection.prepareStatement(query);
+            ps.setBoolean(1, true);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean check_first_monthCalculation(double pretplata) {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT fullPayment FROM korisnici WHERE id=?";
+        boolean fullPayment = true;
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, user.getId());
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                rs.next();
+                fullPayment = rs.getBoolean("fullPayment");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return fullPayment;
+
     }
 
     private void setPaketData() {

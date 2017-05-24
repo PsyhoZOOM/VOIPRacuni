@@ -92,7 +92,8 @@ public class MainWin implements Initializable {
     public void openCSV(ActionEvent actionEvent) {
         //OPEN CSV file and set extensions filter
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Mesečni obračun CSV Fajl", "*.csv");
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("Mesečni obračun CSV Fajl", "*.csv");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.setTitle("Import Zipovani-CSV fajl");
@@ -169,7 +170,9 @@ public class MainWin implements Initializable {
 
         for (int i = 0; i < csvDataArrayList.size(); i++) {
             CSVData csvDataSQL = csvDataArrayList.get(i);
-            String query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS, chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID, fileName) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS," +
+                    " chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID, fileName) " +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             try {
                 ps = db.connection.prepareStatement(query);
                 ps.setString(1, csvDataSQL.getAccount());

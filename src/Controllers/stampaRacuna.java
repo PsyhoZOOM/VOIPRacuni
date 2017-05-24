@@ -193,7 +193,9 @@ public class stampaRacuna implements Initializable {
         if(checkIfRacunExists(false)){
             return;
         }
+        String userDIR = System.getProperty("user.home");
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(userDIR));
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
         fileChooser.getExtensionFilters().addAll(extensionFilter);
 
@@ -242,7 +244,9 @@ public class stampaRacuna implements Initializable {
         if(checkIfRacunExists(true)){
             return;
         }
+        String userDIR = System.getProperty("user.home");
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(userDIR));
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
         fileChooser.getExtensionFilters().addAll(extensionFilter);
 
