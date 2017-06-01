@@ -58,8 +58,8 @@ public class korisnikUplate implements Initializable {
         cZaUplatu.setCellValueFactory(new PropertyValueFactory<uplate, Double>("zaUplatu"));
         cUplaceno.setCellValueFactory(new PropertyValueFactory<uplate, Double>("uplaceno"));
         cDatumUplate.setCellValueFactory(new PropertyValueFactory<uplate, String>("datumUplate"));
-        cDug.setCellValueFactory(new PropertyValueFactory<uplate, Double>("dug"));
-        cPDV.setCellValueFactory(new PropertyValueFactory<uplate, Double>("PDV"));
+        //       cDug.setCellValueFactory(new PropertyValueFactory<uplate, Double>("dug"));
+        //       cPDV.setCellValueFactory(new PropertyValueFactory<uplate, Double>("PDV"));
 
         cZaUplatu.setCellFactory(new Callback<TableColumn, TableCell>() {
             @Override
@@ -96,7 +96,7 @@ public class korisnikUplate implements Initializable {
                 return cell;
             }
         });
-
+/*
         cPDV.setCellFactory(new Callback<TableColumn, TableCell>() {
             @Override
             public TableCell<uplate, Double> call(TableColumn param) {
@@ -133,6 +133,9 @@ public class korisnikUplate implements Initializable {
                 return cell;
             }
         });
+
+
+        */
 
         tblUplate.selectionModelProperty().addListener(new ChangeListener<TableView.TableViewSelectionModel<uplate>>() {
             @Override

@@ -322,9 +322,9 @@ public class stampaRacuna implements Initializable {
         PreparedStatement ps;
         String query;
         if(singlePrint) {
-            query = "DELETE FROM uplate WHERE datumZaduzenja=? AND userID=?";
+            query = "DELETE FROM uplate WHERE datumZaduzenja=? AND userID=? ";
         }else{
-            query = "DELETE FROM uplate WHERE datumZaduzenja=?";
+            query = "DELETE FROM uplate WHERE datumZaduzenja=? ";
         }
         try {
             ps = db.connection.prepareCall(query);

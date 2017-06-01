@@ -13,7 +13,7 @@
                 <TableView fx:id="tblUplate" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="cIme" prefWidth="75.0" text="Ime i prezime"/>
-                        <TableColumn fx:id="cModel" prefWidth="75.0" text="Modelo poziv na br."/>
+                        <TableColumn fx:id="cModel" prefWidth="75.0" text="Model poziv na br."/>
                         <TableColumn fx:id="cBrTel" prefWidth="75.0" text="Br. Telefona"/>
                         <TableColumn fx:id="cZaMesec" prefWidth="75.0" text="Za Mesec"/>
                         <TableColumn fx:id="cZaUplatu" prefWidth="75.0" text="Za uplatu"/>

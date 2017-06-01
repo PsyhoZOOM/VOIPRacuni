@@ -9,9 +9,10 @@ import java.sql.*;
 public class Database {
 
     public Connection connection;
+    public boolean isConnected = false;
 
 
-    public Database() {
+    public Database(String hostName, String user, String password) {
         try {
 
             //JDBC
@@ -24,14 +25,11 @@ public class Database {
             //MYSQL
             Class.forName("com.mysql.jdbc.Driver");
             // REMOTE DATABASE
-            connection = DriverManager.getConnection("jdbc:mysql://venus.yuvideo.net:3306/CSV?" +
-                    "useUnicode=true&characterEncoding=utf-8", "jgemstone", "jgemstone");
-
-            //LOCAL DATABASE
-            //connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSV?" +
-            //        "useUniceode=true&characterEncoding=utf-8", "voipUser", "voipPassword");
+            connection = DriverManager.getConnection("jdbc:mysql://" + hostName + ":3306/CSV?" +
+                    "useUnicode=true&characterEncoding=utf-8", user, password);
 
 
+            isConnected = !connection.isClosed();
 
             create_new_database();
 

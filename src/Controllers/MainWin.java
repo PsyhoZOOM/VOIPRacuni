@@ -47,13 +47,19 @@ public class MainWin implements Initializable {
     ResourceBundle resources;
     FXMLLoader fxmlLoader;
     korisniciWin korisniciWinController;
-    Database db = new Database();
+    private Database db;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.location = location;
         this.resources = resources;
         fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/korisniciWin.fxml"), resources);
+
+
+    }
+
+    public void setDB(Database db) {
+        this.db = db;
         try {
             bPane.setCenter(fxmlLoader.load());
             korisniciWinController = fxmlLoader.getController();
@@ -62,7 +68,6 @@ public class MainWin implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 

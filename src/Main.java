@@ -1,4 +1,3 @@
-import Controllers.MainWin;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,11 +20,15 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Locale.setDefault(new Locale("rs", "RS"));
-        Parent root = FXMLLoader.load(getClass().getResource("/FXML/MainWin.fxml"));
-        primaryStage.setTitle("Fiksna Telefonija Stampa Racuna");
+        Parent root = null;
+
+        root = FXMLLoader.load(getClass().getResource("/FXML/connectionWIn.fxml"));
+        primaryStage.setTitle("Izaberite server za konekciju");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Assets/YuVideoLogo.png")));
-        primaryStage.setScene(new Scene(root, 900, 600));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
+
+
     }
 
     public void init(String args[]) {
