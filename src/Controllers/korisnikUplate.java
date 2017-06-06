@@ -222,13 +222,14 @@ public class korisnikUplate implements Initializable {
 
         uplate uplata = tblUplate.getSelectionModel().getSelectedItem();
         PreparedStatement ps;
-        String query = "UPDATE uplate SET uplaceno=?, datumUplate=? WHERE id=?";
+        String query = "UPDATE uplate SET uplaceno=?, datumUplate=?, datumZaduzenja=? WHERE id=?";
 
         try {
             ps = db.connection.prepareStatement(query);
             ps.setDouble(1, uplata.getZaUplatu());
             ps.setString(2, date);
-            ps.setInt(3, tblUplate.getSelectionModel().getSelectedItem().getId());
+            ps.setString(3, date);
+            ps.setInt(4, tblUplate.getSelectionModel().getSelectedItem().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
