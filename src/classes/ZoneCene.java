@@ -16,6 +16,16 @@ public class ZoneCene implements Serializable {
     double cenaPDV;
     double competitionCena;
     double razlika;
+    double otherCena;
+
+
+    public double getOtherCena() {
+        return otherCena;
+    }
+
+    public void setOtherCena(double otherCena) {
+        this.otherCena = otherCena;
+    }
 
     public int getId() {
         return id;

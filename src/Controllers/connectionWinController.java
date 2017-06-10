@@ -72,6 +72,7 @@ public class connectionWinController implements Initializable {
 
         primaryStage.setScene(new Scene(root, 900, 600));
 
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 }

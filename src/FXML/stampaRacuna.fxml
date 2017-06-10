@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ContextMenu?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.stampaRacuna">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/Main.css"
+            xmlns="http://javafx.com/javafx/8.0.111" fx:controller="Controllers.stampaRacuna">
     <children>
         <VBox layoutX="207.0" layoutY="80.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER" spacing="5.0">
                     <children>
-                        <Label text="Od:" />
-                        <DatePicker fx:id="dtpOd" editable="false" />
-                        <Label text="Do" />
-                        <DatePicker fx:id="dtpDo" editable="false" />
+                        <Label text="Za mesec:"/>
+                        <DatePicker fx:id="dtpZaMesec" editable="false"/>
+                        <Pane prefWidth="200.0"/>
                         <Label text="Rok plaćanja" />
                         <DatePicker fx:id="dtpRokPlacanja" editable="false" />
                         <Button fx:id="bPrikazi" mnemonicParsing="false" onAction="#showForPrint" text="Prikaži" />

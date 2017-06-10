@@ -9,16 +9,17 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
-import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
@@ -150,6 +151,7 @@ public class korisniciWin implements Initializable {
                     user.setPib(rs.getString("pib"));
                     user.setFirma(rs.getBoolean("firma"));
                     user.setNazivFirme(rs.getString("nazivFirme"));
+                    user.setDatumPrikljucka(rs.getString("datumPrikljucka"));
                     usersArrayList.add(user);
                 }
             }

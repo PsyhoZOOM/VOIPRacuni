@@ -21,7 +21,6 @@ public class getCSVUserData {
             ps.setString(1, accountPhone);
             ps.setString(2, startDate + " 00:00:00");
             ps.setString(3, endDate + " 59:59:59");
-            System.out.println(ps.toString());
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {

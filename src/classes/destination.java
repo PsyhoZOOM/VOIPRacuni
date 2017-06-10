@@ -6,14 +6,28 @@ package classes;
 public class destination {
     int id;
     int userid;
-    String nazivDestinacije;
     int utrosenoMinuta;
     int gratisMinuta;
     int minutaZaNaplatu;
     double cenaPoMinutu;
     double ukupno;
     String account;
+
+    //ova dva stringa treba zameniti verovatno sa opistDestinacije i nazivDestinacije..... ??**
     String nazivDestinacijeZone;
+    String nazivDestinacije;
+
+    //**kao ovde
+    String opisDestinacije;
+
+
+    public String getOpisDestinacije() {
+        return opisDestinacije;
+    }
+
+    public void setOpisDestinacije(String opisDestinacije) {
+        this.opisDestinacije = opisDestinacije;
+    }
 
     public int getId() {
         return id;

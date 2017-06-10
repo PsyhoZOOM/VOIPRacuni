@@ -17,6 +17,8 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -31,9 +33,6 @@ public class editKorisnik implements Initializable {
     public TextField tMesto;
     public TextField tPostBr;
     public TextField tbrUgovora;
-    public Database db;
-    public boolean editUser = false;
-    public Users user;
     public TextField tCustomerID;
     public TextField tPozivNaBroj;
     public TextField tBrojTelefona;
@@ -43,6 +42,10 @@ public class editKorisnik implements Initializable {
     public TextField tNazivFirme;
     public TextField tPIB;
     public TextField tMBR;
+    public DatePicker dtpDatumPrikljucka;
+    public Database db;
+    public boolean editUser = false;
+    public Users user;
     private URL location;
     private ResourceBundle resources;
 
@@ -50,6 +53,20 @@ public class editKorisnik implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.location = location;
         this.resources = resources;
+
+        dtpDatumPrikljucka.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate object) {
+                return object.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                String date = LocalDate.parse(string).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+                return LocalDate.parse(date);
+            }
+        });
 
         bClose.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -108,7 +125,9 @@ public class editKorisnik implements Initializable {
 
         PreparedStatement ps;
         String query = "INSERT INTO korisnici (imePrezime, adresa, mesto, postbr, brUgovora, customerID, pozivNaBroj, " +
-                "brojTelefona, paketID, stampa, firma, mbr, pib, nazivFirme) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                "brojTelefona, paketID, stampa, firma, mbr, pib, nazivFirme, datumPrikljucka) " +
+                "VALUES " +
+                "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -125,6 +144,7 @@ public class editKorisnik implements Initializable {
             ps.setString(12, tMBR.getText());
             ps.setString(13, tPIB.getText());
             ps.setString(14, tNazivFirme.getText());
+            ps.setString(15, dtpDatumPrikljucka.getValue().toString());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -136,7 +156,7 @@ public class editKorisnik implements Initializable {
 
         PreparedStatement ps;
         String query = "UPDATE korisnici SET imePrezime=?, adresa=?, mesto=?, postbr=?, brUgovora=?, customerID=?, " +
-                "pozivNaBroj=?, brojTelefona=?, paketID=?, stampa=?, firma=?, mbr=?,  pib=?, nazivFirme=? WHERE id=? ";
+                "pozivNaBroj=?, brojTelefona=?, paketID=?, stampa=?, firma=?, mbr=?,  pib=?, nazivFirme=?, datumPrikljucka=? WHERE id=? ";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, tImePrezime.getText());
@@ -153,7 +173,8 @@ public class editKorisnik implements Initializable {
             ps.setString(12, tMBR.getText());
             ps.setString(13, tPIB.getText());
             ps.setString(14, tNazivFirme.getText());
-            ps.setInt(15, user.getId());
+            ps.setString(15, dtpDatumPrikljucka.getValue().toString());
+            ps.setInt(16, user.getId());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -181,10 +202,9 @@ public class editKorisnik implements Initializable {
         tMBR.setText(user.getMbr());
         tPIB.setText(user.getPib());
         tNazivFirme.setText(user.getNazivFirme());
-
+        dtpDatumPrikljucka.setValue(LocalDate.parse(user.getDatumPrikljucka(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         setPaketiData();
-
     }
 
     private void setPaketiData() {
@@ -221,10 +241,7 @@ public class editKorisnik implements Initializable {
                 if (items.get(i).getId() == user.getNazivPaketaID()) {
                     cmbPaket.setValue(items.get(i));
                 }
-
             }
         }
     }
-
-
 }

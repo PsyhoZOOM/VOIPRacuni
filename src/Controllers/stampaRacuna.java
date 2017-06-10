@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +29,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -40,11 +40,9 @@ public class stampaRacuna implements Initializable {
     public TableView<Users> tblData;
     public TableColumn cIme;
     public TableColumn cNazivUsluge;
-    public DatePicker dtpOd;
-    public DatePicker dtpDo;
+    public DatePicker dtpZaMesec;
     public TableColumn cStampaChkBox;
     public Database db;
-    public CheckBox stampaAll;
     public MenuItem menuStampajSingle;
     public DatePicker dtpRokPlacanja;
     public TableColumn cBrojTelefona;
@@ -80,12 +78,47 @@ public class stampaRacuna implements Initializable {
             }
         });
 
+        dtpZaMesec.setConverter(new StringConverter<LocalDate>() {
+            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-        dtpOd.setValue(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().minus(1), 1));
-        dtpDo.setValue(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().minus(1), 25));
+            @Override
+            public String toString(LocalDate object) {
+                if (object == null) {
+                    return null;
+                }
+                return dateTimeFormatter.format(object);
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string == null || string.trim().isEmpty()) {
+                    return null;
+                } else {
+                    return LocalDate.parse(string, dateTimeFormatter);
+                }
+            }
+        });
+
+        dtpRokPlacanja.setConverter(new StringConverter<LocalDate>() {
+            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            @Override
+            public String toString(LocalDate object) {
+                if (object == null)
+                    return "";
+                return object.format(dateTimeFormatter);
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string == null || string.trim().isEmpty())
+                    return null;
+                return LocalDate.parse(string, dateTimeFormatter);
+            }
+        });
+
+        dtpZaMesec.setValue(LocalDate.now());
         dtpRokPlacanja.setValue(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 28));
-
-
     }
 
 
@@ -180,19 +213,10 @@ public class stampaRacuna implements Initializable {
 
 
     public void showForPrint(ActionEvent actionEvent) {
-        LocalDate start = dtpOd.getValue();
-        LocalDate stop = dtpDo.getValue();
-
-
         setData();
-
-
     }
 
     public void printData(ActionEvent actionEvent) {
-        if(checkIfRacunExists(false)){
-            return;
-        }
         String userDIR = System.getProperty("user.home");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDIR));
@@ -223,10 +247,7 @@ public class stampaRacuna implements Initializable {
         doc.open();
         for (int i = 0; i < usersArrayList.size(); i++) {
             if (usersArrayList.get(i).isStampa()) {
-                System.out.println("FIRMA: "+usersArrayList.get(i).isFirma());
                 PrintRacune(usersArrayList.get(i), doc, pdfWriter);
-
-
             }
         }
 
@@ -241,9 +262,6 @@ public class stampaRacuna implements Initializable {
     public void stampajSingle(ActionEvent actionEvent) {
         if (tblData.getSelectionModel().getSelectedIndex() == -1)
             return;
-        if(checkIfRacunExists(true)){
-            return;
-        }
         String userDIR = System.getProperty("user.home");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDIR));
@@ -273,114 +291,22 @@ public class stampaRacuna implements Initializable {
 
     }
 
-    private boolean checkIfRacunExists(boolean singlePrint) {
-        String datumZaduzenja = String.valueOf(dtpOd.getValue() + " 00:00:00");
-        boolean notExist=false;
 
-        PreparedStatement ps;
-        ResultSet rs;
-        String query;
-        if(singlePrint) {
-            query = "SELECT datumZaduzenja from uplate WHERE datumZaduzenja=? and userID=?";
-        }else{
-            query = "SELECT datumZaduzenja FROM uplate WHERE datumZaduzenja=?";
-        }
-        try {
-            ps = db.connection.prepareCall(query);
-            ps.setString(1, datumZaduzenja);
-            if(singlePrint)
-                ps.setInt(2, tblData.getSelectionModel().getSelectedItem().getId());
-            rs = ps.executeQuery();
-            if(rs.isBeforeFirst()) {
-                ButtonType yes = new ButtonType("Da", ButtonBar.ButtonData.YES);
-                ButtonType no = new ButtonType("Ne", ButtonBar.ButtonData.NO);
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                        String.format("Računi za %d-%d postoje. " +
-                                "Da li želite da izbrišete i ponovo generišete račune?",
-                                dtpOd.getValue().getMonthValue(), dtpOd.getValue().getYear()),yes , no );
-                alert.setTitle("Duplikovani racuni");
-                alert.setHeaderText("Upozorenje");
-                Optional<ButtonType> buttonType = alert.showAndWait();
-                System.out.println(buttonType);
-                if(buttonType.get() == yes ){
-                    deleteUplate(dtpOd.getValue() + " 00:00:00",singlePrint);
-                    notExist = false;
-                }else {
-                    notExist = true;
-                }
-
-            }
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return  notExist;
-    }
-
-    private void deleteUplate(String datumZaduzenja, boolean singlePrint) {
-        PreparedStatement ps;
-        String query;
-        if(singlePrint) {
-            query = "DELETE FROM uplate WHERE datumZaduzenja=? AND userID=? ";
-        }else{
-            query = "DELETE FROM uplate WHERE datumZaduzenja=? ";
-        }
-        try {
-            ps = db.connection.prepareCall(query);
-            ps.setString(1, datumZaduzenja);
-            if(singlePrint)
-                ps.setInt(2, tblData.getSelectionModel().getSelectedItem().getId());
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     private void PrintRacune(Users user, Document doc, PdfWriter pdfWriter) {
-
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-
-        String starDate = dtpOd.getValue().format(timeFormatter);
-        String stopDate = dtpDo.getValue().format(timeFormatter);
         String rokPlacanja = dtpRokPlacanja.getValue().format(timeFormatter);
+        String zaMesec = dtpZaMesec.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
+        userRacun ur = new userRacun(db, zaMesec, rokPlacanja, user);
 
-        userRacun ur = new userRacun(db, starDate, stopDate, rokPlacanja, user);
         PrintPage printPage = new PrintPage(ur, doc, pdfWriter);
 
-        zaduziKorisnika(ur);
 
 
     }
 
-    private void zaduziKorisnika(userRacun ur) {
-        PreparedStatement ps;
-        String query = "INSERT INTO uplate (ime, brojTel, zaUplatu, uplaceno, zaMesec, datumZaduzenja, userID, " +
-                "modelPoziv)" +
-                "VALUES  (?,?,?,?,?,?,?,?)";
-
-        try {
-            ps = db.connection.prepareStatement(query);
-            ps.setString(1, ur.getUser().getIme());
-            ps.setString(2, ur.getUser().getBrojTelefona());
-            ps.setDouble(3, ur.getPretplata() + ur.getPotrosnja());
-            ps.setDouble(4, 0.00);
-            ps.setString(5, String.valueOf(LocalDate.parse(ur.getPeriodDo(),
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy")).getMonthValue()));
-            ps.setString(6, String.valueOf(LocalDate.parse(ur.getPeriodOd(),
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))+" 00:00:00");
-            ps.setInt(7, ur.getUser().getId());
-            ps.setString(8, ur.getUser().getPozivNaBroj());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 }

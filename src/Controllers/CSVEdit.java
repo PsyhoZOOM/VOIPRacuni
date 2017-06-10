@@ -96,6 +96,7 @@ public class CSVEdit implements Initializable {
 
 
         initInterface();
+        showTable();
 
     }
 
@@ -196,9 +197,9 @@ public class CSVEdit implements Initializable {
 
 
                 }
+                showTable();
             }
         });
-        showTable();
 
     }
 

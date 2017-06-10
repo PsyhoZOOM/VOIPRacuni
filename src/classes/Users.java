@@ -24,7 +24,16 @@ public class Users implements Serializable {
     String pib;
     String mbr;
     String nazivFirme;
+    String datumPrikljucka;
 
+
+    public String getDatumPrikljucka() {
+        return datumPrikljucka;
+    }
+
+    public void setDatumPrikljucka(String datumPrikljucka) {
+        this.datumPrikljucka = datumPrikljucka;
+    }
 
     public String getNazivFirme() {
         return nazivFirme;

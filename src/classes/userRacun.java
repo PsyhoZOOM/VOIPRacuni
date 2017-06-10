@@ -12,450 +12,198 @@ import java.util.ArrayList;
  */
 public class userRacun {
     private final String rokPlacanja;
-    private final String startDate;
-    private final String stopDate;
+    private final String zaMesec;
+    private final LocalDate zaMesecOd;
+    private final LocalDate zaMesecDo;
     private Users user;
-    private ArrayList<Paketi> paketiArrayList = new ArrayList<>();
-    private Racun racun;
-    private ArrayList<Zone> zoneArr = new ArrayList<>();
     private Database db;
-    private ArrayList<CSVData> csvDataArr = new ArrayList<>();
-    private ArrayList<ZoneCene> zoneCenesArr = new ArrayList<>();
-    private ArrayList<destination> userDestinationData = new ArrayList<>();
-    private String startD;
-    private String stopD;
+    private Double pretplata = 0.00;
+    private Double pretplataPDV = 0.00;
+    private Double potrosnja = 0.00;
+    private Double zaUplatu = 0.00;
+    private Double prethodniDug = 0.00;
+    private ArrayList<destination> destinacija = new ArrayList<>();
+    private FIXX fixx;
 
 
-    public userRacun(Database db, String startD, String stopD, String rokPlacanja, Users user) {
+    public userRacun(Database db, String zaMesec, String rokPlacanja, Users user) {
 
         this.db = db;
-        this.startDate = LocalDate.parse(startD).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString();
-        this.stopDate = LocalDate.parse(stopD).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString();
-        this.startD = startD + " 00:00:00";
-        this.stopD = stopD + " 59:59:59";
+        this.fixx = new FIXX(this.db);
         this.user = user;
+        this.zaMesec = zaMesec;
         this.rokPlacanja = LocalDate.parse(rokPlacanja).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString();
+        LocalDate date = LocalDate.parse(LocalDate.parse(zaMesec + "-01").format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        zaMesecOd = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+        zaMesecDo = LocalDate.of(date.getYear(), date.getMonthValue(), date.lengthOfMonth());
 
-        setCSVData();
-        setZoneCene();
-        setZoneData();
-        setPaketData();
-        setChargedTimeMS();
-        saberiSve();
+        setPretplata();
+        setPotrosnja();
+        setZaUplatu();
+        setPrethodniDug();
+        setDestination();
+
+        // TODO: 6/9/17 izbrisati klasu kada nam natprovajder automatski skida besplatneminute
+
+        setGratisFiksna();
+
+
     }
 
-
-    private void setZoneData() {
-        PreparedStatement ps;
-        ResultSet rs;
-        String query = "SELECT * FROM zone";
-
-        try {
-            ps = db.connection.prepareStatement(query);
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                while (rs.next()) {
-                    Zone zona = new Zone();
-                    zona.setId(rs.getInt("id"));
-                    zona.setNaziv(rs.getString("naziv"));
-                    zona.setOpis(rs.getString("opis"));
-                    zona.setZona(rs.getString("zona"));
-                    zona.setZonaID(rs.getInt("zonaID"));
-                    zoneArr.add(zona);
+    private void setGratisFiksna() {
+        int besplatniMinut = 60;
+        for (destination dst : destinacija) {
+            System.out.println(dst.getNazivDestinacijeZone());
+            if (dst.getNazivDestinacijeZone().equals("Srbija fiksni")) {
+                dst.setGratisMinuta(60);
+                if (dst.getMinutaZaNaplatu() < 60) {
+                    dst.setMinutaZaNaplatu(0);
+                    dst.ukupno = 0.00;
+                } else {
+                    double minutazaNaplatu = (dst.getMinutaZaNaplatu() - dst.getGratisMinuta()) * dst.getCenaPoMinutu();
+                    dst.setMinutaZaNaplatu(dst.getMinutaZaNaplatu() - dst.getGratisMinuta());
+                    dst.setUkupno(minutazaNaplatu);
                 }
             }
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
-    private void setZoneCene() {
+    private void setDestination() {
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM zoneCene";
+        String query = "SELECT * FROM zaduzenja WHERE userID=? AND zaMesec=? AND komentar = 'Saobracaj' AND uplaceno=0";
 
-        try {
-            ps = db.connection.prepareStatement(query);
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                while (rs.next()) {
-                    ZoneCene zoneCene = new ZoneCene();
-                    zoneCene.setId(rs.getInt("id"));
-                    zoneCene.setVrstaUsluge(rs.getString("vrstaUsluge"));
-                    zoneCene.setProviderCena(rs.getDouble("providerCena"));
-                    zoneCene.setProviderPDV(rs.getDouble("providerPDV"));
-                    zoneCene.setCena(rs.getDouble("cena"));
-                    zoneCene.setPDV(rs.getDouble("PDV"));
-                    zoneCene.setCenaPDV(rs.getDouble("cenaPDV"));
-                    zoneCene.setCompetitionCena(rs.getDouble("otherCena"));
-                    zoneCenesArr.add(zoneCene);
-                }
-                ps.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setCSVData(){
-        PreparedStatement ps;
-        ResultSet rs;
-        String query;
-        query= "SELECT  DISTINCT description, id, account, 'from', 'to', country, description," +
-                "connectTime, chargedTimeMS, chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, " +
-                "serviceUnit, customerID, fileName FROM csv";
-        //query = "SELECT *, DISTINCT description FROM csv ";
-
-        try {
-            ps = db.connection.prepareStatement(query);
-            rs = ps.executeQuery();
-            if(rs.isBeforeFirst()){
-                while (rs.next()){
-                    CSVData csvData = new CSVData();
-                    csvData.setId(rs.getInt("id"));
-                    csvData.setAccount(rs.getString("account"));
-                    csvData.setFrom(rs.getString("from"));
-                    csvData.setTo(rs.getString("to"));
-                    csvData.setCountry(rs.getString("country"));
-                    csvData.setDescription(rs.getString("description"));
-                    csvData.setConnectTime(rs.getString("connectTime"));
-                    csvData.setChargedTimeMinSec(rs.getString("chargedTimeMS"));
-                    csvData.setChargedTimeSec(rs.getInt("chargedTimeS"));
-                    csvData.setChargedAmountRSD(rs.getDouble("chargedAmountRSD"));
-                    csvData.setServiceName(rs.getString("serviceName"));
-                    csvData.setChargedQuantity(rs.getInt("chargedQuantity"));
-                    csvData.setServiceUnit(rs.getString("serviceUnit"));
-                    csvData.setCustomerID(rs.getString("customerID"));
-                    csvData.setFileName(rs.getString("fileName"));
-                    csvDataArr.add(csvData);
-                }
-            }
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public Racun getRacun() {
-        return this.racun;
-    }
-
-    private void setRacun(ArrayList<destination> userDestinationData) {
-        racun = new Racun();
-        racun.setDestinacija(userDestinationData);
-        racun.setBroj(user.getBrojTelefona());
-        racun.setUgovorBr(user.getBrUgovora());
-        racun.setDatumIzdavanja(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-        racun.setPdv(getPaketData(user.getNazivPaketaID()).getPDV());
-        racun.setPeriodOd(startDate);
-        racun.setPeriodDo(stopDate);
-        racun.setPrethodniDug(getDugKorisnika(user.getId()));
-        racun.setRokPlacanja(rokPlacanja);
-        racun.setPozivNaBroj(user.getPozivNaBroj());
-        racun.setPretplata(getPaketData(user.getNazivPaketaID()).getPretplata());
-        user.setPozivNaBroj(user.pozivNaBroj);
-        Double potrosnja = 0.00;
-        for (int i = 0; i < userDestinationData.size(); i++) {
-            potrosnja += userDestinationData.get(i).getUkupno();
-        }
-        racun.setPotrosnja(potrosnja);
-    }
-
-    private Double getDugKorisnika(int userID) {
-        PreparedStatement ps;
-        ResultSet rs;
-        String query = "SELECT SUM(zaUplatu) AS zaUplatu FROM uplate WHERE userID=? AND uplaceno=0 AND datumZaduzenja<?";
-        Double dug = 0.00;
-
-        try {
-            ps = db.connection.prepareStatement(query);
-            ps.setInt(1, userID);
-            ps.setString(2, startD);
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                rs.next();
-                dug = rs.getDouble("zaUplatu");
-                dug += valueToPercent.getValue(dug, getPDV());
-            }
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return dug;
-    }
-
-    private void saberiSve() {
-        double prethodni_dug = 0.00;
-        double pretplata = 0.00;
-        double potrosnja = 0.00;
-        double pdv = 0.00;
-        double ukupnoZaUplatu = 0.00;
-
-        prethodni_dug = racun.getPrethodniDug();
-        pretplata = getPaketData(user.getNazivPaketaID()).getPretplata();
-
-        if (!check_first_monthCalculation(pretplata)) {
-            double cena = 0.00;
-            LocalDate date = LocalDate.now();
-            int days = date.lengthOfMonth();
-            int currentDay = date.getDayOfMonth();
-
-            cena = pretplata / days;
-            days = days - currentDay;
-            pretplata = cena * days;
-            racun.setPretplata(pretplata);
-
-            updateUserFullTimePayment();
-
-        }
-        
-        potrosnja = racun.getPotrosnja();
-        pdv = getPaketData(user.getNazivPaketaID()).getPDV();
-
-        ukupnoZaUplatu = pretplata + potrosnja;
-        ukupnoZaUplatu = ukupnoZaUplatu + valueToPercent.getValue(ukupnoZaUplatu, pdv);
-        ukupnoZaUplatu = ukupnoZaUplatu + prethodni_dug;
-
-        racun.setZaUplatu(ukupnoZaUplatu);
-    }
-
-    private void updateUserFullTimePayment() {
-        String query = "UPDATE korisnici SET fullPayment=? WHERE id=?";
-
-        try {
-            PreparedStatement ps = db.connection.prepareStatement(query);
-            ps.setBoolean(1, true);
-            ps.setInt(2, user.getId());
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean check_first_monthCalculation(double pretplata) {
-        PreparedStatement ps;
-        ResultSet rs;
-        String query = "SELECT fullPayment FROM korisnici WHERE id=?";
-        boolean fullPayment = true;
         try {
             ps = db.connection.prepareStatement(query);
             ps.setInt(1, user.getId());
+            ps.setString(2, zaMesec);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                destination destination = new destination();
+                while (rs.next()) {
+                    destination.setUserid(user.getId());
+                    destination.setUkupno(rs.getDouble("zaUplatu"));
+                    destination.setId(rs.getInt("id"));
+                    destination.setUtrosenoMinuta(rs.getInt("minutaZaNaplatu"));
+                    destination.setNazivDestinacijeZone(fixx.getZoneCeneData(user.getNazivPaketaID()).getVrstaUsluge());
+                    destination.setCenaPoMinutu(fixx.getZoneCeneData(user.getNazivPaketaID()).getCena());
+                    destinacija.add(destination);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void setPrethodniDug() {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT SUM('zaUplatu') AS ukupnoPrethodniDug FROM zaduzenja WHERE userID=? AND zaMesec <? AND " +
+                "uplaceno=0";
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, user.getId());
+            ps.setString(2, zaMesec);
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 rs.next();
-                fullPayment = rs.getBoolean("fullPayment");
+                this.prethodniDug = rs.getDouble("ukupnoPrethodniDug");
             }
+            ps.close();
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return fullPayment;
-
     }
 
-    private void setPaketData() {
+
+    private void setZaUplatu() {
+        this.zaUplatu = potrosnja + pretplataPDV;
+    }
+
+    private void setPotrosnja() {
         PreparedStatement ps;
         ResultSet rs;
-        Paketi paket;
-
+        String query = "SELECT SUM(zaUplatu) AS ukupnoZaUplatu FROM zaduzenja WHERE userID=? AND zaMesec=? AND uplaceno=?" +
+                " AND komentar=?";
         try {
-            ps = db.connection.prepareStatement("SELECT * FROM paketi");
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, user.getId());
+            ps.setString(2, zaMesec);
+            ps.setDouble(3, 0.00);
+            ps.setString(4, "Saobracaj");
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
-                while (rs.next()) {
-                    paket = new Paketi();
-                    paket.setId(rs.getInt("id"));
-                    paket.setPretplata(rs.getInt("pretplata"));
-                    paket.setPDV(rs.getDouble("PDV"));
-                    paket.setBesplatniMinutiFiksna(rs.getInt("besplatniMinutiFiksna"));
-                    paketiArrayList.add(paket);
-                }
+                rs.next();
+                this.potrosnja = rs.getDouble(1);
             }
+            ps.close();
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void setChargedTimeMS() {
-        PreparedStatement ps;
+    private void setPretplata() {
         ResultSet rs;
-        String query;
-        ArrayList<destination> dstArr = new ArrayList<>();
-        destination dst = null;
-
-        for (int i = 0; i < zoneArr.size(); i++) {
-        //for(int i = 0; i < csvDataArr.size(); i++){
-            query = "SELECT account, description, SUM(chargedTimeS) AS chargedTimeMS FROM csv  WHERE account=? " +
-                    "AND connectTime >=? AND connectTime <=? AND description=?";
-            try {
-                ps = db.connection.prepareStatement(query);
-                ps.setString(1, user.getBrojTelefona());
-                ps.setString(2, startD);
-                ps.setString(3, stopD);
-                ps.setString(4,zoneArr.get(i).getOpis());
-                rs = ps.executeQuery();
-                if (rs.isBeforeFirst()) {
-                    rs.next();
-                    if (rs.getString("account") == null)
-                        continue;
-                    dst = new destination();
-                    dst.setUserid(user.getId());
-                    dst.setAccount(rs.getString("account"));
-                    dst.setNazivDestinacije(rs.getString("description"));
-                    dst.setNazivDestinacijeZone(getNazivDestinacije(rs.getString("description")));
-                    dst.setUtrosenoMinuta(rs.getInt("chargedTimeMS") / 60);
-                     Double cenaDesc = getZone(rs.getString("description")).getProviderCena();
-                    dst.setCenaPoMinutu(cenaDesc);
-                    dstArr.add(dst);
-                }
-                ps.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+        PreparedStatement ps;
+        String query = "SELECT *  FROM paketi WHERE id=?";
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, user.getNazivPaketaID());
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                rs.next();
+                this.pretplata = rs.getDouble("pretplata");
+                this.pretplataPDV = rs.getDouble("PDV");
             }
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        userDestinationData = setGratis(dstArr);
-        userDestinationData = setMinutaZaNaplatu(userDestinationData);
-        setRacun(userDestinationData);
-    }
-
-    private String getNazivDestinacije(String description) {
-        String destinacijaIme = description;
-        for(int i =0;i<zoneArr.size();i++){
-            if(description.equals(zoneArr.get(i).getOpis())){
-                destinacijaIme = zoneArr.get(i).getZona();
-                destinacijaIme = getZoneCeneData(zoneArr.get(i).getZonaID()).getVrstaUsluge();
-
-            }
-
-        }
-        return destinacijaIme;
-    }
-
-    private void getNazivDestinazijeZone(String description){
-
-    }
-
-    private ArrayList<destination> setMinutaZaNaplatu(ArrayList<destination> userDestinationData) {
-
-        for (int i = 0; i < userDestinationData.size(); i++) {
-            int utrosenoMinuta = 0;
-            int gratisMinuta = 0;
-            int minutaZaNaplatu = 0;
-            Double cenaPoMinutu = 0.00;
-            Double ukupno = 0.00;
-
-            cenaPoMinutu = getZone(userDestinationData.get(i).getNazivDestinacije()).getCena();
-            userDestinationData.get(i).setCenaPoMinutu(cenaPoMinutu);
-            minutaZaNaplatu = userDestinationData.get(i).getUtrosenoMinuta() - userDestinationData.get(i).getGratisMinuta();
-            if (minutaZaNaplatu > 0) {
-                userDestinationData.get(i).setMinutaZaNaplatu(minutaZaNaplatu);
-                userDestinationData.get(i).setUkupno(minutaZaNaplatu * cenaPoMinutu);
-            } else {
-                userDestinationData.get(i).setMinutaZaNaplatu(0);
-                userDestinationData.get(i).setUkupno(0.00);
-            }
-        }
-        return userDestinationData;
-    }
-
-    private ArrayList<destination> setGratis(ArrayList<destination> userDestinationData) {
-        final String gratisFiksnaSrbija = "Srbija Fiksna";
-        final String gratisMobilaSrbija = "Srbija Mobilna";
-        int gratisMinuta = 0;
-
-        for (int i = 0; i < userDestinationData.size(); i++) {
-            //FIKSNA TELEFONIJA SRBIJA GRATIS
-            if (userDestinationData.get(i).getNazivDestinacije().equals(gratisFiksnaSrbija)) {
-                gratisMinuta = getPaketData(user.getNazivPaketaID()).besplatniMinutiFiksna;
-                userDestinationData.get(i).setGratisMinuta(gratisMinuta);
-            } else {
-                if (userDestinationData.get(i).getUtrosenoMinuta() > 0) {
-                    userDestinationData.get(i).setGratisMinuta(0);
-                }
-            }
-        }
-        return userDestinationData;
-    }
-
-    private Double getCenaZone(int zoneID) {
-        return null;
-    }
-
-    private Paketi getPaketData(int paketID) {
-        Paketi paketi = null;
-        for (int i = 0; i < paketiArrayList.size(); i++) {
-            if (paketiArrayList.get(i).getId() == paketID) {
-                paketi = paketiArrayList.get(i);
-            }
-
-        }
-        return paketi;
-    }
-
-    private ZoneCene getZone(String opis) {
-        ZoneCene zoneCene = null;
-
-
-        for (int i = 0; i < zoneArr.size(); i++) {
-            if (zoneArr.get(i).getOpis().equals(opis)) {
-                zoneCene = getZoneCeneData(zoneArr.get(i).getZonaID());
-            }
-
-        }
-        return zoneCene;
-    }
-
-    private ZoneCene getZoneCeneData(int zoneID) {
-        ZoneCene zoneCene = null;
-        for (int i = 0; i < zoneCenesArr.size(); i++) {
-            if (zoneCenesArr.get(i).getId() == zoneID)
-                zoneCene = zoneCenesArr.get(i);
-        }
-        return zoneCene;
     }
 
     public Users getUser() {
-        return user;
+        return this.user;
+    }
+
+
+    public String getPeriodDo() {
+        return zaMesecDo.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
     public String getPeriodOd() {
-        return startDate;
-    }
-
-    public String getPeriodDo() {
-        return stopDate;
+        return zaMesecDo.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
     public String getRokPlacanja() {
         return rokPlacanja;
     }
 
-    public double getPretplata() {
-        return racun.getPretplata();
-    }
-
-    public ArrayList<destination> getDestinacija() {
-        return userDestinationData;
-    }
-
-    public double getZaUplatu() {
-        return racun.zaUplatu;
-    }
-
-    public double getPDV() {
-        return racun.getPdv();
-    }
-
-    public double getPrethodniDug() {
-        return racun.getPrethodniDug();
+    public Double getPretplata() {
+        return pretplata;
     }
 
     public double getPotrosnja() {
-        return racun.getPotrosnja();
+        return potrosnja;
+    }
+
+    public double getZaUplatu() {
+        return zaUplatu;
+    }
+
+    public double getPDV() {
+        return this.pretplataPDV;
+    }
+
+    public double getPrethodniDug() {
+        return prethodniDug;
+    }
+
+    public ArrayList<destination> getDestinacija() {
+        return destinacija;
     }
 }
+

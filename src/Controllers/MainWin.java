@@ -2,6 +2,8 @@ package Controllers;
 
 import classes.CSVData;
 import classes.Database;
+import classes.Users;
+import classes.zaduziKorisnike;
 import com.csvreader.CsvReader;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +25,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -101,7 +106,7 @@ public class MainWin implements Initializable {
                 new FileChooser.ExtensionFilter("Mesečni obračun CSV Fajl", "*.csv");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setTitle("Import Zipovani-CSV fajl");
+        fileChooser.setTitle("Import CSV fajl");
 
         final List<File> lf = fileChooser.showOpenMultipleDialog(bPane.getScene().getWindow());
         final List<File> csvFiles = new ArrayList<File>();
@@ -131,10 +136,10 @@ public class MainWin implements Initializable {
         CSVData csvData;
         String fileName;
         String customerID;
+        String datumZaduzenja = null;
+
         final ArrayList<CSVData> csvDataArrayList = new ArrayList<CSVData>();
         for (int i = 0; i < csvFiles.size(); i++) {
-            System.out.println("IMPORTING: " + csvFiles.get(i).getName());
-
             fileName = FilenameUtils.getBaseName(csvFiles.get(i).getName());
             customerID = fileName.substring(fileName.lastIndexOf("-"));
             customerID = customerID.replace("-customer", "");
@@ -163,6 +168,7 @@ public class MainWin implements Initializable {
                     csvData.setCustomerID(customerID);
                     csvData.setFileName(fileName);
                     csvDataArrayList.add(csvData);
+                    datumZaduzenja = csvReader.get("Connect Time");
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -170,12 +176,24 @@ public class MainWin implements Initializable {
                 e.printStackTrace();
             }
 
+
         }
 
 
         for (int i = 0; i < csvDataArrayList.size(); i++) {
             CSVData csvDataSQL = csvDataArrayList.get(i);
-            String query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS," +
+            String query = "DELETE FROM csv WHERE fileName=?";
+            try {
+                ps = db.connection.prepareStatement(query);
+                ps.setString(1, csvDataSQL.getFileName());
+                ps.executeUpdate();
+                ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+            query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS," +
                     " chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID, fileName) " +
                     "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             try {
@@ -196,14 +214,60 @@ public class MainWin implements Initializable {
                 ps.setString(14, csvDataSQL.getFileName());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
 
         }
 
+        zaduzi(datumZaduzenja);
+
     }
 
+    private void zaduzi(String datumZaduzenja) {
+        LocalDate datumZad = LocalDate.parse(datumZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        datumZad.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        ArrayList<Users> usersArrayList = new ArrayList<>();
+        Users user;
+
+        PreparedStatement ps;
+        ResultSet rs;
+
+        String query = "SELECT * FROM korisnici";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    user = new Users();
+                    user.setId(rs.getInt("id"));
+                    user.setDatumPrikljucka(rs.getString("datumPrikljucka"));
+                    user.setIme(rs.getString("imePrezime"));
+                    user.setAdresa(rs.getString("adresa"));
+                    user.setMesto(rs.getString("mesto"));
+                    user.setPostBr(rs.getString("postBr"));
+                    user.setBrUgovora(rs.getString("brUgovora"));
+                    user.setCustomerId(rs.getString("customerID"));
+                    user.setPozivNaBroj(rs.getString("pozivNaBroj"));
+                    user.setBrojTelefona(rs.getString("brojTelefona"));
+                    user.setNazivPaketaID(rs.getInt("paketID"));
+                    user.setStampa(rs.getBoolean("stampa"));
+                    user.setFirma(rs.getBoolean("firma"));
+                    user.setMbr(rs.getString("mbr"));
+                    user.setPib(rs.getString("pib"));
+                    user.setNazivFirme(rs.getString("nazivFirme"));
+                    usersArrayList.add(user);
+
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        zaduziKorisnike zadukor = new zaduziKorisnike(usersArrayList, datumZaduzenja, db);
+
+    }
 
 
     public void showCSV(ActionEvent actionEvent) {
