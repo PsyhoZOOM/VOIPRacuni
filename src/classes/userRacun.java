@@ -39,13 +39,13 @@ public class userRacun {
 
         setPretplata();
         setPotrosnja();
-        setZaUplatu();
         setPrethodniDug();
         setDestination();
+        setGratisFiksna();
+        setZaUplatu();
 
         // TODO: 6/9/17 izbrisati klasu kada nam natprovajder automatski skida besplatneminute
 
-        setGratisFiksna();
 
 
     }
@@ -99,7 +99,7 @@ public class userRacun {
     private void setPrethodniDug() {
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT SUM('zaUplatu') AS ukupnoPrethodniDug FROM zaduzenja WHERE userID=? AND zaMesec <? AND " +
+        String query = "SELECT SUM(zaUplatu) AS ukupnoPrethodniDug FROM zaduzenja WHERE userID=? AND zaMesec <? AND " +
                 "uplaceno=0";
         try {
             ps = db.connection.prepareStatement(query);
@@ -109,6 +109,7 @@ public class userRacun {
             if (rs.isBeforeFirst()) {
                 rs.next();
                 this.prethodniDug = rs.getDouble("ukupnoPrethodniDug");
+                this.prethodniDug = this.prethodniDug + valueToPercent.getValue(this.prethodniDug, pretplataPDV);
             }
             ps.close();
             rs.close();
@@ -119,7 +120,8 @@ public class userRacun {
 
 
     private void setZaUplatu() {
-        this.zaUplatu = potrosnja + pretplataPDV;
+        this.zaUplatu = this.getPotrosnja() + valueToPercent.getValue(this.getPotrosnja(), this.getPDV())
+                + this.getPrethodniDug() + valueToPercent.getValue(getPrethodniDug(), this.getPDV());
     }
 
     private void setPotrosnja() {
@@ -175,7 +177,7 @@ public class userRacun {
     }
 
     public String getPeriodOd() {
-        return zaMesecDo.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        return zaMesecOd.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
     public String getRokPlacanja() {
