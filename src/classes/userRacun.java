@@ -52,8 +52,6 @@ public class userRacun {
     private void setPotrosnja() {
         for (destination dest : destinacija) {
             this.potrosnja += dest.getUkupno();
-            System.out.println(String.format("potrosnja: %s, minutaZaNaplatu: %s, cenaPoMinutu: %s, ukupno: %s", this.potrosnja,
-                    dest.getMinutaZaNaplatu(), dest.getCenaPoMinutu(), dest.getUkupno()));
         }
     }
 
@@ -82,7 +80,6 @@ public class userRacun {
                             zoneCene.getVrstaUsluge()
                     );
                     destination.setCenaPoMinutu(zoneCene.getCena());
-                    System.out.println("DESTINATION: " + destination.getNazivDestinacijeZone());
                     if (destination.getNazivDestinacijeZone().equals("Srbija fiksni")) {
                         destination.setGratisMinuta(60);
                         destination.setMinutaZaNaplatu(0);

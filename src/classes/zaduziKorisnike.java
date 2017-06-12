@@ -136,6 +136,7 @@ public class zaduziKorisnike {
                 ps.setInt(2, user.getId());
                 ps.setString(3, datumStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
                 ps.setDouble(4, destination.getMinutaZaNaplatu() * zoneCene.getCena());
+                System.out.println(String.format("Minuta za naplatu: %s, Destination: %s", destination.getMinutaZaNaplatu(), destination.getOpisDestinacije()));
                 ps.setString(5, "Saobracaj");
                 ps.setString(6, destination.getOpisDestinacije());
                 ps.setInt(7, zoneData.getId());

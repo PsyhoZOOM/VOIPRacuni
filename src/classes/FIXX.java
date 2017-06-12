@@ -165,7 +165,7 @@ public class FIXX {
         ResultSet rs;
         // chargedTimeS > 0 FIX zbog nekih nebuloza u CSV fajlu
         String query = "SELECT sum(chargedTimeS) AS seconds FROM csv WHERE account=? and description=? and " +
-                "connectTime >= ? and connectTime <= ? and chargedTimeS > 0";
+                "connectTime >= ? and connectTime <= ?";
         int minuta = 0;
         try {
             ps = db.connection.prepareStatement(query);
