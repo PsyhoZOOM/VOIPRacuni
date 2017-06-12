@@ -264,7 +264,6 @@ public class PrintPage {
         destination destination;
         doc.newPage();
 
-        double ukupno = 0.00;
 
         Rectangle small = new Rectangle(200, 100);
         PdfPTable table = new PdfPTable(6);
@@ -304,6 +303,18 @@ public class PrintPage {
         PdfPCell cll;
 
 
+        //ako korisnik nema nikakvu potrosnju staviti "-" umesto praznig polja (cisto zbog izgleda :))
+        if (destinationArrayList.size() == 0) {
+            destination = new destination();
+            destination.setMinutaZaNaplatu(0);
+            destination.setGratisMinuta(0);
+            destination.setUkupno(0.00);
+            destination.setNazivDestinacijeZone("-");
+            destination.setUtrosenoMinuta(0);
+            destination.setCenaPoMinutu(0);
+            destinationArrayList.add(destination);
+
+        }
         for (int i = 0; i < destinationArrayList.size(); i++) {
             destination = destinationArrayList.get(i);
 
@@ -339,12 +350,11 @@ public class PrintPage {
             cll.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cll);
 
-            ukupno += destination.getUkupno();
 
 
         }
 
-        cellH1 = new PdfPCell(new Phrase(String.format("UKUPNO: %s din.", df.format(ukupno)), fontBold));
+        cellH1 = new PdfPCell(new Phrase(String.format("UKUPNO: %s din.", df.format(racun.getPotrosnja())), fontBold));
         cellH1.setColspan(6);
         cellH1.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cellH1.setBackgroundColor(BaseColor.LIGHT_GRAY);

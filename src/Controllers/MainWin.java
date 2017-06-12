@@ -1,9 +1,6 @@
 package Controllers;
 
-import classes.CSVData;
-import classes.Database;
-import classes.Users;
-import classes.zaduziKorisnike;
+import classes.*;
 import com.csvreader.CsvReader;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +22,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +48,7 @@ public class MainWin implements Initializable {
     ResourceBundle resources;
     FXMLLoader fxmlLoader;
     korisniciWin korisniciWinController;
+    FIXX fixx;
     private Database db;
 
     @Override
@@ -70,6 +67,7 @@ public class MainWin implements Initializable {
             korisniciWinController = fxmlLoader.getController();
             korisniciWinController.db = db;
             korisniciWinController.setData(null);
+            fixx = new FIXX(db);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,17 +107,17 @@ public class MainWin implements Initializable {
         fileChooser.setTitle("Import CSV fajl");
 
         final List<File> lf = fileChooser.showOpenMultipleDialog(bPane.getScene().getWindow());
-        final List<File> csvFiles = new ArrayList<File>();
+        final List<File> csvFiles = new ArrayList<>();
 
 
                 String message;
                 for (int i = 0; i < lf.size(); i++) {
                         csvFiles.add(lf.get(i));
-                        lf.get(i).getName();
+                    System.out.println("Fajl: " + lf.get(i).getAbsoluteFile() + " je importovan");
                 }
                 exportCSVtoDatabase(csvFiles);
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Import CSV Fajla zavrseno");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Import CSV Fajla i obracun zavrsen");
                 alert.showAndWait();
 
 
@@ -168,17 +166,18 @@ public class MainWin implements Initializable {
                     csvData.setCustomerID(customerID);
                     csvData.setFileName(fileName);
                     csvDataArrayList.add(csvData);
-                    datumZaduzenja = csvReader.get("Connect Time");
                 }
             } catch (FileNotFoundException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+                alert.showAndWait();
                 e.printStackTrace();
             } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
                 e.printStackTrace();
             }
 
 
         }
-
 
         for (int i = 0; i < csvDataArrayList.size(); i++) {
             CSVData csvDataSQL = csvDataArrayList.get(i);
@@ -186,12 +185,11 @@ public class MainWin implements Initializable {
             try {
                 ps = db.connection.prepareStatement(query);
                 ps.setString(1, csvDataSQL.getFileName());
-                ps.executeUpdate();
+                //ps.executeUpdate();
                 ps.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
 
             query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS," +
                     " chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID, fileName) " +
@@ -212,6 +210,7 @@ public class MainWin implements Initializable {
                 ps.setString(12, csvDataSQL.getServiceUnit());
                 ps.setString(13, csvDataSQL.getCustomerID());
                 ps.setString(14, csvDataSQL.getFileName());
+                datumZaduzenja = String.valueOf(LocalDate.parse(csvDataSQL.getConnectTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -219,51 +218,14 @@ public class MainWin implements Initializable {
 
         }
 
+
         zaduzi(datumZaduzenja);
 
     }
 
     private void zaduzi(String datumZaduzenja) {
-        LocalDate datumZad = LocalDate.parse(datumZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        datumZad.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        ArrayList<Users> usersArrayList = new ArrayList<>();
-        Users user;
-
-        PreparedStatement ps;
-        ResultSet rs;
-
-        String query = "SELECT * FROM korisnici";
-
-        try {
-            ps = db.connection.prepareStatement(query);
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                while (rs.next()) {
-                    user = new Users();
-                    user.setId(rs.getInt("id"));
-                    user.setDatumPrikljucka(rs.getString("datumPrikljucka"));
-                    user.setIme(rs.getString("imePrezime"));
-                    user.setAdresa(rs.getString("adresa"));
-                    user.setMesto(rs.getString("mesto"));
-                    user.setPostBr(rs.getString("postBr"));
-                    user.setBrUgovora(rs.getString("brUgovora"));
-                    user.setCustomerId(rs.getString("customerID"));
-                    user.setPozivNaBroj(rs.getString("pozivNaBroj"));
-                    user.setBrojTelefona(rs.getString("brojTelefona"));
-                    user.setNazivPaketaID(rs.getInt("paketID"));
-                    user.setStampa(rs.getBoolean("stampa"));
-                    user.setFirma(rs.getBoolean("firma"));
-                    user.setMbr(rs.getString("mbr"));
-                    user.setPib(rs.getString("pib"));
-                    user.setNazivFirme(rs.getString("nazivFirme"));
-                    usersArrayList.add(user);
-
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        ArrayList<Users> usersArrayList = fixx.getUsers();
 
         zaduziKorisnike zadukor = new zaduziKorisnike(usersArrayList, datumZaduzenja, db);
 

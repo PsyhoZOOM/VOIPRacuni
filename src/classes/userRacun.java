@@ -38,10 +38,9 @@ public class userRacun {
         zaMesecDo = LocalDate.of(date.getYear(), date.getMonthValue(), date.lengthOfMonth());
 
         setPretplata();
-        setPotrosnja();
         setPrethodniDug();
         setDestination();
-        setGratisFiksna();
+        setPotrosnja();
         setZaUplatu();
 
         // TODO: 6/9/17 izbrisati klasu kada nam natprovajder automatski skida besplatneminute
@@ -50,27 +49,19 @@ public class userRacun {
 
     }
 
-    private void setGratisFiksna() {
-        int besplatniMinut = 60;
-        for (destination dst : destinacija) {
-            System.out.println(dst.getNazivDestinacijeZone());
-            if (dst.getNazivDestinacijeZone().equals("Srbija fiksni")) {
-                dst.setGratisMinuta(60);
-                if (dst.getMinutaZaNaplatu() < 60) {
-                    dst.setMinutaZaNaplatu(0);
-                    dst.ukupno = 0.00;
-                } else {
-                    double minutazaNaplatu = (dst.getMinutaZaNaplatu() - dst.getGratisMinuta()) * dst.getCenaPoMinutu();
-                    dst.setMinutaZaNaplatu(dst.getMinutaZaNaplatu() - dst.getGratisMinuta());
-                    dst.setUkupno(minutazaNaplatu);
-                }
-            }
+    private void setPotrosnja() {
+        for (destination dest : destinacija) {
+            this.potrosnja += dest.getUkupno();
+            System.out.println(String.format("potrosnja: %s, minutaZaNaplatu: %s, cenaPoMinutu: %s, ukupno: %s", this.potrosnja,
+                    dest.getMinutaZaNaplatu(), dest.getCenaPoMinutu(), dest.getUkupno()));
         }
     }
 
     private void setDestination() {
         PreparedStatement ps;
         ResultSet rs;
+        Zone zone;
+        ZoneCene zoneCene;
         String query = "SELECT * FROM zaduzenja WHERE userID=? AND zaMesec=? AND komentar = 'Saobracaj' AND uplaceno=0";
 
         try {
@@ -79,14 +70,32 @@ public class userRacun {
             ps.setString(2, zaMesec);
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
-                destination destination = new destination();
                 while (rs.next()) {
+                    zone = fixx.getZoneData(rs.getString("destination"));
+                    zoneCene = fixx.getZoneCeneData(rs.getInt("zoneCeneID"));
+                    destination destination = new destination();
                     destination.setUserid(user.getId());
                     destination.setUkupno(rs.getDouble("zaUplatu"));
                     destination.setId(rs.getInt("id"));
                     destination.setUtrosenoMinuta(rs.getInt("minutaZaNaplatu"));
-                    destination.setNazivDestinacijeZone(fixx.getZoneCeneData(user.getNazivPaketaID()).getVrstaUsluge());
-                    destination.setCenaPoMinutu(fixx.getZoneCeneData(user.getNazivPaketaID()).getCena());
+                    destination.setNazivDestinacijeZone(
+                            zoneCene.getVrstaUsluge()
+                    );
+                    destination.setCenaPoMinutu(zoneCene.getCena());
+                    System.out.println("DESTINATION: " + destination.getNazivDestinacijeZone());
+                    if (destination.getNazivDestinacijeZone().equals("Srbija fiksni")) {
+                        destination.setGratisMinuta(60);
+                        destination.setMinutaZaNaplatu(0);
+                        if (destination.getUtrosenoMinuta() > 60) {
+                            destination.setMinutaZaNaplatu(destination.getUtrosenoMinuta() - 60);
+                        }
+                    } else {
+                        destination.setGratisMinuta(0);
+                    }
+                    destination.setMinutaZaNaplatu(rs.getInt("minutaZaNaplatu"));
+                    destination.minutaZaNaplatu = rs.getInt("minutaZaNaplatu");
+
+
                     destinacija.add(destination);
                 }
             }
@@ -108,8 +117,8 @@ public class userRacun {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 rs.next();
-                this.prethodniDug = rs.getDouble("ukupnoPrethodniDug");
-                this.prethodniDug = this.prethodniDug + valueToPercent.getValue(this.prethodniDug, pretplataPDV);
+                double prDug = rs.getDouble("ukupnoPrethodniDug");
+                this.prethodniDug = prDug + valueToPercent.getValue(prDug, this.getPDV());
             }
             ps.close();
             rs.close();
@@ -120,32 +129,11 @@ public class userRacun {
 
 
     private void setZaUplatu() {
-        this.zaUplatu = this.getPotrosnja() + valueToPercent.getValue(this.getPotrosnja(), this.getPDV())
-                + this.getPrethodniDug() + valueToPercent.getValue(getPrethodniDug(), this.getPDV());
+
+        this.zaUplatu = this.getPretplata() + this.getPotrosnja() +
+                valueToPercent.getValue((this.getPretplata() + this.getPotrosnja()), this.getPDV()) + prethodniDug;
     }
 
-    private void setPotrosnja() {
-        PreparedStatement ps;
-        ResultSet rs;
-        String query = "SELECT SUM(zaUplatu) AS ukupnoZaUplatu FROM zaduzenja WHERE userID=? AND zaMesec=? AND uplaceno=?" +
-                " AND komentar=?";
-        try {
-            ps = db.connection.prepareStatement(query);
-            ps.setInt(1, user.getId());
-            ps.setString(2, zaMesec);
-            ps.setDouble(3, 0.00);
-            ps.setString(4, "Saobracaj");
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                rs.next();
-                this.potrosnja = rs.getDouble(1);
-            }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void setPretplata() {
         ResultSet rs;
@@ -162,6 +150,23 @@ public class userRacun {
             }
             ps.close();
             rs.close();
+
+            LocalDate datumPr = LocalDate.parse(user.getDatumPrikljucka(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate datumZaMesec = LocalDate.parse(this.zaMesec + "-01");
+            //ako je korisnik prikljucen u toku meseca onda moramo izracunati koliko dana ce mu se naplatiti pretplata
+            //a ne ceo mesec
+            if (datumPr.getYear() == datumZaMesec.getYear() || datumPr.getMonthValue() == datumZaMesec.getMonthValue()) {
+                int danaUMesecu = 0;
+                int danPriljucka = 0;
+                int danaZaNaplatu = 0;
+                double cenaDana = 0.00;
+                danaUMesecu = datumPr.lengthOfMonth();
+                danPriljucka = datumPr.getDayOfMonth();
+                danaZaNaplatu = danaUMesecu - danPriljucka;
+                cenaDana = this.pretplata / danaUMesecu;
+                this.pretplata = cenaDana * danaZaNaplatu;
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -207,5 +212,6 @@ public class userRacun {
     public ArrayList<destination> getDestinacija() {
         return destinacija;
     }
+
 }
 

@@ -3,6 +3,7 @@ package classes;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by PsyhoZOOM on 6/8/17.
@@ -13,6 +14,49 @@ public class FIXX {
 
     public FIXX(Database db) {
         this.db = db;
+    }
+
+    public static ArrayList<CSVData> getCSVDataDescriptionDistinct(int userID, String accountPhone, String startDate, String endDate, Database db) {
+        ArrayList<CSVData> csvDataArrayList = new ArrayList<>();
+        PreparedStatement ps;
+        ResultSet rs;
+        //chargedTimeS > 0 zbog nekih nebuloza u csv fajlu
+        String query = "SELECT distinct(description) FROM csv WHERE account=? AND connectTime >= ? AND connectTime <= ? " +
+                "and chargedTimeS != 0  ";
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, accountPhone);
+            ps.setString(2, startDate + " 00:00:00");
+            ps.setString(3, endDate + " 23:59:59");
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    CSVData csvData = new CSVData();
+                    /*
+                    csvData.setId(rs.getInt("id"));
+                    csvData.setAccount(rs.getString("account"));
+                    csvData.setFrom(rs.getString("from"));
+                    csvData.setTo(rs.getString("to"));
+                    csvData.setCountry(rs.getString("country"));
+                    csvData.setDescription(rs.getString("description"));
+                    csvData.setConnectTime(rs.getString("connectTime"));
+                    csvData.setChargedTimeMinSec(rs.getString("chargedTimeMS"));
+                    csvData.setChargedTimeSec(rs.getInt("chargedTimeS"));
+                    csvData.setChargedAmountRSD(rs.getDouble("chargedAmountRSD"));
+                    csvData.setServiceName(rs.getString("serviceName"));
+                    csvData.setChargedQuantity(rs.getInt("chargedQuantity"));
+                    csvData.setServiceUnit(rs.getString("serviceUnit"));
+                    csvData.setCustomerID(rs.getString("customerID"));
+                    csvData.setFileName(rs.getString("fileName"));
+                    */
+                    csvData.setDescription(rs.getString("description"));
+                    csvDataArrayList.add(csvData);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return csvDataArrayList;
     }
 
     /**
@@ -53,7 +97,6 @@ public class FIXX {
 
         return zoneCene;
     }
-
 
     /**
      * vraca Zone data  iz table zone od prosledjenog opisa(Description)
@@ -116,5 +159,79 @@ public class FIXX {
 
         return paket;
     }
+
+    public int getCSVDataChargedTimeS_SUM(String account, String description, String startDate, String stopDate, Database db) {
+        PreparedStatement ps;
+        ResultSet rs;
+        // chargedTimeS > 0 FIX zbog nekih nebuloza u CSV fajlu
+        String query = "SELECT sum(chargedTimeS) AS seconds FROM csv WHERE account=? and description=? and " +
+                "connectTime >= ? and connectTime <= ? and chargedTimeS > 0";
+        int minuta = 0;
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, account);
+            ps.setString(2, description);
+            ps.setString(3, startDate + " 00:00:00");
+            ps.setString(4, stopDate + " 23:59:59");
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    minuta = +rs.getInt("seconds");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        minuta = minuta / 60;
+        return minuta;
+    }
+
+    public ArrayList<Users> getUsers() {
+
+        ArrayList<Users> usersArrayList = new ArrayList<>();
+        Users user;
+
+        PreparedStatement ps;
+        ResultSet rs;
+
+        //String query = "SELECT * FROM korisnici WHERE datumPrikljucka >=?";
+        String query = "SELECT * FROM korisnici";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            // ps.setString(1, datumZaduzenja);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    user = new Users();
+                    user.setId(rs.getInt("id"));
+                    user.setDatumPrikljucka(rs.getString("datumPrikljucka"));
+                    user.setIme(rs.getString("imePrezime"));
+                    user.setAdresa(rs.getString("adresa"));
+                    user.setMesto(rs.getString("mesto"));
+                    user.setPostBr(rs.getString("postBr"));
+                    user.setBrUgovora(rs.getString("brUgovora"));
+                    user.setCustomerId(rs.getString("customerID"));
+                    user.setPozivNaBroj(rs.getString("pozivNaBroj"));
+                    user.setBrojTelefona(rs.getString("brojTelefona"));
+                    user.setNazivPaketaID(rs.getInt("paketID"));
+                    user.setStampa(rs.getBoolean("stampa"));
+                    user.setFirma(rs.getBoolean("firma"));
+                    user.setMbr(rs.getString("mbr"));
+                    user.setPib(rs.getString("pib"));
+                    user.setNazivFirme(rs.getString("nazivFirme"));
+                    usersArrayList.add(user);
+
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usersArrayList;
+    }
+
+
 
 }

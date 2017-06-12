@@ -152,6 +152,7 @@ public class stampaRacuna implements Initializable {
                     users.setNazivFirme(rs.getString("nazivFirme"));
                     users.setPib(rs.getString("pib"));
                     users.setMbr(rs.getString("mbr"));
+                    users.setDatumPrikljucka(rs.getString("datumPrikljucka"));
 
                     usresArrayList.add(users);
                 }
@@ -222,6 +223,7 @@ public class stampaRacuna implements Initializable {
         fileChooser.setInitialDirectory(new File(userDIR));
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
         fileChooser.getExtensionFilters().addAll(extensionFilter);
+        fileChooser.setInitialFileName("RacuniFiksnaTelefonija-" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM")) + ".pdf");
 
         File file = fileChooser.showSaveDialog(bPrint.getScene().getWindow());
 
@@ -252,6 +254,8 @@ public class stampaRacuna implements Initializable {
         }
 
         doc.close();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Štampa završena!");
 
 
 

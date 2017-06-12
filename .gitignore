@@ -28,3 +28,6 @@ hs_err_pid*
 data.db
 lib
 out/
+.DS_Store
+src/.DS_Store
+/.idea/

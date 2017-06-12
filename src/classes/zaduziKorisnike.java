@@ -12,27 +12,31 @@ import java.util.ArrayList;
  */
 public class zaduziKorisnike {
     private final Database db;
+    private final String mesecZaduzenja;
     public boolean done = false;
     FIXX fixx;
+    DateTimeFormatter fullDateTimeFormater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter dateDateTimeFormater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter monthDateTimeFormater = DateTimeFormatter.ofPattern("yyyy-MM");
 
-    public zaduziKorisnike(ArrayList<Users> usersArrayList, String datumZaduzenja, Database db) {
+
+    public zaduziKorisnike(ArrayList<Users> usersArrayList, String mesecZaduzenja, Database db) {
         this.db = db;
         fixx = new FIXX(this.db);
+        this.mesecZaduzenja = mesecZaduzenja;
         for (Users user : usersArrayList) {
-            zaduziSingleUserSaobracaj(user, datumZaduzenja);
-            zaduziSingleUserPaket(user, datumZaduzenja);
+            zaduziSingleUserSaobracaj(user);
+            zaduziSingleUserPaket(user);
         }
 
 
     }
 
-    private void zaduziSingleUserPaket(Users user, String datumZaduzenja) {
+    private void zaduziSingleUserPaket(Users user) {
         PreparedStatement ps;
         ResultSet rs;
         String query;
-        datumZaduzenja = LocalDate.parse(datumZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String mesecZaduzenja = LocalDate.parse(datumZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        String mesecKreiranje = LocalDate.parse(user.getDatumPrikljucka(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String mesecKreiranja = LocalDate.parse(user.getDatumPrikljucka(), dateDateTimeFormater).format(monthDateTimeFormater);
 
 
         query = "SELECT paketID from korisnici WHERE id=?";
@@ -54,8 +58,8 @@ public class zaduziKorisnike {
 
 
         Paketi zoneCene = fixx.getPaketData(paketID);
-        if (mesecZaduzenja.equals(mesecKreiranje)) {
-            LocalDate datum = LocalDate.parse(user.getDatumPrikljucka(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        if (mesecZaduzenja.equals(mesecKreiranja)) {
+            LocalDate datum = LocalDate.parse(mesecZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             int daysInMonth = datum.lengthOfMonth();
             int currentDay = datum.getDayOfMonth();
             double oneDayPrice = zoneCene.getPretplata() / daysInMonth;
@@ -67,7 +71,7 @@ public class zaduziKorisnike {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             ps.setInt(2, user.getId());
-            ps.setString(3, mesecZaduzenja);
+            ps.setString(3, String.valueOf(LocalDate.parse(mesecZaduzenja, dateDateTimeFormater).format(monthDateTimeFormater)));
             ps.setDouble(4, zoneCene.getPretplata());
             ps.setString(5, "Paket");
             ps.executeUpdate();
@@ -79,8 +83,8 @@ public class zaduziKorisnike {
 
     }
 
-    private void zaduziSingleUserSaobracaj(Users user, String datumZaduznja) {
-        LocalDate datumStart = LocalDate.parse(datumZaduznja, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private void zaduziSingleUserSaobracaj(Users user) {
+        LocalDate datumStart = LocalDate.parse(mesecZaduzenja);
         String start = datumStart.withDayOfMonth(1).toString();
         String stop = datumStart.withDayOfMonth(datumStart.lengthOfMonth()).toString();
         PreparedStatement ps;
@@ -88,64 +92,28 @@ public class zaduziKorisnike {
         String query;
 
         ArrayList<CSVData> csvUserDataArrayList;
-
         ArrayList<destination> destinationsArrayList = new ArrayList<>();
+        csvUserDataArrayList = FIXX.getCSVDataDescriptionDistinct(user.getId(), user.getBrojTelefona(), start, stop, db);
 
-        getCSVUserData getCsvUserData = new getCSVUserData();
-
-        csvUserDataArrayList = getCSVUserData.getData(user.getId(), user.getBrojTelefona(), start, stop, db);
-
-        query = "SELECT opis  FROM zone";
-        try {
-            ps = db.connection.prepareStatement(query);
-            rs = ps.executeQuery();
-            //uzeti svaki opis iz zone table
-            //svaki opis uporediti sa korisnikovom destinacijom i ako postoji ubaciti je u korisnik zaduzenja ++
-            //na kraju insertovati u zaduzenja korisnika sa cenom
-            if (rs.isBeforeFirst()) {
-                Double zaduzenje = 0.00;
-                int minutaZaNaplatu = 0;
-
-                destination dest;
-                //za svaki destination iz zone uporediti opis sa CSV tablom i ako jeste
-                //spojiti svaki destination iz CSV table u jedan destination i po zavrsetku ubaciti u arraylistu
-                //koja ce ubaciti u zaduzenja tablu
-                while (rs.next()) {
-                    String opis = rs.getString("opis");
-                    dest = new destination();
-                    for (CSVData csvUserData : csvUserDataArrayList) {
-                        if (csvUserData.getDescription().equals(opis)) {
-                            dest.setAccount(csvUserData.getAccount());
-                            dest.setMinutaZaNaplatu(dest.getMinutaZaNaplatu() + (csvUserData.getChargedTimeSec() / 60));
-                            dest.setCenaPoMinutu(getPricePerMinute(csvUserData.getDescription()));
-                            dest.setId(csvUserData.getId());
-                            dest.setOpisDestinacije(csvUserData.getDescription());
-                            dest.setNazivDestinacije(fixx.getZoneData(csvUserData.getDescription()).getNaziv());
-                            dest.setCenaPoMinutu(
-                                    fixx.getZoneCeneData(
-                                            fixx.getZoneData(
-                                                    csvUserData.getDescription()
-                                            ).getZonaID()
-                                    ).getCena()
-                            );
-                            dest.setUkupno(dest.getUkupno() + (dest.getCenaPoMinutu() * dest.getMinutaZaNaplatu()));
-                            dest.setUserid(user.getId());
-                            dest.setUtrosenoMinuta(dest.getUtrosenoMinuta() + (csvUserData.getChargedTimeSec() / 60));
-                        }
-                    }
-                    if (dest.getAccount() != null)
-                        destinationsArrayList.add(dest);
+        for (CSVData csvData : csvUserDataArrayList) {
+            destination des = new destination();
+            des.setOpisDestinacije(csvData.getDescription());
+            des.setMinutaZaNaplatu(fixx.getCSVDataChargedTimeS_SUM(user.getBrojTelefona(), csvData.getDescription(),
+                    start, stop, db));
+            //TODO  set gratis
+            System.out.println(des.getOpisDestinacije());
+            if (des.getOpisDestinacije().equals("Srbija Fiksna")) {
+                if (des.getMinutaZaNaplatu() <= 60) {
+                    des.setMinutaZaNaplatu(0);
+                } else {
+                    des.setMinutaZaNaplatu(des.getMinutaZaNaplatu() - 60);
                 }
             }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            destinationsArrayList.add(des);
         }
 
-
         //izbrisati CSV i zaduzenje od accounta za taj mesec u slucaju dupliciranja importovanog fajla
-        query = "DELETE FROM zaduzenja where zaMesec=? and userID=?";
+        query = "DELETE FROM zaduzenja where zaMesec=? and userID=? AND uplaceno=0";
         try {
             ps = db.connection.prepareStatement(query);
             ps.setString(1, datumStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
@@ -156,25 +124,25 @@ public class zaduziKorisnike {
             e.printStackTrace();
         }
 
-
         for (destination destination : destinationsArrayList) {
-
-
             //fill the data :))
             query = "INSERT INTO zaduzenja (datumZaduzenja, userID, zaMesec, zaUplatu, komentar, destination, zoneID," +
                     "zoneCeneID, minutaZaNaplatu) VALUES (?,?,?,?,?,?,?,?,?)";
+            Zone zoneData = fixx.getZoneData(destination.getOpisDestinacije());
+            ZoneCene zoneCene = fixx.getZoneCeneData(zoneData.getZonaID());
             try {
                 ps = db.connection.prepareStatement(query);
                 ps.setString(1, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString());
-                ps.setInt(2, destination.getUserid());
+                ps.setInt(2, user.getId());
                 ps.setString(3, datumStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
-                ps.setDouble(4, destination.getUkupno());
+                ps.setDouble(4, destination.getMinutaZaNaplatu() * zoneCene.getCena());
                 ps.setString(5, "Saobracaj");
                 ps.setString(6, destination.getOpisDestinacije());
-                ps.setInt(7, fixx.getZoneData(destination.getOpisDestinacije()).getId());
-                ps.setInt(8, fixx.getZoneData(destination.getOpisDestinacije()).getZonaID());
+                ps.setInt(7, zoneData.getId());
+                ps.setInt(8, zoneData.getZonaID());
                 ps.setInt(9, destination.getMinutaZaNaplatu());
-                ps.executeUpdate();
+                if (destination.getMinutaZaNaplatu() != 0)
+                    ps.executeUpdate();
                 ps.close();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -185,43 +153,6 @@ public class zaduziKorisnike {
     }
 
 
-    private double getPricePerMinute(String description) {
-        PreparedStatement ps;
-        ResultSet rs;
-        String query = "SELECT * FROM zone WHERE opis=?";
-        int idZoneCene = 0;
-        double pricePerMinute = 0.00;
-        try {
-            ps = db.connection.prepareStatement(query);
-            ps.setString(1, description);
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                rs.next();
-                idZoneCene = rs.getInt("zonaID");
-            }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        query = "SELECT * FROM zoneCene WHERE id=?";
-        try {
-            ps = db.connection.prepareStatement(query);
-            ps.setInt(1, idZoneCene);
-            rs = ps.executeQuery();
-            if (rs.isBeforeFirst()) {
-                rs.next();
-                pricePerMinute = rs.getDouble("cena");
-            }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return pricePerMinute;
-    }
 
 
 }
