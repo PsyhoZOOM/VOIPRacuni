@@ -176,7 +176,7 @@ public class FIXX {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
-                    minuta = +rs.getInt("seconds");
+                    minuta = minuta + rs.getInt("seconds") / 60;
                 }
             }
         } catch (SQLException e) {
@@ -184,7 +184,6 @@ public class FIXX {
         }
 
 
-        minuta = minuta / 60;
         return minuta;
     }
 

@@ -75,24 +75,16 @@ public class userRacun {
                     destination.setUserid(user.getId());
                     destination.setUkupno(rs.getDouble("zaUplatu"));
                     destination.setId(rs.getInt("id"));
-                    destination.setUtrosenoMinuta(rs.getInt("minutaZaNaplatu"));
+                    destination.setUtrosenoMinuta(rs.getInt("minutaPotrosnja"));
                     destination.setNazivDestinacijeZone(
                             zoneCene.getVrstaUsluge()
                     );
+                    destination.setMinutaZaNaplatu(rs.getInt("minutaZaNaplatu"));
                     destination.setCenaPoMinutu(zoneCene.getCena());
                     if (destination.getNazivDestinacijeZone().equals("Srbija fiksni")) {
                         destination.setGratisMinuta(60);
-                        destination.setMinutaZaNaplatu(0);
-                        if (destination.getUtrosenoMinuta() > 60) {
-                            destination.setMinutaZaNaplatu(destination.getUtrosenoMinuta() - 60);
-                        }
-                    } else {
-                        destination.setGratisMinuta(0);
                     }
-                    destination.setMinutaZaNaplatu(rs.getInt("minutaZaNaplatu"));
-                    destination.minutaZaNaplatu = rs.getInt("minutaZaNaplatu");
-
-
+                    //this.potrosnja = + rs.getDouble("zaUplatu");
                     destinacija.add(destination);
                 }
             }
@@ -114,8 +106,10 @@ public class userRacun {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 rs.next();
+                //TODO potrosnja saobracaj porez pretplata bez poreza
                 double prDug = rs.getDouble("ukupnoPrethodniDug");
-                this.prethodniDug = prDug + valueToPercent.getValue(prDug, this.getPDV());
+                this.prethodniDug = prDug;
+                //this.prethodniDug = prDug + valueToPercent.getValue(prDug, this.getPDV());
             }
             ps.close();
             rs.close();
@@ -152,7 +146,7 @@ public class userRacun {
             LocalDate datumZaMesec = LocalDate.parse(this.zaMesec + "-01");
             //ako je korisnik prikljucen u toku meseca onda moramo izracunati koliko dana ce mu se naplatiti pretplata
             //a ne ceo mesec
-            if (datumPr.getYear() == datumZaMesec.getYear() || datumPr.getMonthValue() == datumZaMesec.getMonthValue()) {
+            if (datumPr.getYear() == datumZaMesec.getYear() && datumPr.getMonthValue() == datumZaMesec.getMonthValue()) {
                 int danaUMesecu = 0;
                 int danPriljucka = 0;
                 int danaZaNaplatu = 0;
@@ -163,6 +157,7 @@ public class userRacun {
                 cenaDana = this.pretplata / danaUMesecu;
                 this.pretplata = cenaDana * danaZaNaplatu;
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();

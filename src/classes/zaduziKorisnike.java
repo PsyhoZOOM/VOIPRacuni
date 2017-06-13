@@ -25,6 +25,11 @@ public class zaduziKorisnike {
         fixx = new FIXX(this.db);
         this.mesecZaduzenja = mesecZaduzenja;
         for (Users user : usersArrayList) {
+            LocalDate userPrikljucak = LocalDate.parse(user.getDatumPrikljucka(), dateDateTimeFormater);
+            LocalDate dateZad = LocalDate.parse(mesecZaduzenja, dateDateTimeFormater);
+
+            if (userPrikljucak.isAfter(dateZad))
+                continue;
             zaduziSingleUserSaobracaj(user);
             zaduziSingleUserPaket(user);
         }
@@ -100,15 +105,19 @@ public class zaduziKorisnike {
             des.setOpisDestinacije(csvData.getDescription());
             des.setMinutaZaNaplatu(fixx.getCSVDataChargedTimeS_SUM(user.getBrojTelefona(), csvData.getDescription(),
                     start, stop, db));
+            des.setUtrosenoMinuta(fixx.getCSVDataChargedTimeS_SUM(user.getBrojTelefona(), csvData.getDescription(),
+                    start, stop, db));
             //TODO  set gratis
-            System.out.println(des.getOpisDestinacije());
             if (des.getOpisDestinacije().equals("Srbija Fiksna")) {
-                if (des.getMinutaZaNaplatu() <= 60) {
-                    des.setMinutaZaNaplatu(0);
+                int minZaNaplatu = des.getMinutaZaNaplatu();
+                if (minZaNaplatu <= 60) {
+                    minZaNaplatu = 0;
                 } else {
-                    des.setMinutaZaNaplatu(des.getMinutaZaNaplatu() - 60);
+                    minZaNaplatu = minZaNaplatu - 60;
                 }
+                des.setMinutaZaNaplatu(minZaNaplatu);
             }
+            System.out.println("za naplatu:" + des.getMinutaZaNaplatu() + " " + des.getOpisDestinacije());
             destinationsArrayList.add(des);
         }
 
@@ -127,7 +136,7 @@ public class zaduziKorisnike {
         for (destination destination : destinationsArrayList) {
             //fill the data :))
             query = "INSERT INTO zaduzenja (datumZaduzenja, userID, zaMesec, zaUplatu, komentar, destination, zoneID," +
-                    "zoneCeneID, minutaZaNaplatu) VALUES (?,?,?,?,?,?,?,?,?)";
+                    "zoneCeneID, minutaZaNaplatu, minutaPotrosnja) VALUES (?,?,?,?,?,?,?,?,?,?)";
             Zone zoneData = fixx.getZoneData(destination.getOpisDestinacije());
             ZoneCene zoneCene = fixx.getZoneCeneData(zoneData.getZonaID());
             try {
@@ -136,12 +145,12 @@ public class zaduziKorisnike {
                 ps.setInt(2, user.getId());
                 ps.setString(3, datumStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
                 ps.setDouble(4, destination.getMinutaZaNaplatu() * zoneCene.getCena());
-                System.out.println(String.format("Minuta za naplatu: %s, Destination: %s", destination.getMinutaZaNaplatu(), destination.getOpisDestinacije()));
                 ps.setString(5, "Saobracaj");
                 ps.setString(6, destination.getOpisDestinacije());
                 ps.setInt(7, zoneData.getId());
                 ps.setInt(8, zoneData.getZonaID());
                 ps.setInt(9, destination.getMinutaZaNaplatu());
+                ps.setInt(10, destination.getUtrosenoMinuta());
                 if (destination.getMinutaZaNaplatu() != 0)
                     ps.executeUpdate();
                 ps.close();
