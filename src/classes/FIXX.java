@@ -179,6 +179,8 @@ public class FIXX {
                     minuta = minuta + rs.getInt("seconds") / 60;
                 }
             }
+            ps.close();
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -225,10 +227,50 @@ public class FIXX {
 
                 }
             }
+            ps.close();
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return usersArrayList;
+    }
+
+    public Users getUserData(int userID) {
+        String ImePrezime = null;
+        PreparedStatement ps;
+        ResultSet rs;
+        Users user = null;
+        String query = "SELECT * FROM korisnici WHERE id=?";
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, userID);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                rs.next();
+                user = new Users();
+                user.setId(rs.getInt("id"));
+                user.setIme(rs.getString("ImePrezime"));
+                user.setAdresa(rs.getString("adresa"));
+                user.setMesec(rs.getString("mesto"));
+                user.setPostBr(rs.getString("postBr"));
+                user.setBrUgovora(rs.getString("brUgovora"));
+                user.setCustomerId(rs.getString("customerID"));
+                user.setPozivNaBroj(rs.getString("pozivNaBroj"));
+                user.setBrojTelefona(rs.getString("brojTelefona"));
+                user.setNazivPaketaID(rs.getInt("paketID"));
+                user.setStampa(rs.getBoolean("stampa"));
+                user.setFirma(rs.getBoolean("firma"));
+                user.setMbr(rs.getString("mbr"));
+                user.setPib(rs.getString("pib"));
+                user.setNazivFirme(rs.getString("nazivFirme"));
+            }
+            ps.close();
+            rs.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
 

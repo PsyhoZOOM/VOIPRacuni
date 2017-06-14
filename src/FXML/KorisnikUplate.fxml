@@ -10,6 +10,20 @@
         <VBox layoutX="164.0" layoutY="35.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
+                <TreeTableView fx:id="tblUplateTree" prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                        <TreeTableColumn fx:id="ctImePrezime" prefWidth="75.0" text="Ime i Prezime"/>
+                        <TreeTableColumn fx:id="ctModel" prefWidth="75.0" text="Model poz. na br."/>
+                        <TreeTableColumn fx:id="ctBrTel" prefWidth="75.0" text="Br. Telefona"/>
+                        <TreeTableColumn fx:id="ctZaMesec" prefWidth="75.0" text="Za mesec"/>
+                        <TreeTableColumn fx:id="ctZaUplatu" prefWidth="75.0" text="Za Uplatu"/>
+                        <TreeTableColumn fx:id="ctUplaceno" prefWidth="75.0" text="Uplaceno"/>
+                        <TreeTableColumn fx:id="ctDatumUplate" prefWidth="75.0" text="Datum uplate"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TreeTableView>
                 <TableView fx:id="tblUplate" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="cIme" prefWidth="75.0" text="Ime i prezime"/>

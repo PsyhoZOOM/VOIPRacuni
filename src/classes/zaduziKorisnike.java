@@ -121,17 +121,6 @@ public class zaduziKorisnike {
             destinationsArrayList.add(des);
         }
 
-        //izbrisati CSV i zaduzenje od accounta za taj mesec u slucaju dupliciranja importovanog fajla
-        query = "DELETE FROM zaduzenja where zaMesec=? and userID=? AND uplaceno=0";
-        try {
-            ps = db.connection.prepareStatement(query);
-            ps.setString(1, datumStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
-            ps.setInt(2, user.getId());
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         for (destination destination : destinationsArrayList) {
             //fill the data :))

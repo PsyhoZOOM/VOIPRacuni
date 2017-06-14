@@ -118,6 +118,7 @@ public class korisniciWin implements Initializable {
 
     private ObservableList setTableData(String search) {
         PreparedStatement ps = null;
+
         String query = "SELECT * FROM korisnici WHERE imePrezime LIKE  ? OR adresa LIKE ? OR mesto LIKE ? OR postbr LIKE ? or brUgovora LIKE  ? OR customerID LIKE ?";
         ArrayList<Users> usersArrayList = new ArrayList<Users>();
         try {

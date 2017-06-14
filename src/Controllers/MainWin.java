@@ -181,17 +181,8 @@ public class MainWin implements Initializable {
 
         for (int i = 0; i < csvDataArrayList.size(); i++) {
             CSVData csvDataSQL = csvDataArrayList.get(i);
-            String query = "DELETE FROM csv WHERE fileName=?";
-            try {
-                ps = db.connection.prepareStatement(query);
-                ps.setString(1, csvDataSQL.getFileName());
-                //ps.executeUpdate();
-                ps.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
 
-            query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS," +
+            String query = "INSERT INTO csv (account, `from`, `to`, country, description, connectTime, chargedTimeMS," +
                     " chargedTimeS, chargedAmountRSD, serviceName, chargedQuantity, serviceUnit, customerID, fileName) " +
                     "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             try {

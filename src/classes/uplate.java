@@ -17,6 +17,16 @@ public class uplate implements Serializable {
     int userID;
     String datumUplate;
     Double PDV;
+    String komentar;
+
+
+    public String getKomentar() {
+        return komentar;
+    }
+
+    public void setKomentar(String komentar) {
+        this.komentar = komentar;
+    }
 
     public int getId() {
         return id;

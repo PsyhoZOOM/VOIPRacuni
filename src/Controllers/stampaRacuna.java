@@ -125,13 +125,15 @@ public class stampaRacuna implements Initializable {
     private void setData() {
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM korisnici";
+        LocalDate zaM = dtpZaMesec.getValue();
+        String query = "SELECT * FROM korisnici WHERE datumPrikljucka <= ?";
         Users users;
         ArrayList<Users> usresArrayList = new ArrayList<Users>();
 
 
         try {
             ps = db.connection.prepareStatement(query);
+            ps.setString(1, zaM.format(DateTimeFormatter.ofPattern("yyyy-MM")));
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
