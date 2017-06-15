@@ -1,10 +1,10 @@
-CREATE DATABASE  IF NOT EXISTS `CSV` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE  IF NOT EXISTS `CSV` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `CSV`;
--- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.54, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: CSV
 -- ------------------------------------------------------
--- Server version	5.6.36
+-- Server version	5.5.54-0+deb8u1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -226,6 +226,7 @@ CREATE TABLE `zaduzenja` (
   `zoneCeneID` int(11) DEFAULT NULL,
   `minutaZaNaplatu` int(11) DEFAULT NULL,
   `minutaPotrosnja` int(11) DEFAULT '0',
+  `datumUplate` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8;
@@ -237,7 +238,7 @@ CREATE TABLE `zaduzenja` (
 
 LOCK TABLES `zaduzenja` WRITE;
 /*!40000 ALTER TABLE `zaduzenja` DISABLE KEYS */;
-INSERT INTO `zaduzenja` VALUES (10,'2017-06-12',10,'2017-04',240,240,'Paket',NULL,NULL,NULL,NULL,0),(15,'2017-06-12',13,'2017-04',159.6,159.6,'Paket',NULL,NULL,NULL,NULL,0),(18,'2017-06-12',16,'2017-04',502.5,0,'Paket',NULL,NULL,NULL,NULL,0),(20,'2017-06-12',17,'2017-04',480,0,'Paket',NULL,NULL,NULL,NULL,0),(23,'2017-06-12',18,'2017-04',167.1,167.1,'Paket',NULL,NULL,NULL,NULL,0),(25,'2017-06-12',20,'2017-04',487.5,487.5,'Paket',NULL,NULL,NULL,NULL,0),(26,'2017-06-12',4,'2017-05',2.88,0,'Saobracaj','Srbija Fiksna',347,1,3,63),(27,'2017-06-12',4,'2017-05',68.75,0,'Saobracaj','Srbija Mobilna',348,2,11,11),(28,'2017-06-12',4,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1),(29,'2017-06-12',4,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(30,'2017-06-12',5,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1),(31,'2017-06-12',5,'2017-05',68.75,0,'Saobracaj','Srbija Mobilna',348,2,11,11),(32,'2017-06-12',5,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(33,'2017-06-12',6,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(34,'2017-06-12',7,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(35,'2017-06-12',8,'2017-05',268.75,0,'Saobracaj','Srbija Mobilna',348,2,43,43),(36,'2017-06-12',8,'2017-05',23.04,0,'Saobracaj','Srbija Fiksna',347,1,24,84),(37,'2017-06-12',8,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(38,'2017-06-12',9,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(39,'2017-06-12',10,'2017-05',28.799999999999997,0,'Saobracaj','Srbija Fiksna',347,1,30,90),(40,'2017-06-12',10,'2017-05',93.78,0,'Saobracaj','Switzerland',385,3,9,9),(41,'2017-06-12',10,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(42,'2017-06-12',11,'2017-05',111.36,0,'Saobracaj','Srbija Fiksna',347,1,116,176),(43,'2017-06-12',11,'2017-05',356.25,0,'Saobracaj','Srbija Mobilna',348,2,57,57),(44,'2017-06-12',11,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,9,9),(45,'2017-06-12',11,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(46,'2017-06-12',12,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,3,3),(47,'2017-06-12',12,'2017-05',31.25,0,'Saobracaj','Srbija Mobilna',348,2,5,5),(48,'2017-06-12',12,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(49,'2017-06-12',13,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(50,'2017-06-12',14,'2017-05',300,0,'Saobracaj','Srbija Mobilna',348,2,48,48),(51,'2017-06-12',14,'2017-05',20.84,0,'Saobracaj','Switzerland',385,3,2,2),(52,'2017-06-12',14,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1),(53,'2017-06-12',14,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(54,'2017-06-12',15,'2017-05',110.39999999999999,0,'Saobracaj','Srbija Fiksna',347,1,115,175),(55,'2017-06-12',15,'2017-05',6.25,0,'Saobracaj','Srbija Mobilna',348,2,1,1),(56,'2017-06-12',15,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1),(57,'2017-06-12',15,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(58,'2017-06-12',16,'2017-05',87.5,0,'Saobracaj','Srbija Mobilna',348,2,14,14),(59,'2017-06-12',16,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(60,'2017-06-12',17,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(61,'2017-06-12',18,'2017-05',27.84,0,'Saobracaj','Srbija Fiksna',347,1,29,89),(62,'2017-06-12',18,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0),(63,'2017-06-12',20,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0);
+INSERT INTO `zaduzenja` VALUES (10,'2017-06-12',10,'2017-04',240,240,'Paket',NULL,NULL,NULL,NULL,0,NULL),(15,'2017-06-12',13,'2017-04',159.6,159.6,'Paket',NULL,NULL,NULL,NULL,0,NULL),(18,'2017-06-12',16,'2017-04',502.5,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(20,'2017-06-12',17,'2017-04',480,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(23,'2017-06-12',18,'2017-04',167.1,167.1,'Paket',NULL,NULL,NULL,NULL,0,NULL),(25,'2017-06-12',20,'2017-04',487.5,487.5,'Paket',NULL,NULL,NULL,NULL,0,NULL),(26,'2017-06-12',4,'2017-05',2.88,0,'Saobracaj','Srbija Fiksna',347,1,3,63,NULL),(27,'2017-06-12',4,'2017-05',68.75,0,'Saobracaj','Srbija Mobilna',348,2,11,11,NULL),(28,'2017-06-12',4,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1,NULL),(29,'2017-06-12',4,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(30,'2017-06-12',5,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1,NULL),(31,'2017-06-12',5,'2017-05',68.75,0,'Saobracaj','Srbija Mobilna',348,2,11,11,NULL),(32,'2017-06-12',5,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(33,'2017-06-12',6,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(34,'2017-06-12',7,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(35,'2017-06-12',8,'2017-05',268.75,0,'Saobracaj','Srbija Mobilna',348,2,43,43,NULL),(36,'2017-06-12',8,'2017-05',23.04,0,'Saobracaj','Srbija Fiksna',347,1,24,84,NULL),(37,'2017-06-12',8,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(38,'2017-06-12',9,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(39,'2017-06-12',10,'2017-05',28.799999999999997,0,'Saobracaj','Srbija Fiksna',347,1,30,90,NULL),(40,'2017-06-12',10,'2017-05',93.78,0,'Saobracaj','Switzerland',385,3,9,9,NULL),(41,'2017-06-12',10,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(42,'2017-06-12',11,'2017-05',111.36,0,'Saobracaj','Srbija Fiksna',347,1,116,176,NULL),(43,'2017-06-12',11,'2017-05',356.25,0,'Saobracaj','Srbija Mobilna',348,2,57,57,NULL),(44,'2017-06-12',11,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,9,9,NULL),(45,'2017-06-12',11,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(46,'2017-06-12',12,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,3,3,NULL),(47,'2017-06-12',12,'2017-05',31.25,0,'Saobracaj','Srbija Mobilna',348,2,5,5,NULL),(48,'2017-06-12',12,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(49,'2017-06-12',13,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(50,'2017-06-12',14,'2017-05',300,0,'Saobracaj','Srbija Mobilna',348,2,48,48,NULL),(51,'2017-06-12',14,'2017-05',20.84,0,'Saobracaj','Switzerland',385,3,2,2,NULL),(52,'2017-06-12',14,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1,NULL),(53,'2017-06-12',14,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(54,'2017-06-12',15,'2017-05',110.39999999999999,0,'Saobracaj','Srbija Fiksna',347,1,115,175,NULL),(55,'2017-06-12',15,'2017-05',6.25,0,'Saobracaj','Srbija Mobilna',348,2,1,1,NULL),(56,'2017-06-12',15,'2017-05',0,0,'Saobracaj','Calls between IP phones',457,12,1,1,NULL),(57,'2017-06-12',15,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(58,'2017-06-12',16,'2017-05',87.5,0,'Saobracaj','Srbija Mobilna',348,2,14,14,NULL),(59,'2017-06-12',16,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(60,'2017-06-12',17,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(61,'2017-06-12',18,'2017-05',27.84,0,'Saobracaj','Srbija Fiksna',347,1,29,89,NULL),(62,'2017-06-12',18,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL),(63,'2017-06-12',20,'2017-05',400,0,'Paket',NULL,NULL,NULL,NULL,0,NULL);
 /*!40000 ALTER TABLE `zaduzenja` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,6 +298,10 @@ LOCK TABLES `zoneCene` WRITE;
 INSERT INTO `zoneCene` VALUES (1,'Srbija fiksni',0.85,20,0.96,20,1.2),(2,'Srbija mobilni',6,20,6.25,20,8),(3,'Inostranstvo zona 1',4.5,20,10.42,20,16.86),(4,'Inostranstvo zona 2',11.25,20,13.75,20,20.8),(5,'Inostranstvo zona 3',18.75,20,19.58,20,24.51),(6,'Inostranstvo zona 4',26.25,20,33.75,20,44.51),(8,'Inostranstvo zona 5',41.25,20,42.08,20,53.46),(9,'Inostranstvo zona 6',71.25,20,79.17,20,0),(10,'Inostranstvo zona 7',262.5,20,292.08,20,0),(11,'Poziv na kratke brojeve',1.5,20,2.5,20,0),(12,'Saobraćaj u mreži YuVideo',0,20,0,20,0);
 /*!40000 ALTER TABLE `zoneCene` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'CSV'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -307,4 +312,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-06-13 12:24:56
+-- Dump completed on 2017-06-14 11:39:46

@@ -1,7 +1,6 @@
 package Controllers;
 
 import classes.*;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -10,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -59,24 +59,13 @@ public class korisnikUplate implements Initializable {
         this.resources = resources;
 
 
-        ctImePrezime.setCellValueFactory((TreeTableColumn.CellDataFeatures<uplate, String> param) -> {
-            return new ReadOnlyObjectWrapper<>(param.getValue().getValue().getIme());
-        });
-        ctBrTel.setCellValueFactory(param -> {
-            return new ReadOnlyObjectWrapper<>(param.getValue().getValue().getBrojTel());
-        });
-        ctZaMesec.setCellValueFactory(param -> {
-            return new ReadOnlyObjectWrapper<>(param.getValue().getValue().getZaMesec());
-        });
-        ctZaUplatu.setCellValueFactory(param -> {
-            return new ReadOnlyObjectWrapper<>(param.getValue().getValue().getZaUplatu());
-        });
-        ctUplaceno.setCellValueFactory(param -> {
-            return new ReadOnlyObjectWrapper<>(param.getValue().getValue().getUplaceno());
-        });
-        ctDatumUplate.setCellValueFactory(param -> {
-            return new ReadOnlyObjectWrapper<>(param.getValue().getValue().getDatumUplate());
-        });
+        ctImePrezime.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("ime"));
+        ctBrTel.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("brojTel"));
+        ctZaMesec.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("zaMesec"));
+        ctZaUplatu.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, Double>("zaUplatu"));
+        ctUplaceno.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, Double>("uplaceno"));
+        ctDatumUplate.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("datumUplate"));
+
 
         ctImePrezime.setCellFactory(new Callback<TreeTableColumn<uplate, String>, TreeTableCell<uplate, String>>() {
             @Override
@@ -106,7 +95,12 @@ public class korisnikUplate implements Initializable {
                         if (empty) {
                             setText(null);
                         } else {
-                            setText(df.format(item));
+                            System.out.println(item);
+                            if (item != null) {
+                                setText(df.format(item));
+                            } else {
+                                setText(null);
+                            }
                         }
                     }
                 };
@@ -124,7 +118,11 @@ public class korisnikUplate implements Initializable {
                         if (empty) {
                             setText(null);
                         } else {
-                            setText(df.format(item));
+                            if (item != null) {
+                                setText(df.format(item));
+                            } else {
+                                setText(null);
+                            }
                         }
                     }
                 };
