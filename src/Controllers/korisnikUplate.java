@@ -1,14 +1,11 @@
 package Controllers;
 
 import classes.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
 
@@ -26,21 +23,13 @@ import java.util.ResourceBundle;
  * Created by PsyhoZOOM@gmail.com on 5/11/17.
  */
 public class korisnikUplate implements Initializable {
-    public TableView<uplate> tblUplate;
-    public TableColumn cIme;
-    public TableColumn cModel;
-    public TableColumn cBrTel;
-    public TableColumn cZaMesec;
-    public TableColumn cZaUplatu;
-    public TableColumn cUplaceno;
-    public TableColumn cDatumUplate;
     public Button bUplati;
     public Label lDug;
     public TableColumn cDug;
     public TableColumn cPDV;
     public TreeTableView<uplate> tblUplateTree;
     public TreeTableColumn<uplate, String> ctImePrezime;
-    public TreeTableColumn<uplate, String> ctModel;
+    public TreeTableColumn<uplate, String> ctVrsta;
     public TreeTableColumn<uplate, String> ctBrTel;
     public TreeTableColumn<uplate, String> ctZaMesec;
     public TreeTableColumn<uplate, Double> ctZaUplatu;
@@ -65,6 +54,7 @@ public class korisnikUplate implements Initializable {
         ctZaUplatu.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, Double>("zaUplatu"));
         ctUplaceno.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, Double>("uplaceno"));
         ctDatumUplate.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("datumUplate"));
+        ctVrsta.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("komentar"));
 
 
         ctImePrezime.setCellFactory(new Callback<TreeTableColumn<uplate, String>, TreeTableCell<uplate, String>>() {
@@ -95,7 +85,6 @@ public class korisnikUplate implements Initializable {
                         if (empty) {
                             setText(null);
                         } else {
-                            System.out.println(item);
                             if (item != null) {
                                 setText(df.format(item));
                             } else {
@@ -129,104 +118,6 @@ public class korisnikUplate implements Initializable {
                 return cell;
             }
         });
-
-
-        cIme.setCellValueFactory(new PropertyValueFactory<uplate, String>("ime"));
-        cModel.setCellValueFactory(new PropertyValueFactory<uplate, String>("modelPoziv"));
-        cBrTel.setCellValueFactory(new PropertyValueFactory<uplate, String>("brojTel"));
-        cZaMesec.setCellValueFactory(new PropertyValueFactory<uplate, String>("zaMesec"));
-        cZaUplatu.setCellValueFactory(new PropertyValueFactory<uplate, Double>("zaUplatu"));
-        cUplaceno.setCellValueFactory(new PropertyValueFactory<uplate, Double>("uplaceno"));
-        cDatumUplate.setCellValueFactory(new PropertyValueFactory<uplate, String>("datumUplate"));
-        //       cDug.setCellValueFactory(new PropertyValueFactory<uplate, Double>("dug"));
-        //       cPDV.setCellValueFactory(new PropertyValueFactory<uplate, Double>("PDV"));
-
-        cZaUplatu.setCellFactory(new Callback<TableColumn, TableCell>() {
-            @Override
-            public TableCell call(TableColumn param) {
-                TableCell<uplate, Double> cell = new TableCell<uplate, Double>() {
-                    @Override
-                    public void updateItem(Double uplata, boolean bool) {
-                        super.updateItem(uplata, bool);
-                        if (bool) {
-                            setText(null);
-                        } else {
-                            setText(df.format(uplata));
-                        }
-                    }
-                };
-                return cell;
-            }
-        });
-
-        cUplaceno.setCellFactory(new Callback<TableColumn, TableCell>() {
-            @Override
-            public TableCell call(TableColumn param) {
-                TableCell<uplate, Double> cell = new TableCell<uplate, Double>() {
-                    @Override
-                    public void updateItem(Double uplaceno, boolean bool) {
-                        super.updateItem(uplaceno, bool);
-                        if (bool) {
-                            setText(null);
-                        } else {
-                            setText(df.format(uplaceno));
-                        }
-                    }
-                };
-                return cell;
-            }
-        });
-/*
-        cPDV.setCellFactory(new Callback<TableColumn, TableCell>() {
-            @Override
-            public TableCell<uplate, Double> call(TableColumn param) {
-                TableCell<uplate, Double> cell = new TableCell<uplate, Double>(){
-                    @Override
-                    protected void updateItem(Double item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if(empty){
-                            setText(null);
-                        }else {
-                            setText(df.format(item));
-                        }
-                    }
-                };
-                return  cell;
-            }
-        });
-
-        cDug.setCellFactory(new Callback<TableColumn, TableCell>() {
-            @Override
-            public TableCell call(TableColumn param) {
-                TableCell<uplate, Double> cell = new TableCell<uplate, Double>(){
-
-                    @Override
-                    protected void updateItem(Double item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if(empty){
-                            setText(null);
-                        }else{
-                            setText(df.format(item));
-                        }
-                    }
-                };
-                return cell;
-            }
-        });
-
-
-        */
-
-        tblUplate.selectionModelProperty().addListener(new ChangeListener<TableView.TableViewSelectionModel<uplate>>() {
-            @Override
-            public void changed(ObservableValue<? extends TableView.TableViewSelectionModel<uplate>> observable, TableView.TableViewSelectionModel<uplate> oldValue, TableView.TableViewSelectionModel<uplate> newValue) {
-                if (newValue.getSelectedItem().getUplaceno() > 0) {
-                    bUplati.setDisable(true);
-                } else {
-                    bUplati.setDisable(false);
-                }
-            }
-        });
     }
 
     public void setData() {
@@ -240,21 +131,13 @@ public class korisnikUplate implements Initializable {
 
 
         for (uplate uplata : data) {
-            System.out.println("UPLATA: " + uplata.getKomentar());
-            if (uplata.getZaMesec().equals("zaMesec")) {
-                //TODO ovde sam stao
-                //napraviti tree item od uplata
                 if (uplata.getKomentar().equals("Paket")) {
                     treeItemPaket = new TreeItem(uplata);
                     root.getChildren().add(treeItemPaket);
                 }
-
-            }
-
         }
 
         for (TreeItem<uplate> treupl : root.getChildren()) {
-            System.out.println("ROOT: " + treupl.getValue().getZaMesec());
             for (uplate uplata : data) {
                 if (treupl.getValue().getZaMesec().equals(uplata.getZaMesec())) {
                     if (uplata.getKomentar().equals("Saobracaj")) {
@@ -268,7 +151,8 @@ public class korisnikUplate implements Initializable {
 
         lDug.setText(String.valueOf(zaUplatuUkupno));
 
-
+        tblUplateTree.setShowRoot(false);
+        root.expandedProperty().setValue(true);
         tblUplateTree.setRoot(root);
 
 
@@ -305,7 +189,7 @@ public class korisnikUplate implements Initializable {
         Users user;
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM zaduzenja WHERE userID=? ORDER BY zaMesec";
+        String query = "SELECT sum(zaUplatu) as zaUplatu, id, uplaceno, userID, datumUplate, komentar, zaMesec FROM zaduzenja WHERE userID=? and uplaceno=0  ORDER by zaMesec";
         ArrayList<uplate> uplateArrayList = new ArrayList<>();
         uplate uplata;
         double ukupno = 0.00;
@@ -316,7 +200,6 @@ public class korisnikUplate implements Initializable {
             rs = ps.executeQuery();
 
             if (rs.isBeforeFirst()) {
-
                 while (rs.next()) {
                     user = fixx.getUserData(rs.getInt("userID"));
                     uplata = new uplate();
@@ -325,7 +208,8 @@ public class korisnikUplate implements Initializable {
                     uplata.setBrojTel(user.getBrojTelefona());
                     uplata.setDug(rs.getDouble("zaUplatu"));
                     uplata.setUplaceno(rs.getDouble("uplaceno"));
-                    uplata.setZaMesec(LocalDate.parse(rs.getString("datumZaduzenja"), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MM-yyyy")));
+                    //uplata.setZaMesec(LocalDate.parse(rs.getString("datumZaduzenja"), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MM-yyyy")));
+                    uplata.setZaMesec(rs.getString("zaMesec"));
                     uplata.setUserID(rs.getInt("userID"));
                     uplata.setDatumUplate(rs.getString("datumUplate"));
                     uplata.setPDV(getPDV(user.getNazivPaketaID()));
@@ -344,21 +228,25 @@ public class korisnikUplate implements Initializable {
     }
 
     public void uplati(ActionEvent actionEvent) {
-        if (tblUplate.getSelectionModel().getSelectedIndex() == -1)
+        if (tblUplateTree.selectionModelProperty().getValue().getSelectedIndex() == -1)
             return;
 
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        uplate uplata = tblUplate.getSelectionModel().getSelectedItem();
+        //    uplate uplata = tblUplateTree.getSelectionModel().getSelectedItem().getChildren().;
+        for (TreeItem<uplate> item : tblUplateTree.getRoot().getChildren()) {
+            System.out.println("TREE ITEM: " + item.getValue().getKomentar());
+            System.out.println("TREE ITEM PRICE: " + item.getValue().getZaUplatu());
+        }
         PreparedStatement ps;
         String query = "UPDATE zaduzenja SET uplaceno=?, datumUplate=? WHERE id=?";
 
         try {
             ps = db.connection.prepareStatement(query);
-            ps.setDouble(1, uplata.getZaUplatu());
+            //  ps.setDouble(1, uplata.getZaUplatu());
             ps.setString(2, date);
-            ps.setInt(3, tblUplate.getSelectionModel().getSelectedItem().getId());
-            ps.executeUpdate();
+            ps.setInt(3, tblUplateTree.getSelectionModel().getSelectedItem().getValue().getId());
+            //ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
