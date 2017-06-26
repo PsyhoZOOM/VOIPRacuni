@@ -148,9 +148,12 @@ public class korisnikUplate implements Initializable {
                     }
                 }
             }
-            treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + valueToPercent.getValue(treupl.getValue().getZaUplatu(), 20));
+            treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + valueToPercent.getValue(treupl.getValue().getZaUplatu(), treupl.getValue().getPDV()));
         }
 
+
+        //TODO
+        //za uplatu pdvset
 
         zaUplatuUkupno = zaUplatuUkupno + valueToPercent.getValue(zaUplatuUkupno, 20);
 
