@@ -138,18 +138,23 @@ public class korisnikUplate implements Initializable {
         }
 
         for (TreeItem<uplate> treupl : root.getChildren()) {
+            zaUplatuUkupno = zaUplatuUkupno + treupl.getValue().getZaUplatu();
             for (uplate uplata : data) {
                 if (treupl.getValue().getZaMesec().equals(uplata.getZaMesec())) {
                     if (uplata.getKomentar().equals("Saobracaj")) {
                         treupl.getChildren().add(new TreeItem<uplate>(uplata));
                         treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + uplata.getZaUplatu());
-                        zaUplatuUkupno += treupl.getValue().getZaUplatu();
+                        zaUplatuUkupno = zaUplatuUkupno + uplata.getZaUplatu();
                     }
                 }
             }
+            treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + valueToPercent.getValue(treupl.getValue().getZaUplatu(), 20));
         }
 
-        lDug.setText(String.valueOf(zaUplatuUkupno));
+
+        zaUplatuUkupno = zaUplatuUkupno + valueToPercent.getValue(zaUplatuUkupno, 20);
+
+        lDug.setText(df.format(zaUplatuUkupno));
 
         tblUplateTree.setShowRoot(false);
         root.expandedProperty().setValue(true);
@@ -189,10 +194,10 @@ public class korisnikUplate implements Initializable {
         Users user;
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT sum(zaUplatu) as zaUplatu, id, uplaceno, userID, datumUplate, komentar, zaMesec FROM zaduzenja WHERE userID=? and uplaceno=0  ORDER by zaMesec";
+        //String query = "SELECT sum(zaUplatu) as zaUplatu, id, uplaceno, userID, datumUplate, komentar, zaMesec FROM zaduzenja WHERE userID=? and uplaceno=0  ORDER by zaMesec";
+        String query = "SELECT * FROM zaduzenja WHERE userID=? ORDER BY zaMesec DESC";
         ArrayList<uplate> uplateArrayList = new ArrayList<>();
         uplate uplata;
-        double ukupno = 0.00;
 
         try {
             ps = db.connection.prepareStatement(query);
@@ -208,17 +213,13 @@ public class korisnikUplate implements Initializable {
                     uplata.setBrojTel(user.getBrojTelefona());
                     uplata.setDug(rs.getDouble("zaUplatu"));
                     uplata.setUplaceno(rs.getDouble("uplaceno"));
-                    //uplata.setZaMesec(LocalDate.parse(rs.getString("datumZaduzenja"), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MM-yyyy")));
                     uplata.setZaMesec(rs.getString("zaMesec"));
                     uplata.setUserID(rs.getInt("userID"));
                     uplata.setDatumUplate(rs.getString("datumUplate"));
                     uplata.setPDV(getPDV(user.getNazivPaketaID()));
-                    uplata.setZaUplatu(uplata.getDug() + valueToPercent.getValue(uplata.getDug(), uplata.getPDV()));
+                    uplata.setZaUplatu(uplata.getDug());
                     uplata.setKomentar(rs.getString("komentar"));
-                    ukupno += uplata.getZaUplatu();
-                    ukupno -= rs.getDouble("uplaceno");
                     uplateArrayList.add(uplata);
-                    lDug.setText(String.valueOf(ukupno));
                 }
             }
         } catch (SQLException e) {
@@ -238,18 +239,37 @@ public class korisnikUplate implements Initializable {
             System.out.println("TREE ITEM: " + item.getValue().getKomentar());
             System.out.println("TREE ITEM PRICE: " + item.getValue().getZaUplatu());
         }
+
+        TreeItem<uplate> uplataRoot = tblUplateTree.getSelectionModel().getSelectedItem();
+
+        for (TreeItem<uplate> trIt : uplataRoot.getChildren()) {
+            int id = trIt.getValue().getId();
+            Double pduug = trIt.getValue().getZaUplatu();
+            uplatiUplatu(id, pduug);
+        }
+        uplatiUplatu(uplataRoot.getValue().getId(), uplataRoot.getValue().getZaUplatu());
+
+
+
+        setData();
+    }
+
+
+    private void uplatiUplatu(int id, double pdug) {
         PreparedStatement ps;
         String query = "UPDATE zaduzenja SET uplaceno=?, datumUplate=? WHERE id=?";
-
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         try {
             ps = db.connection.prepareStatement(query);
-            //  ps.setDouble(1, uplata.getZaUplatu());
+            ps.setDouble(1, pdug);
             ps.setString(2, date);
-            ps.setInt(3, tblUplateTree.getSelectionModel().getSelectedItem().getValue().getId());
-            //ps.executeUpdate();
+            ps.setInt(3, id);
+            ps.executeUpdate();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        setData();
+
     }
+
 }
