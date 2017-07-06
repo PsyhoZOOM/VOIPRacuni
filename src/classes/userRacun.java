@@ -43,7 +43,6 @@ public class userRacun {
         setPotrosnja();
         setZaUplatu();
 
-        // TODO: 6/9/17 izbrisati klasu kada nam natprovajder automatski skida besplatneminute
 
 
 

@@ -1,6 +1,8 @@
 package Controllers;
 
 import classes.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -116,6 +118,18 @@ public class korisnikUplate implements Initializable {
                     }
                 };
                 return cell;
+            }
+        });
+
+        bUplati.setDisable(true);
+        tblUplateTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<uplate>>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<uplate>> observable, TreeItem<uplate> oldValue, TreeItem<uplate> newValue) {
+                if (newValue.getValue().getKomentar().equals("Saobracaj")) {
+                    bUplati.setDisable(true);
+                } else {
+                    bUplati.setDisable(false);
+                }
             }
         });
     }

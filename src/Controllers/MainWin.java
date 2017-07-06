@@ -44,6 +44,9 @@ public class MainWin implements Initializable {
     public MenuItem menuPrikaziZone;
     public MenuItem menuPaketi;
     public MenuItem menuStampa;
+    public MenuItem menuMesecniObracun;
+    public MenuItem menuIzvestaji;
+    public MenuItem menuStatistika;
     URL location;
     ResourceBundle resources;
     FXMLLoader fxmlLoader;
@@ -89,12 +92,9 @@ public class MainWin implements Initializable {
             stage.setScene(scene);
             stage.showAndWait();
             zoneCeneController.showData("");
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void openCSV(ActionEvent actionEvent) {
@@ -141,6 +141,7 @@ public class MainWin implements Initializable {
             fileName = FilenameUtils.getBaseName(csvFiles.get(i).getName());
             customerID = fileName.substring(fileName.lastIndexOf("-"));
             customerID = customerID.replace("-customer", "");
+
 
             try {
 
@@ -210,7 +211,7 @@ public class MainWin implements Initializable {
         }
 
 
-        zaduzi(datumZaduzenja);
+        //zaduzi(datumZaduzenja);
 
     }
 
@@ -285,5 +286,34 @@ public class MainWin implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showMesecniObracune(ActionEvent actionEvent) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/mesecniObracuni.fxml"), resources);
+
+        try {
+            Scene scene = new Scene(fxmlLoader.load());
+            //TODO
+            //napraviti prozor za generisanje mesecnih racuna
+            MesecniObracuni mesecniObracunController = fxmlLoader.getController();
+            mesecniObracunController.db = db;
+
+
+            Stage stage = new Stage();
+            stage.initOwner(bPane.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Mesečni obračuni");
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void showIzvestaje(ActionEvent actionEvent) {
+    }
+
+    public void showStatistika(ActionEvent actionEvent) {
     }
 }

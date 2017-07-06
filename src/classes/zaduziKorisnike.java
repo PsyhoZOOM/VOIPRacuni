@@ -147,8 +147,6 @@ public class zaduziKorisnike {
                 e.printStackTrace();
             }
         }
-
-
     }
 
 
