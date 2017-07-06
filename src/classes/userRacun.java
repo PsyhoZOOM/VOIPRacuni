@@ -27,7 +27,6 @@ public class userRacun {
 
 
     public userRacun(Database db, String zaMesec, String rokPlacanja, Users user) {
-
         this.db = db;
         this.fixx = new FIXX(this.db);
         this.user = user;
@@ -51,6 +50,7 @@ public class userRacun {
     private void setPotrosnja() {
         for (destination dest : destinacija) {
             this.potrosnja += dest.getUkupno();
+            System.out.println("potrosnja: " + this.potrosnja);
         }
     }
 
@@ -68,23 +68,12 @@ public class userRacun {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
-                    zone = fixx.getZoneData(rs.getString("destination"));
-                    zoneCene = fixx.getZoneCeneData(rs.getInt("zoneCeneID"));
                     destination destination = new destination();
                     destination.setUserid(user.getId());
                     destination.setUkupno(rs.getDouble("zaUplatu"));
                     destination.setId(rs.getInt("id"));
-                    destination.setUtrosenoMinuta(rs.getInt("minutaPotrosnja"));
-                    destination.setNazivDestinacijeZone(
-                            zoneCene.getVrstaUsluge()
-                    );
-                    destination.setMinutaZaNaplatu(rs.getInt("minutaZaNaplatu"));
-                    destination.setCenaPoMinutu(zoneCene.getCena());
-                    if (destination.getNazivDestinacijeZone().equals("Srbija fiksni")) {
-                        destination.setGratisMinuta(60);
-                    }
-                    //this.potrosnja = + rs.getDouble("zaUplatu");
                     destinacija.add(destination);
+                    System.out.println(destinacija);
                 }
             }
         } catch (SQLException e) {
@@ -105,10 +94,8 @@ public class userRacun {
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 rs.next();
-                //TODO potrosnja saobracaj porez pretplata bez poreza
                 double prDug = rs.getDouble("ukupnoPrethodniDug");
                 this.prethodniDug = prDug;
-                //this.prethodniDug = prDug + valueToPercent.getValue(prDug, this.getPDV());
             }
             ps.close();
             rs.close();
@@ -120,8 +107,8 @@ public class userRacun {
 
     private void setZaUplatu() {
 
-        this.zaUplatu = this.getPretplata() + this.getPotrosnja() +
-                valueToPercent.getValue((this.getPretplata() + this.getPotrosnja()), this.getPDV()) + prethodniDug;
+        this.zaUplatu = this.getPretplata() + this.getPotrosnja() + this.prethodniDug +
+                valueToPercent.getValue((this.getPretplata() + this.getPotrosnja() + this.prethodniDug), this.getPDV());
     }
 
 

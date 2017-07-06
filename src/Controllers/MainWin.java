@@ -1,6 +1,8 @@
 package Controllers;
 
-import classes.*;
+import classes.CSVData;
+import classes.Database;
+import classes.FIXX;
 import com.csvreader.CsvReader;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -211,17 +213,9 @@ public class MainWin implements Initializable {
         }
 
 
-        //zaduzi(datumZaduzenja);
 
     }
 
-    private void zaduzi(String datumZaduzenja) {
-
-        ArrayList<Users> usersArrayList = fixx.getUsers();
-
-        zaduziKorisnike zadukor = new zaduziKorisnike(usersArrayList, datumZaduzenja, db);
-
-    }
 
 
     public void showCSV(ActionEvent actionEvent) {
@@ -297,6 +291,7 @@ public class MainWin implements Initializable {
             //napraviti prozor za generisanje mesecnih racuna
             MesecniObracuni mesecniObracunController = fxmlLoader.getController();
             mesecniObracunController.db = db;
+            mesecniObracunController.check_if_obracun_exists(LocalDate.now().minusMonths(1));
 
 
             Stage stage = new Stage();

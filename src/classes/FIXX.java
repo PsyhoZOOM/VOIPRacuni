@@ -59,6 +59,30 @@ public class FIXX {
         return csvDataArrayList;
     }
 
+    public static Double getAccountDebt(String account, String zaMesec, Database db) {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT SUM(chargedAmountRSD) FROM csv WHERE account=? AND  connectTime LIKE ? AND chargedAmountRSD >=0";
+        Double debt = 0.00;
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, account);
+            ps.setString(2, zaMesec + "%");
+
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    debt = rs.getDouble(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return debt;
+    }
+
     /**
      * vraca ZoneCene data od id-a iz table->zone column->zonaID
      *

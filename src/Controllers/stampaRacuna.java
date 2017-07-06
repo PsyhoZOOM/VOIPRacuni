@@ -133,7 +133,7 @@ public class stampaRacuna implements Initializable {
 
         try {
             ps = db.connection.prepareStatement(query);
-            ps.setString(1, zaM.format(DateTimeFormatter.ofPattern("yyyy-MM")));
+            ps.setString(1, zaM.format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-31");
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {

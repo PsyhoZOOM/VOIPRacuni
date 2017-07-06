@@ -1,5 +1,7 @@
 package classes;
 
+import javafx.scene.control.Alert;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +32,8 @@ public class zaduziKorisnike {
 
             if (userPrikljucak.isAfter(dateZad))
                 continue;
-            zaduziSingleUserSaobracaj(user);
+            //zaduziSingleUserSaobracaj(user);
+            zaduziKorisnikaSaobracaj(user);
             zaduziSingleUserPaket(user);
         }
 
@@ -82,6 +85,40 @@ public class zaduziKorisnike {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void zaduziKorisnikaSaobracaj(Users user) {
+        PreparedStatement ps;
+        ResultSet rs;
+
+        FIXX fixx = new FIXX(db);
+
+        String query;
+        LocalDate datumStart = LocalDate.parse(mesecZaduzenja);
+        String start = datumStart.withDayOfMonth(1).toString();
+        String stop = datumStart.withDayOfMonth(datumStart.lengthOfMonth()).toString();
+
+
+        double debt = FIXX.getAccountDebt(user.getBrojTelefona(), datumStart.format(monthDateTimeFormater), db);
+
+        query = "INSERT INTO zaduzenja (datumZaduzenja, userID, zaMesec, zaUplatu, komentar) VALUES (?,?,?,?,?)";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setString(1, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ps.setInt(2, user.getId());
+            ps.setString(3, datumStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
+            ps.setDouble(4, debt);
+            ps.setString(5, "Saobracaj");
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
             e.printStackTrace();
         }
 

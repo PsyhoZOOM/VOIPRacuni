@@ -28,8 +28,8 @@ public class PrintPage {
 
         createFrontPage(racun);
         doc.newPage();
-        createBackPage(racun);
-        doc.newPage();
+        //createBackPage(racun);
+        //doc.newPage();
     }
 
 
