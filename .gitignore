@@ -31,3 +31,4 @@ out/
 .DS_Store
 src/.DS_Store
 /.idea/
+/CSV.sql
