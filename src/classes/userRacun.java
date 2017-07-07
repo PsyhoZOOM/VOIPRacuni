@@ -95,7 +95,7 @@ public class userRacun {
             if (rs.isBeforeFirst()) {
                 rs.next();
                 double prDug = rs.getDouble("ukupnoPrethodniDug");
-                this.prethodniDug = prDug;
+                this.prethodniDug = prDug + valueToPercent.getValue(prDug, this.pretplataPDV);
             }
             ps.close();
             rs.close();
@@ -108,7 +108,7 @@ public class userRacun {
     private void setZaUplatu() {
 
         this.zaUplatu = this.getPretplata() + this.getPotrosnja() + this.prethodniDug +
-                valueToPercent.getValue((this.getPretplata() + this.getPotrosnja() + this.prethodniDug), this.getPDV());
+                valueToPercent.getValue((this.getPretplata() + this.getPotrosnja()), this.getPDV());
     }
 
 
