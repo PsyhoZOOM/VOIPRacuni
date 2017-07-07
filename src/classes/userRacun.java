@@ -96,7 +96,6 @@ public class userRacun {
                 rs.next();
                 double prDug = rs.getDouble("ukupnoPrethodniDug");
                 this.prethodniDug = prDug + valueToPercent.getValue(prDug, this.getPDV());
-                System.out.println(String.format("Broj: %, Ime: %, dug: %d", user.getBrojTelefona(), user.getIme() + this.prethodniDug));
             }
             ps.close();
             rs.close();
