@@ -53,6 +53,7 @@ public class editKorisnik implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.location = location;
         this.resources = resources;
+        dtpDatumPrikljucka.setValue(LocalDate.now());
 
         dtpDatumPrikljucka.setConverter(new StringConverter<LocalDate>() {
             @Override
