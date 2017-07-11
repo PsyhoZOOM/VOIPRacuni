@@ -102,7 +102,6 @@ public class statistika implements Initializable {
                             caption.setTranslateX(e.getSceneX());
                             caption.setTranslateY(e.getSceneY());
                             caption.setText(String.valueOf(data.getPieValue()) + "min.");
-                            System.out.println(data.getPieValue() + "%");
                         }
                     });
         }
