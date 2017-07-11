@@ -287,8 +287,6 @@ public class MainWin implements Initializable {
 
         try {
             Scene scene = new Scene(fxmlLoader.load());
-            //TODO
-            //napraviti prozor za generisanje mesecnih racuna
             MesecniObracuni mesecniObracunController = fxmlLoader.getController();
             mesecniObracunController.db = db;
             mesecniObracunController.check_if_obracun_exists(LocalDate.now().minusMonths(1));
@@ -310,5 +308,21 @@ public class MainWin implements Initializable {
     }
 
     public void showStatistika(ActionEvent actionEvent) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/statistika.fxml"), resources);
+
+        try {
+            Scene scene = new Scene(fxmlLoader.load());
+            statistika statistikaController = fxmlLoader.getController();
+            statistikaController.db = db;
+
+            Stage stage = new Stage();
+            stage.initOwner(bPane.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Statistika");
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
