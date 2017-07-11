@@ -30,7 +30,7 @@ public class zaduziKorisnike {
             LocalDate userPrikljucak = LocalDate.parse(user.getDatumPrikljucka(), dateDateTimeFormater);
             LocalDate dateZad = LocalDate.parse(mesecZaduzenja, dateDateTimeFormater);
 
-            if (userPrikljucak.isAfter(dateZad))
+            if (userPrikljucak.isAfter(dateZad.withDayOfMonth(dateZad.lengthOfMonth())))
                 continue;
             //zaduziSingleUserSaobracaj(user);
             zaduziKorisnikaSaobracaj(user);
