@@ -36,11 +36,11 @@ public class userRacun {
         zaMesecOd = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
         zaMesecDo = LocalDate.of(date.getYear(), date.getMonthValue(), date.lengthOfMonth());
 
+        this.pretplataPDV = fixx.getPaketData(user.getNazivPaketaID()).getPDV();
         setPretplata();
         setPrethodniDug();
         setDestination();
         setPotrosnja();
-        this.pretplataPDV = fixx.getPaketData(user.getNazivPaketaID()).getPDV();
         setZaUplatu();
 
 

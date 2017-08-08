@@ -35,7 +35,7 @@ public class korisnikUplate implements Initializable {
     public TreeTableColumn<uplate, String> ctBrTel;
     public TreeTableColumn<uplate, String> ctZaMesec;
     public TreeTableColumn<uplate, Double> ctZaUplatu;
-    public TreeTableColumn<uplate, Double> ctUplaceno;
+    public TreeTableColumn<uplate, String> ctUplaceno;
     public TreeTableColumn<uplate, String> ctDatumUplate;
     Database db;
     Users user;
@@ -54,7 +54,7 @@ public class korisnikUplate implements Initializable {
         ctBrTel.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("brojTel"));
         ctZaMesec.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("zaMesec"));
         ctZaUplatu.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, Double>("zaUplatu"));
-        ctUplaceno.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, Double>("uplaceno"));
+        ctUplaceno.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("uplaceno"));
         ctDatumUplate.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("datumUplate"));
         ctVrsta.setCellValueFactory(new TreeItemPropertyValueFactory<uplate, String>("komentar"));
 
@@ -99,27 +99,6 @@ public class korisnikUplate implements Initializable {
             }
         });
 
-        ctUplaceno.setCellFactory(new Callback<TreeTableColumn<uplate, Double>, TreeTableCell<uplate, Double>>() {
-            @Override
-            public TreeTableCell<uplate, Double> call(TreeTableColumn<uplate, Double> param) {
-                TreeTableCell<uplate, Double> cell = new TreeTableCell<uplate, Double>() {
-                    @Override
-                    protected void updateItem(Double item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setText(null);
-                        } else {
-                            if (item != null) {
-                                setText(df.format(item));
-                            } else {
-                                setText(null);
-                            }
-                        }
-                    }
-                };
-                return cell;
-            }
-        });
 
         bUplati.setDisable(true);
         tblUplateTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<uplate>>() {
@@ -136,7 +115,6 @@ public class korisnikUplate implements Initializable {
 
     public void setData() {
         Double zaUplatuUkupno = 0.00;
-        Double Uplaceno = 0.00;
         ObservableList<uplate> data = FXCollections.observableArrayList(getUplate(user.getId()));
         //tblUplate.setItems(data);
 
@@ -154,8 +132,9 @@ public class korisnikUplate implements Initializable {
 
         for (TreeItem<uplate> treupl : root.getChildren()) {
             for (uplate uplata : data) {
-                zaUplatuUkupno = uplata.getZaUplatu() - uplata.getUplaceno();
                 if (treupl.getValue().getZaMesec().equals(uplata.getZaMesec())) {
+                    if (uplata.getUplaceno().equals("Ne"))
+                        zaUplatuUkupno = zaUplatuUkupno + uplata.getZaUplatu();
                     if (uplata.getKomentar().equals("Saobracaj")) {
                         treupl.getChildren().add(new TreeItem<uplate>(uplata));
                         treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + uplata.getZaUplatu());
@@ -230,12 +209,16 @@ public class korisnikUplate implements Initializable {
                     uplata.setIme(user.getIme());
                     uplata.setBrojTel(user.getBrojTelefona());
                     uplata.setDug(rs.getDouble("zaUplatu"));
-                    uplata.setUplaceno(rs.getDouble("uplaceno"));
+                    if (rs.getDouble("uplaceno") > 0) {
+                        uplata.setUplaceno("Da");
+                    } else {
+                        uplata.setUplaceno("Ne");
+                    }
                     uplata.setZaMesec(rs.getString("zaMesec"));
                     uplata.setUserID(rs.getInt("userID"));
                     uplata.setDatumUplate(rs.getString("datumUplate"));
                     uplata.setPDV(getPDV(user.getNazivPaketaID()));
-                    uplata.setZaUplatu(uplata.getDug());
+                    uplata.setZaUplatu(rs.getDouble("zaUplatu"));
                     uplata.setKomentar(rs.getString("komentar"));
                     uplateArrayList.add(uplata);
                 }
@@ -279,7 +262,7 @@ public class korisnikUplate implements Initializable {
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         try {
             ps = db.connection.prepareStatement(query);
-            ps.setDouble(1, pdug);
+            ps.setDouble(1, 1);
             ps.setString(2, date);
             ps.setInt(3, id);
             ps.executeUpdate();

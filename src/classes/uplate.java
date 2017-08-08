@@ -11,7 +11,7 @@ public class uplate implements Serializable {
     String brojTel;
     Double dug;
     Double zaUplatu;
-    Double uplaceno;
+    String uplaceno;
     String zaMesec;
     String uplatio;
     int userID;
@@ -19,6 +19,13 @@ public class uplate implements Serializable {
     Double PDV;
     String komentar;
 
+    public String getUplaceno() {
+        return uplaceno;
+    }
+
+    public void setUplaceno(String uplaceno) {
+        this.uplaceno = uplaceno;
+    }
 
     public String getKomentar() {
         return komentar;
@@ -66,14 +73,6 @@ public class uplate implements Serializable {
 
     public void setZaUplatu(Double zaUplatu) {
         this.zaUplatu = zaUplatu;
-    }
-
-    public Double getUplaceno() {
-        return uplaceno;
-    }
-
-    public void setUplaceno(Double uplaceno) {
-        this.uplaceno = uplaceno;
     }
 
     public String getZaMesec() {
