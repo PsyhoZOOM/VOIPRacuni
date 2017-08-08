@@ -153,13 +153,12 @@ public class korisnikUplate implements Initializable {
         }
 
         for (TreeItem<uplate> treupl : root.getChildren()) {
-            zaUplatuUkupno = zaUplatuUkupno + treupl.getValue().getZaUplatu();
             for (uplate uplata : data) {
+                zaUplatuUkupno = uplata.getZaUplatu() - uplata.getUplaceno();
                 if (treupl.getValue().getZaMesec().equals(uplata.getZaMesec())) {
                     if (uplata.getKomentar().equals("Saobracaj")) {
                         treupl.getChildren().add(new TreeItem<uplate>(uplata));
                         treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + uplata.getZaUplatu());
-                        zaUplatuUkupno = zaUplatuUkupno + uplata.getZaUplatu();
                     }
                 }
             }
