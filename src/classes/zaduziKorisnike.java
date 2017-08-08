@@ -30,6 +30,8 @@ public class zaduziKorisnike {
             LocalDate userPrikljucak = LocalDate.parse(user.getDatumPrikljucka(), dateDateTimeFormater);
             LocalDate dateZad = LocalDate.parse(mesecZaduzenja, dateDateTimeFormater);
 
+            ////TO-DO
+            //postaviti zadnji dan u mesecu zbog zaduzenja korisnika
             if (userPrikljucak.isAfter(dateZad))
                 continue;
             //zaduziSingleUserSaobracaj(user);
@@ -44,7 +46,8 @@ public class zaduziKorisnike {
         PreparedStatement ps;
         ResultSet rs;
         String query;
-        String mesecKreiranja = LocalDate.parse(user.getDatumPrikljucka(), dateDateTimeFormater).format(monthDateTimeFormater);
+        String mesecKreiranja = LocalDate.parse(user.getDatumPrikljucka(),
+                dateDateTimeFormater).format(monthDateTimeFormater);
 
 
         query = "SELECT paketID from korisnici WHERE id=?";

@@ -9,10 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -243,6 +240,30 @@ public class korisniciWin implements Initializable {
     }
 
     public void obrisiKorinisk(ActionEvent actionEvent) {
+        if (tblKorisnici.getSelectionModel().getSelectedIndex() == -1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Nije izabran ni jedan korisnik za brisanje", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
+        ButtonType da = new ButtonType("Da!", ButtonBar.ButtonData.YES);
+        ButtonType ne = new ButtonType("Ne!", ButtonBar.ButtonData.NO);
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, String.format("Da li ste sigurni da želite da izbrišete" +
+                "korisnika %"));
+
+        PreparedStatement ps;
+        String query = "DELETE FROM korisnici WHERE id=?";
+
+        try {
+            ps = db.connection.prepareStatement(query);
+            ps.setInt(1, tblKorisnici.getSelectionModel().getSelectedItem().getId());
+            ps.executeUpdate();
+            ps.close();
+            setData("");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void traziKorisnika(ActionEvent actionEvent) {
