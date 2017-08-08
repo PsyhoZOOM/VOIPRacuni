@@ -47,7 +47,7 @@ public class zaduziKorisnike {
         ResultSet rs;
         String query;
         String mesecKreiranja = LocalDate.parse(user.getDatumPrikljucka(),
-                dateDateTimeFormater).format(monthDateTimeFormater);
+                dateDateTimeFormater).format(dateDateTimeFormater);
 
 
         query = "SELECT paketID from korisnici WHERE id=?";
@@ -69,13 +69,21 @@ public class zaduziKorisnike {
 
 
         Paketi zoneCene = fixx.getPaketData(paketID);
-        if (mesecZaduzenja.equals(mesecKreiranja)) {
-            LocalDate datum = LocalDate.parse(mesecZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            int daysInMonth = datum.lengthOfMonth();
-            int currentDay = datum.getDayOfMonth();
-            double oneDayPrice = zoneCene.getPretplata() / daysInMonth;
-            zoneCene.setPretplata((daysInMonth - currentDay) * oneDayPrice);
+        LocalDate datumPr = LocalDate.parse(mesecKreiranja, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate datumZaMesec = LocalDate.parse(mesecZaduzenja, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        if (datumPr.getYear() == datumZaMesec.getYear() && datumPr.getMonthValue() == datumZaMesec.getMonthValue()) {
+            int danaUMesecu = 0;
+            int danPriljucka = 0;
+            int danaZaNaplatu = 0;
+            double cenaDana = 0.00;
+            danaUMesecu = datumPr.lengthOfMonth();
+            danPriljucka = datumPr.getDayOfMonth();
+            danaZaNaplatu = danaUMesecu - danPriljucka;
+            cenaDana = zoneCene.getPretplata() / danaUMesecu;
+            zoneCene.setPretplata(cenaDana * danaZaNaplatu);
         }
+
 
         query = "INSERT INTO zaduzenja (datumZaduzenja, userID, zaMesec, zaUplatu, komentar) VALUES (?,?,?,?,?)";
         try {

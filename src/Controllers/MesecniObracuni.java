@@ -101,8 +101,11 @@ public class MesecniObracuni implements Initializable {
         FIXX fix = new FIXX(db);
 
         ArrayList<Users> users = fix.getUsers();
+        LocalDate obracunZaMesec = LocalDate.parse(dtpObracunZaMesec.getValue().toString());
+        obracunZaMesec = LocalDate.of(obracunZaMesec.getYear(), obracunZaMesec.getMonthValue(), obracunZaMesec.lengthOfMonth());
 
-        zaduziKorisnike zaduziKorisnike = new zaduziKorisnike(users, dtpObracunZaMesec.getValue().toString(), db);
+
+        zaduziKorisnike zaduziKorisnike = new zaduziKorisnike(users, obracunZaMesec.toString(), db);
 
 
         bObracunaj.setDisable(true);

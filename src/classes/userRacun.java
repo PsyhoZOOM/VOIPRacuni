@@ -40,6 +40,7 @@ public class userRacun {
         setPrethodniDug();
         setDestination();
         setPotrosnja();
+        this.pretplataPDV = fixx.getPaketData(user.getNazivPaketaID()).getPDV();
         setZaUplatu();
 
 
@@ -115,23 +116,30 @@ public class userRacun {
     private void setPretplata() {
         ResultSet rs;
         PreparedStatement ps;
-        String query = "SELECT *  FROM paketi WHERE id=?";
+        String query = "SELECT * FROM zaduzenja WHERE userID=? AND zaMesec=? AND komentar = 'Paket' AND uplaceno=0";
         try {
             ps = db.connection.prepareStatement(query);
-            ps.setInt(1, user.getNazivPaketaID());
+            ps.setInt(1, user.getId());
+            ps.setString(2, zaMesec);
             rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 rs.next();
-                this.pretplata = rs.getDouble("pretplata");
-                this.pretplataPDV = rs.getDouble("PDV");
+                this.pretplata = rs.getDouble("zaUplatu");
             }
             ps.close();
             rs.close();
 
+            //// TO-DO brisanje
+            /*
             LocalDate datumPr = LocalDate.parse(user.getDatumPrikljucka(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             LocalDate datumZaMesec = LocalDate.parse(this.zaMesec + "-01");
+
+
+
             //ako je korisnik prikljucen u toku meseca onda moramo izracunati koliko dana ce mu se naplatiti pretplata
             //a ne ceo mesec
+
+
             if (datumPr.getYear() == datumZaMesec.getYear() && datumPr.getMonthValue() == datumZaMesec.getMonthValue()) {
                 int danaUMesecu = 0;
                 int danPriljucka = 0;
@@ -143,6 +151,11 @@ public class userRacun {
                 cenaDana = this.pretplata / danaUMesecu;
                 this.pretplata = cenaDana * danaZaNaplatu;
             }
+
+
+            */
+
+
 
 
         } catch (SQLException e) {

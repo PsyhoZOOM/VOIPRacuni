@@ -136,6 +136,7 @@ public class korisnikUplate implements Initializable {
 
     public void setData() {
         Double zaUplatuUkupno = 0.00;
+        Double Uplaceno = 0.00;
         ObservableList<uplate> data = FXCollections.observableArrayList(getUplate(user.getId()));
         //tblUplate.setItems(data);
 
@@ -162,7 +163,8 @@ public class korisnikUplate implements Initializable {
                     }
                 }
             }
-            treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + valueToPercent.getValue(treupl.getValue().getZaUplatu(), treupl.getValue().getPDV()));
+            treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() +
+                    valueToPercent.getValue(treupl.getValue().getZaUplatu(), treupl.getValue().getPDV()));
         }
 
 
