@@ -133,23 +133,25 @@ public class korisnikUplate implements Initializable {
         for (TreeItem<uplate> treupl : root.getChildren()) {
             for (uplate uplata : data) {
                 if (treupl.getValue().getZaMesec().equals(uplata.getZaMesec())) {
-                    if (uplata.getUplaceno().equals("Ne"))
-                        zaUplatuUkupno = zaUplatuUkupno + uplata.getZaUplatu();
                     if (uplata.getKomentar().equals("Saobracaj")) {
                         treupl.getChildren().add(new TreeItem<uplate>(uplata));
                         treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() + uplata.getZaUplatu());
                     }
                 }
             }
+
             treupl.getValue().setZaUplatu(treupl.getValue().getZaUplatu() +
                     valueToPercent.getValue(treupl.getValue().getZaUplatu(), treupl.getValue().getPDV()));
+
+            if (treupl.getValue().getUplaceno().equals("Ne") && treupl.getValue().getKomentar().equals("Paket"))
+                zaUplatuUkupno = zaUplatuUkupno + treupl.getValue().getZaUplatu();
         }
 
 
         //TODO
         //za uplatu pdvset
 
-        zaUplatuUkupno = zaUplatuUkupno + valueToPercent.getValue(zaUplatuUkupno, 20);
+        //       zaUplatuUkupno = zaUplatuUkupno + valueToPercent.getValue(zaUplatuUkupno, 20);
 
         lDug.setText(df.format(zaUplatuUkupno));
 
