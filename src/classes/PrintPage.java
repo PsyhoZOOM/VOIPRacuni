@@ -37,11 +37,18 @@ public class PrintPage {
 
         //TOP PODACI
         font.setSize(8);
+        String brRacuna;
+        LocalDate racunGodinaUgoovor = LocalDate.parse(racun.getPeriodDo(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        brRacuna = racun.getUser().getBrUgovora().replace("/", "") + "-" + racunGodinaUgoovor.getMonthValue();
+
+
+
         String topR = String.format("" +
+                "Račun br.: %s\n" +
                 "Ugovor br.: %s\n" +
                 "Datum izdavanja: %s\n" +
                 "Za period od %s do %s\n" +
-                "Rok plaćanja %s", racun.getUser().getBrUgovora(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), racun.getPeriodOd(), racun.getPeriodDo(), racun.getRokPlacanja());
+                "Rok plaćanja %s", brRacuna, racun.getUser().getBrUgovora(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), racun.getPeriodOd(), racun.getPeriodDo(), racun.getRokPlacanja());
         Paragraph p = new Paragraph(topR, font);
         p.setAlignment(Element.ALIGN_RIGHT);
 
@@ -122,7 +129,7 @@ public class PrintPage {
 
         canvas.beginText();
         canvas.moveText(X, Y - 100);
-        canvas.showText("PDV:");
+        canvas.showText("PDV: " + racun.getPDV() + "%");
         canvas.endText();
 
         canvas.beginText();
@@ -165,7 +172,7 @@ public class PrintPage {
 
         canvas.beginText();
         canvas.moveText(X, Y - 100);
-        canvas.showText(df.format(racun.getPDV()) + "%");
+        canvas.showText(df.format(valueToPercent.getValue(racun.getPretplata() + racun.getPotrosnja(), racun.getPDV())) + "din.");
         canvas.endText();
 
         canvas.beginText();
