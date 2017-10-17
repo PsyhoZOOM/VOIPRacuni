@@ -191,7 +191,11 @@ public class PrintPage {
         canvas.setFontAndSize(fotNorma.getBaseFont(), 8);
         canvas.beginText();
         canvas.moveText(52, 215);
-        canvas.showText(racun.getUser().getIme());
+        if (racun.getUser().isFirma()) {
+            canvas.showText(racun.getUser().getNazivFirme());
+        } else {
+            canvas.showText(racun.getUser().getIme());
+        }
         canvas.endText();
 
         canvas.beginText();
@@ -213,7 +217,11 @@ public class PrintPage {
         canvas.setFontAndSize(fotNorma.getBaseFont(), 8);
         canvas.beginText();
         canvas.moveText(388, 217);
-        canvas.showText(racun.getUser().getIme());
+        if (racun.getUser().isFirma()) {
+            canvas.showText(racun.getUser().getNazivFirme());
+        } else {
+            canvas.showText(racun.getUser().getIme());
+        }
         canvas.endText();
 
         canvas.beginText();
