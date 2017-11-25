@@ -32,3 +32,4 @@ out/
 src/.DS_Store
 /.idea/
 /CSV.sql
+/dist/

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.yuvideo.voipRacuni.Controllers.MainWin">
+    <children>
+        <BorderPane fx:id="bPane" layoutX="168.0" layoutY="122.0" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <top>
+                <VBox BorderPane.alignment="CENTER">
+                    <children>
+                        <MenuBar>
+                            <menus>
+                                <Menu mnemonicParsing="false" text="File">
+                                    <items>
+                                        <MenuItem fx:id="meniExit" mnemonicParsing="false" text="Izlaz" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Računi">
+                                    <items>
+                                        <MenuItem fx:id="menuStampa" mnemonicParsing="false" onAction="#showStampa" text="Štampa" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Usluge">
+                                    <items>
+                                        <MenuItem fx:id="menuPrikaziUsluge" mnemonicParsing="false" onAction="#showUsluge" text="Prikazi usluge" />
+                                        <MenuItem fx:id="menuPrikaziZone" mnemonicParsing="false" onAction="#showZone" text="Zone" />
+                                        <MenuItem fx:id="menuPaketi" mnemonicParsing="false" onAction="#showPaketi" text="Paketi" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="CSV">
+                                    <items>
+                                        <MenuItem fx:id="menuOpenCSV" mnemonicParsing="false" onAction="#openCSV" text="Import CSV Racun" />
+                                        <MenuItem fx:id="menuShowCSV" mnemonicParsing="false" onAction="#showCSV" text="Prikazi CSV Racun" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Računi i Izveštaji">
+                                    <items>
+                                        <MenuItem fx:id="menuMesecniObracun" mnemonicParsing="false" onAction="#showMesecniObracune" text="Mesečni obračuni" />
+                                        <MenuItem fx:id="menuIzvestaji" mnemonicParsing="false" onAction="#showIzvestaje" text="Izveštaji" />
+                                        <MenuItem fx:id="menuStatistika" mnemonicParsing="false" onAction="#showStatistika" text="Statstika" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Help">
+                                    <items>
+                                        <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About" />
+                                    </items>
+                                </Menu>
+                            </menus>
+                        </MenuBar>
+                    </children>
+                </VBox>
+            </top>
+            <bottom>
+                <HBox BorderPane.alignment="CENTER">
+                    <children>
+                        <Label fx:id="lMessage" minWidth="400.0" />
+                        <ProgressBar fx:id="progBarImport" prefWidth="200.0" progress="0.0" visible="false" />
+                    </children>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </children>
+</AnchorPane>
