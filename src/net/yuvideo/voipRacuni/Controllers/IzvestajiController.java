@@ -5,12 +5,19 @@
  */
 package net.yuvideo.voipRacuni.Controllers;
 
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.sun.deploy.ref.AppRef;
-import java.awt.FileDialog;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
+import javafx.util.StringConverter;
+import net.yuvideo.voipRacuni.classes.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,32 +29,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.FileChooser;
-import javafx.util.StringConverter;
-import net.yuvideo.voipRacuni.classes.CSVData;
-import net.yuvideo.voipRacuni.classes.Database;
-import net.yuvideo.voipRacuni.classes.PrintPageListing;
-import net.yuvideo.voipRacuni.classes.Users;
-import net.yuvideo.voipRacuni.classes.izvestajPotrosnje;
+
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 /**
  * FXML Controller class
@@ -182,7 +169,7 @@ public class IzvestajiController implements Initializable {
 					if(rs.getString("from").isEmpty() || rs.getString("to").isEmpty())
 						continue;
 
-					LocalDateTime st = LocalDateTime.parse(rs.getString("connectTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+					LocalDateTime st = LocalDateTime.parse(rs.getString("connectTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 					if(!st.isAfter(dtpPeriodOd.getValue().atTime(0, 0, 0)))
 						continue;
 					
@@ -249,7 +236,7 @@ public class IzvestajiController implements Initializable {
 		fc.getExtensionFilters().addAll(ef);
 		File file = fc.showSaveDialog(this.bStampa.getScene().getWindow());
 		try {
-			PdfWriter pdfWriter = PdfWriter.getInstance(printPageListin.getDocument(), new FileOutputStream(file.getAbsolutePath()));
+			PdfWriter pdfWriter = PdfWriter.getInstance(printPageListin.getDocument(), new FileOutputStream(file.getAbsolutePath() + ".pdf"));
 			printPageListin.createListing();
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(IzvestajiController.class.getName()).log(Level.SEVERE, null, ex);
