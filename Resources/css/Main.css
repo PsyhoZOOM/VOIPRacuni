@@ -64,3 +64,13 @@ linear-gradient(to bottom, derive(-fx-base,+40%), derive(-fx-base,-20%), derive(
 .align-center {
     -fx-alignment: center-center
 }
+.chart{
+        -fx-border-color: black;
+        -fx-legend-visible: true;
+        -fx-legend-side: bottom;
+        -fx-title-side: top;
+        -fx-clockwise: true;
+        -fx-pie-label-visible: true;
+        -fx-label-line-length: 25;
+        -fx-pie-to-label-line-curved: true; //curve label lines?
+      }
