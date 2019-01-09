@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity"
+  minHeight="-Infinity"
+  minWidth="-Infinity" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.65"
+  fx:controller="net.yuvideo.voipRacuni.Controllers.connectionWinController">
+  <children>
+    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+      AnchorPane.topAnchor="0.0" alignment="CENTER"
+      layoutX="224.0" layoutY="89.0" spacing="5.0">
+      <children>
+        <HBox VBox.vgrow="NEVER" alignment="CENTER_RIGHT" spacing="5.0">
+          <children>
+            <Label text="Host/IP:"/>
+            <TextField text="localhost" fx:id="tHost"/>
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+          </padding>
+        </HBox>
+        <HBox VBox.vgrow="NEVER" alignment="CENTER_RIGHT" spacing="5.0">
+          <children>
+            <Label text="Korisničko ime:"/>
+            <TextField text="jgemstone" fx:id="tUser"/>
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+          </padding>
+        </HBox>
+        <HBox VBox.vgrow="NEVER" alignment="CENTER_RIGHT" spacing="5.0">
+          <children>
+            <Label text="Šifra:"/>
+            <TextField text="jgemstone" fx:id="tPass"/>
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+          </padding>
+        </HBox>
+        <HBox alignment="CENTER" layoutX="15.0" layoutY="97.0" spacing="5.0">
+          <children>
+            <Label fx:id="lMessage"/>
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+          </padding>
+        </HBox>
+        <Button mnemonicParsing="false" onAction="#connectToHost" text="Poveži se"
+          fx:id="bConnect"/>
+      </children>
+      <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+      </padding>
+    </VBox>
+  </children>
+</AnchorPane>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minWidth="400.0" stylesheets="@../css/Main.css"
+  xmlns="http://javafx.com/javafx/8.0.65"
+  fx:controller="net.yuvideo.voipRacuni.Controllers.editUsluge">
+  <children>
+    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+      AnchorPane.topAnchor="0.0"
+      layoutX="74.0" layoutY="-29.0">
+      <children>
+        <ToolBar>
+          <items>
+            <Button mnemonicParsing="false" text="Zatvori"/>
+          </items>
+        </ToolBar>
+        <GridPane hgap="5.0" vgap="5.0">
+          <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
+            <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" minWidth="10.0"
+              prefWidth="100.0"/>
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+          </rowConstraints>
+          <children>
+            <Label text="Vrsta usluge:"/>
+            <Label GridPane.rowIndex="1" text="Provider cena:"/>
+            <Label GridPane.rowIndex="2" text="Provider PDV:"/>
+            <Label GridPane.rowIndex="3" text="Telekom cena:"/>
+            <Label GridPane.rowIndex="4" text="Cena:"/>
+            <Label GridPane.rowIndex="5" text="PDV:"/>
+            <TextField GridPane.columnIndex="1" minWidth="200.0" fx:id="tNazivUsluge"/>
+            <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="200.0"
+              fx:id="tProviderCena"/>
+            <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="200.0"
+              fx:id="tProviderPVD"/>
+            <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" minWidth="200.0"
+              fx:id="tTelekomCena"/>
+            <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" minWidth="200.0"
+              fx:id="tCena"/>
+            <TextField GridPane.columnIndex="1" GridPane.rowIndex="5" minWidth="200.0"
+              fx:id="tPDV"/>
+            <Button GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6"
+              mnemonicParsing="false"
+              onAction="#saveData" text="Snimi" fx:id="bSnimi"/>
+          </children>
+          <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+          </padding>
+        </GridPane>
+      </children>
+    </VBox>
+  </children>
+</AnchorPane>

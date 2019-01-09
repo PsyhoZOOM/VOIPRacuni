@@ -1,0 +1,90 @@
+
+
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    }
+
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'java-library'
+apply plugin: 'javafx-gradle-plugin'
+
+
+
+
+mainClassName = 'net.yuvideo.voipracuni.Main'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    jcenter()
+
+}
+
+
+configurations(){
+    extraLibs
+}
+
+
+
+dependencies {
+    compile group: 'commons-io', 'name': 'commons-io', version: '1.3.2'
+    compile group: 'de.jensd', 'name' : 'fontawesomefx-commons', version: '9.1.2'
+    compile group: 'org.apache.pdfbox', 'name': 'fontbox', version: '2.0.3'
+    compile group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13'
+    compile group: 'net.sourceforge.javacsv', name: 'javacsv', version: '2.0'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version:'3.17'
+
+
+
+
+    configurations.compile.extendsFrom(configurations.extraLibs)
+
+
+
+
+}
+
+
+jar{
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java"]
+        }
+        resources {
+            srcDirs = ["src/main/resources"]
+        }
+    }
+}
+
+
+
+jfx {
+    // minimal requirement for jfxJar-task
+    mainClass = 'net.yuvideo.voipracuni.Main'
+
+    // minimal requirement for jfxNative-task
+    vendor = 'PsyhoZOOM'
+    jfxMainAppJarName = 'jGemstone-Client.jar'
+    bundler = 'linux.app'
+    bundleArguments  = ['jnlp.outfile' : 'jGemstone-Client']
+
+
+}
